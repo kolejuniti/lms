@@ -1,109 +1,141 @@
-<!--pre registration -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3">
   <div class="card-header">
-  <b>Pre Registration</b>
+    <b>Table Display Options</b>
+  </div>
+  <div class="card-body">
+    <div class="form-check form-check-inline">
+      <input class="form-check-input table-filter" type="checkbox" id="chk-yuran-pengajian" value="yuran-pengajian">
+      <label class="form-check-label" for="chk-yuran-pengajian">Yuran Pengajian</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input table-filter" type="checkbox" id="chk-yuran-konvokesyen" value="yuran-konvokesyen">
+      <label class="form-check-label" for="chk-yuran-konvokesyen">Yuran Konvokesyen</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input table-filter" type="checkbox" id="chk-denda-lain" value="denda-lain">
+      <label class="form-check-label" for="chk-denda-lain">Denda/Saman dan Lain-lain</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input table-filter" type="checkbox" id="chk-bayaran-lebihan" value="bayaran-lebihan">
+      <label class="form-check-label" for="chk-bayaran-lebihan">Bayaran Lebihan</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input table-filter" type="checkbox" id="chk-bayaran-insentif" value="bayaran-insentif">
+      <label class="form-check-label" for="chk-bayaran-insentif">Bayaran Insentif</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input table-filter" type="checkbox" id="chk-penajaan-elaun" value="penajaan-elaun">
+      <label class="form-check-label" for="chk-penajaan-elaun">Penajaan/Elaun</label>
+    </div>
+  </div>
+</div>
+
+<!--pre registration -->
+<div class="card mb-3 stud_info" id="card_pre_registration" data-category="yuran-pengajian">
+  <div class="card-header">
+    <b>Pre Registration</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalPreALL = 0;
-      @endphp
-      @foreach ($data['preRegister'] as $key => $rgs)
+        @php
+        $totalPreALL = 0;
+        @endphp
+        @foreach ($data['preRegister'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['preMethod'][$key] as $mth)
+            @foreach ($data['preMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['preMethod'][$key] as $mth)
+            @foreach ($data['preMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['preMethod'][$key] as $mth)
+            @foreach ($data['preMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalPre = 0;
+            $totalPre = 0;
             @endphp
-          @foreach ($data['preDetail'][$key] as $mth)
+            @foreach ($data['preDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalPre += $mth->amount;
+            $totalPre += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
-            <div>{{  number_format($totalPre, 2) }}</div>
+            <div>{{ number_format($totalPre, 2) }}</div>
             @php
-              $totalPreALL += $totalPre;
+            $totalPreALL += $totalPre;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="9" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{  number_format($totalPreALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="9" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalPreALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -111,111 +143,111 @@
 </div>
 
 <!-- new student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_new_student" data-category="yuran-pengajian">
   <div class="card-header">
-  <b>New Student</b>
+    <b>New Student</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalNewALL = 0;
-      @endphp
-      @foreach ($data['newStudent'] as $key => $rgs)
+        @php
+        $totalNewALL = 0;
+        @endphp
+        @foreach ($data['newStudent'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['newStudMethod'][$key] as $mth)
+            @foreach ($data['newStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['newStudMethod'][$key] as $mth)
+            @foreach ($data['newStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['newStudMethod'][$key] as $mth)
+            @foreach ($data['newStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalNew = 0;
+            $totalNew = 0;
             @endphp
-          @foreach ($data['newStudDetail'][$key] as $mth)
+            @foreach ($data['newStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalNew += $mth->amount;
+            $totalNew += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
-            <div>{{  number_format($totalNew, 2) }}</div>
+            <div>{{ number_format($totalNew, 2) }}</div>
             @php
-              $totalNewALL += $totalNew;
+            $totalNewALL += $totalNew;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="9" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{  number_format($totalNewALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="9" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalNewALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -223,111 +255,111 @@
 </div>
 
 <!-- old student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_old_student" data-category="yuran-pengajian">
   <div class="card-header">
-  <b>Old Student</b>
+    <b>Old Student</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalOldALL = 0;
-      @endphp
-      @foreach ($data['oldStudent'] as $key => $rgs)
+        @php
+        $totalOldALL = 0;
+        @endphp
+        @foreach ($data['oldStudent'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['oldStudMethod'][$key] as $mth)
+            @foreach ($data['oldStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['oldStudMethod'][$key] as $mth)
+            @foreach ($data['oldStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['oldStudMethod'][$key] as $mth)
+            @foreach ($data['oldStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalOld = 0;
+            $totalOld = 0;
             @endphp
-          @foreach ($data['oldStudDetail'][$key] as $mth)
+            @foreach ($data['oldStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalOld += $mth->amount;
+            $totalOld += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
-            <div>{{  number_format($totalOld, 2) }}</div>
+            <div>{{ number_format($totalOld, 2) }}</div>
             @php
-              $totalOldALL += $totalOld;
+            $totalOldALL += $totalOld;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="9" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{  number_format($totalOldALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="9" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalOldALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -335,111 +367,111 @@
 </div>
 
 <!-- withdraw student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_withdraw_student" data-category="yuran-pengajian">
   <div class="card-header">
-  <b>Withdraw Student</b>
+    <b>Withdraw Student</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalWithdrawALL = 0;
-      @endphp
-      @foreach ($data['withdrawStudent'] as $key => $rgs)
+        @php
+        $totalWithdrawALL = 0;
+        @endphp
+        @foreach ($data['withdrawStudent'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['withdrawStudMethod'][$key] as $mth)
+            @foreach ($data['withdrawStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['withdrawStudMethod'][$key] as $mth)
+            @foreach ($data['withdrawStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['withdrawStudMethod'][$key] as $mth)
+            @foreach ($data['withdrawStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalWithdraw = 0;
+            $totalWithdraw = 0;
             @endphp
-          @foreach ($data['withdrawStudDetail'][$key] as $mth)
+            @foreach ($data['withdrawStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalWithdraw += $mth->amount;
+            $totalWithdraw += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
-            <div>{{  number_format($totalWithdraw, 2) }}</div>
+            <div>{{ number_format($totalWithdraw, 2) }}</div>
             @php
-              $totalWithdrawALL += $totalWithdraw;
+            $totalWithdrawALL += $totalWithdraw;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="9" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{  number_format($totalWithdrawALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="9" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalWithdrawALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -447,111 +479,111 @@
 </div>
 
 <!-- graduate student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_graduate_student" data-category="yuran-pengajian">
   <div class="card-header">
-  <b>Graduate Student</b>
+    <b>Graduate Student</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalGraduateALL = 0;
-      @endphp
-      @foreach ($data['graduateStudent'] as $key => $rgs)
+        @php
+        $totalGraduateALL = 0;
+        @endphp
+        @foreach ($data['graduateStudent'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['graduateStudMethod'][$key] as $mth)
+            @foreach ($data['graduateStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['graduateStudMethod'][$key] as $mth)
+            @foreach ($data['graduateStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['graduateStudMethod'][$key] as $mth)
+            @foreach ($data['graduateStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalGraduate = 0;
+            $totalGraduate = 0;
             @endphp
-          @foreach ($data['graduateStudDetail'][$key] as $mth)
+            @foreach ($data['graduateStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalGraduate += $mth->amount;
+            $totalGraduate += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
-            <div>{{  number_format($totalGraduate, 2) }}</div>
+            <div>{{ number_format($totalGraduate, 2) }}</div>
             @php
-              $totalGraduateALL += $totalGraduate;
+            $totalGraduateALL += $totalGraduate;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="9" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{  number_format($totalGraduateALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="9" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalGraduateALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -559,111 +591,111 @@
 </div>
 
 <!-- fail student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_failed_student" data-category="yuran-pengajian">
   <div class="card-header">
-  <b>Failed Student</b>
+    <b>Failed Student</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalFailALL = 0;
-      @endphp
-      @foreach ($data['failStudent'] as $key => $rgs)
+        @php
+        $totalFailALL = 0;
+        @endphp
+        @foreach ($data['failStudent'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['failStudMethod'][$key] as $mth)
+            @foreach ($data['failStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['failStudMethod'][$key] as $mth)
+            @foreach ($data['failStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['failStudMethod'][$key] as $mth)
+            @foreach ($data['failStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalFail = 0;
+            $totalFail = 0;
             @endphp
-          @foreach ($data['failStudDetail'][$key] as $mth)
+            @foreach ($data['failStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalFail += $mth->amount;
+            $totalFail += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
-            <div>{{  number_format($totalFail, 2) }}</div>
+            <div>{{ number_format($totalFail, 2) }}</div>
             @php
-              $totalFailALL += $totalFail;
+            $totalFailALL += $totalFail;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="9" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{  number_format($totalFailALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="9" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalFailALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -671,111 +703,111 @@
 </div>
 
 <!-- expulsion student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_expulsion_student" data-category="yuran-pengajian">
   <div class="card-header">
-  <b>Expulsion Student</b>
+    <b>Expulsion Student</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalExpulsionALL = 0;
-      @endphp
-      @foreach ($data['expulsionStudent'] as $key => $rgs)
+        @php
+        $totalExpulsionALL = 0;
+        @endphp
+        @foreach ($data['expulsionStudent'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['expulsionStudMethod'][$key] as $mth)
+            @foreach ($data['expulsionStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['expulsionStudMethod'][$key] as $mth)
+            @foreach ($data['expulsionStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['expulsionStudMethod'][$key] as $mth)
+            @foreach ($data['expulsionStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalExpulsion = 0;
+            $totalExpulsion = 0;
             @endphp
-          @foreach ($data['expulsionStudDetail'][$key] as $mth)
+            @foreach ($data['expulsionStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalExpulsion += $mth->amount;
+            $totalExpulsion += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
-            <div>{{  number_format($totalExpulsion, 2) }}</div>
+            <div>{{ number_format($totalExpulsion, 2) }}</div>
             @php
-              $totalExpulsionALL += $totalExpulsion;
+            $totalExpulsionALL += $totalExpulsion;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="9" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{  number_format($totalExpulsionALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="9" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalExpulsionALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -784,49 +816,49 @@
 
 <div class="row justify-content-center">
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="yuran-pengajian" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Pre Registration</b>
+      <b>Pre Registration</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['preTotals'])) ? $data['preTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['preTotals'])) ? $data['preTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['preTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['preTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -834,49 +866,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="yuran-pengajian" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>New Student</b>
+      <b>New Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['newTotals'])) ? $data['newTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['newTotals'])) ? $data['newTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['newTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['newTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -884,24 +916,24 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="yuran-pengajian" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Old Student</b>
+      <b>Old Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
           @foreach ($data['program'] as $key => $prg)
@@ -920,13 +952,13 @@
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['oldTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['oldTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -934,49 +966,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="yuran-pengajian" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Withdraw</b>
+      <b>Withdraw</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['withdrawTotals'])) ? $data['withdrawTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['withdrawTotals'])) ? $data['withdrawTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['withdrawTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['withdrawTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -984,49 +1016,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="yuran-pengajian" style="margin-right: 2%">
     <div class="card-header mx-auto">
       <b>Graduate</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['graduateTotals'])) ? $data['graduateTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['graduateTotals'])) ? $data['graduateTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['graduateTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['graduateTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -1034,49 +1066,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="yuran-pengajian" style="margin-right: 2%">
     <div class="card-header mx-auto">
       <b>Fail</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['failTotals'])) ? $data['failTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['failTotals'])) ? $data['failTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['failTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['failTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -1084,49 +1116,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="yuran-pengajian" style="margin-right: 2%">
     <div class="card-header mx-auto">
       <b>Expulsion</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['expulsionTotals'])) ? $data['expulsionTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['expulsionTotals'])) ? $data['expulsionTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['expulsionTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['expulsionTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -1171,111 +1203,111 @@
         <tr>
           <td>
           {{ $key+1 }}
-          </td>
-          <td>
-          {{ $rgs->date }}
-          </td>
-          <td>
-          {{ $rgs->ref_no }}
-          </td>
-          <td>
-          {{ $rgs->method }}
-          </td>
-          <td>
-          {{ $rgs->bank }}
-          </td>
-          <td>
-          {{ $rgs->no_document }}
-          </td>
-          <td>
-          {{ $rgs->amount }}
-          </td>
-        </tr>
-      @endforeach
-      </tbody>
-      <tfoot>
-          <tr>
-              <td colspan="6" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum(array_column((array) $data['hostel'], 'amount')), 2) }}
-              </td>
-            </tr>
-      </tfoot>
-    </table>
-  </div>
-  <!-- /.card-body -->
+</td>
+<td>
+  {{ $rgs->date }}
+</td>
+<td>
+  {{ $rgs->ref_no }}
+</td>
+<td>
+  {{ $rgs->method }}
+</td>
+<td>
+  {{ $rgs->bank }}
+</td>
+<td>
+  {{ $rgs->no_document }}
+</td>
+<td>
+  {{ $rgs->amount }}
+</td>
+</tr>
+@endforeach
+</tbody>
+<tfoot>
+  <tr>
+    <td colspan="6" style="text-align: center">
+      TOTAL
+    </td>
+    <td>
+      {{ number_format(array_sum(array_column((array) $data['hostel'], 'amount')), 2) }}
+    </td>
+  </tr>
+</tfoot>
+</table>
+</div>
+<!-- /.card-body -->
 </div>
 
 <!-- convo student -->
 <div class="card mb-3" id="stud_info">
   <div class="card-header">
-  <b>Convocation Collection</b>
+    <b>Convocation Collection</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th >
-                  No.
-              </th>
-              <th >
-                  Date
-              </th>
-              <th >
-                  No. Resit
-              </th>
-              <th >
-                  Method
-              </th>
-              <th >
-                  Bank
-              </th>
-              <th >
-                  No. Document
-              </th>
-              <th >
-                  Amount
-              </th>
-          </tr>
+        <tr>
+          <th>
+            No.
+          </th>
+          <th>
+            Date
+          </th>
+          <th>
+            No. Resit
+          </th>
+          <th>
+            Method
+          </th>
+          <th>
+            Bank
+          </th>
+          <th>
+            No. Document
+          </th>
+          <th>
+            Amount
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @foreach ($data['convo'] as $key => $rgs)
+        @foreach ($data['convo'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          {{ $rgs->method }}
+            {{ $rgs->method }}
           </td>
           <td>
-          {{ $rgs->bank }}
+            {{ $rgs->bank }}
           </td>
           <td>
-          {{ $rgs->no_document }}
+            {{ $rgs->no_document }}
           </td>
           <td>
-          {{ $rgs->amount }}
+            {{ $rgs->amount }}
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="6" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum(array_column((array) $data['convo'], 'amount')), 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="6" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format(array_sum(array_column((array) $data['convo'], 'amount')), 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -1285,77 +1317,77 @@
 <!-- fine student -->
 <div class="card mb-3" id="stud_info">
   <div class="card-header">
-  <b>Fine Collection</b>
+    <b>Fine Collection</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th >
-                  No.
-              </th>
-              <th >
-                  Date
-              </th>
-              <th >
-                  No. Resit
-              </th>
-              <th>
-                  Type
-              </th>
-              <th >
-                  Method
-              </th>
-              <th >
-                  Bank
-              </th>
-              <th >
-                  No. Document
-              </th>
-              <th >
-                  Amount
-              </th>
-          </tr>
+        <tr>
+          <th>
+            No.
+          </th>
+          <th>
+            Date
+          </th>
+          <th>
+            No. Resit
+          </th>
+          <th>
+            Type
+          </th>
+          <th>
+            Method
+          </th>
+          <th>
+            Bank
+          </th>
+          <th>
+            No. Document
+          </th>
+          <th>
+            Amount
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @foreach ($data['fine'] as $key => $rgs)
+        @foreach ($data['fine'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          {{ $rgs->type }}
+            {{ $rgs->type }}
           </td>
           <td>
-          {{ $rgs->method }}
+            {{ $rgs->method }}
           </td>
           <td>
-          {{ $rgs->bank }}
+            {{ $rgs->bank }}
           </td>
           <td>
-          {{ $rgs->no_document }}
+            {{ $rgs->no_document }}
           </td>
           <td>
-          {{ $rgs->amount }}
+            {{ $rgs->amount }}
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="6" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum(array_column((array) $data['fine'], 'amount')), 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="6" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format(array_sum(array_column((array) $data['fine'], 'amount')), 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -1363,119 +1395,119 @@
 </div> --}}
 
 <!-- hostel student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_hostel_collection" data-category="denda-lain">
   <div class="card-header">
-  <b>Hostel Collection</b>
+    <b>Hostel Collection</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalHostelALL = 0;
-      @endphp
-      @foreach ($data['hostel'] as $key => $rgs)
+        @php
+        $totalHostelALL = 0;
+        @endphp
+        @foreach ($data['hostel'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['hostelStudDetail'][$key] as $mth)
+            @foreach ($data['hostelStudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['hostelStudMethod'][$key] as $mth)
+            @foreach ($data['hostelStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['hostelStudMethod'][$key] as $mth)
+            @foreach ($data['hostelStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['hostelStudMethod'][$key] as $mth)
+            @foreach ($data['hostelStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalHostel = 0;
+            $totalHostel = 0;
             @endphp
-          @foreach ($data['hostelStudDetail'][$key] as $mth)
+            @foreach ($data['hostelStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalHostel += $mth->amount;
+            $totalHostel += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totalHostel, 2) }}</div>
             @php
-              $totalHostelALL += $totalHostel;
+            $totalHostelALL += $totalHostel;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totalHostelALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalHostelALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -1483,119 +1515,119 @@
 </div>
 
 <!-- convo student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_convocation_collection" data-category="yuran-konvokesyen">
   <div class="card-header">
-  <b>Convocation Collection</b>
+    <b>Convocation Collection</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalConvoALL = 0;
-      @endphp
-      @foreach ($data['convo'] as $key => $rgs)
+        @php
+        $totalConvoALL = 0;
+        @endphp
+        @foreach ($data['convo'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['convoStudDetail'][$key] as $mth)
+            @foreach ($data['convoStudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['convoStudMethod'][$key] as $mth)
+            @foreach ($data['convoStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['convoStudMethod'][$key] as $mth)
+            @foreach ($data['convoStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['convoStudMethod'][$key] as $mth)
+            @foreach ($data['convoStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalConvo = 0;
+            $totalConvo = 0;
             @endphp
-          @foreach ($data['convoStudDetail'][$key] as $mth)
+            @foreach ($data['convoStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalConvo += $mth->amount;
+            $totalConvo += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totalConvo, 2) }}</div>
             @php
-              $totalConvoALL += $totalConvo;
+            $totalConvoALL += $totalConvo;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totalConvoALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalConvoALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -1603,119 +1635,119 @@
 </div>
 
 <!-- fine student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_fine_collection" data-category="denda-lain">
   <div class="card-header">
-  <b>Fine Collection</b>
+    <b>Fine Collection</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalFineALL = 0;
-      @endphp
-      @foreach ($data['fine'] as $key => $rgs)
+        @php
+        $totalFineALL = 0;
+        @endphp
+        @foreach ($data['fine'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['fineStudDetail'][$key] as $mth)
+            @foreach ($data['fineStudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['fineStudMethod'][$key] as $mth)
+            @foreach ($data['fineStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['fineStudMethod'][$key] as $mth)
+            @foreach ($data['fineStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['fineStudMethod'][$key] as $mth)
+            @foreach ($data['fineStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalFine = 0;
+            $totalFine = 0;
             @endphp
-          @foreach ($data['fineStudDetail'][$key] as $mth)
+            @foreach ($data['fineStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalFine += $mth->amount;
+            $totalFine += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totalFine, 2) }}</div>
             @php
-              $totalFineALL += $totalFine;
+            $totalFineALL += $totalFine;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totalFineALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalFineALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -1723,119 +1755,119 @@
 </div>
 
 <!-- other student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_others" data-category="denda-lain">
   <div class="card-header">
-  <b>Others</b>
+    <b>Others</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalOtherALL = 0;
-      @endphp
-      @foreach ($data['other'] as $key => $rgs)
+        @php
+        $totalOtherALL = 0;
+        @endphp
+        @foreach ($data['other'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['otherStudDetail'][$key] as $mth)
+            @foreach ($data['otherStudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['otherStudMethod'][$key] as $mth)
+            @foreach ($data['otherStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['otherStudMethod'][$key] as $mth)
+            @foreach ($data['otherStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['otherStudMethod'][$key] as $mth)
+            @foreach ($data['otherStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalOther = 0;
+            $totalOther = 0;
             @endphp
-          @foreach ($data['otherStudDetail'][$key] as $mth)
+            @foreach ($data['otherStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalOther += $mth->amount;
+            $totalOther += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totalOther, 2) }}</div>
             @php
-              $totalOtherALL += $totalOther;
+            $totalOtherALL += $totalOther;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totalOtherALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalOtherALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -1843,119 +1875,119 @@
 </div>
 
 <!-- excess student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_excess_student" data-category="bayaran-lebihan">
   <div class="card-header">
-  <b>Excess Student</b>
+    <b>Excess Student</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalExcessALL = 0;
-      @endphp
-      @foreach ($data['excess'] as $key => $rgs)
+        @php
+        $totalExcessALL = 0;
+        @endphp
+        @foreach ($data['excess'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['excessStudDetail'][$key] as $mth)
+            @foreach ($data['excessStudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['excessStudMethod'][$key] as $mth)
+            @foreach ($data['excessStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['excessStudMethod'][$key] as $mth)
+            @foreach ($data['excessStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['excessStudMethod'][$key] as $mth)
+            @foreach ($data['excessStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalExcess = 0;
+            $totalExcess = 0;
             @endphp
-          @foreach ($data['excessStudDetail'][$key] as $mth)
+            @foreach ($data['excessStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalExcess += $mth->amount;
+            $totalExcess += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totalExcess, 2) }}</div>
             @php
-              $totalExcessALL += $totalExcess;
+            $totalExcessALL += $totalExcess;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totalExcessALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalExcessALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -1964,49 +1996,49 @@
 
 <div class="row justify-content-center">
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-lebihan" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>New Student</b>
+      <b>New Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['newexcessTotals'])) ? $data['newexcessTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['newexcessTotals'])) ? $data['newexcessTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['newexcessTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['newexcessTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2014,49 +2046,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-lebihan" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Old Student</b>
+      <b>Old Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['oldexcessTotals'])) ? $data['oldexcessTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['oldexcessTotals'])) ? $data['oldexcessTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['oldexcessTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['oldexcessTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2065,119 +2097,119 @@
 </div>
 
 <!-- Insentif student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_insentif_naik_semester" data-category="bayaran-insentif">
   <div class="card-header">
-  <b>Insentif Naik Semester</b>
+    <b>Insentif Naik Semester</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 2%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 2%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalInsentifALL = 0;
-      @endphp
-      @foreach ($data['Insentif'] as $key => $rgs)
+        @php
+        $totalInsentifALL = 0;
+        @endphp
+        @foreach ($data['Insentif'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['InsentifStudDetail'][$key] as $mth)
+            @foreach ($data['InsentifStudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['InsentifStudMethod'][$key] as $mth)
+            @foreach ($data['InsentifStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['InsentifStudMethod'][$key] as $mth)
+            @foreach ($data['InsentifStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['InsentifStudMethod'][$key] as $mth)
+            @foreach ($data['InsentifStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalInsentif = 0;
+            $totalInsentif = 0;
             @endphp
-          @foreach ($data['InsentifStudDetail'][$key] as $mth)
+            @foreach ($data['InsentifStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalInsentif += $mth->amount;
+            $totalInsentif += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totalInsentif, 2) }}</div>
             @php
-              $totalInsentifALL += $totalInsentif;
+            $totalInsentifALL += $totalInsentif;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totalInsentifALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalInsentifALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -2186,49 +2218,49 @@
 
 <div class="row justify-content-center">
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>New Student</b>
+      <b>New Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['newInsentifTotals'])) ? $data['newInsentifTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['newInsentifTotals'])) ? $data['newInsentifTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['newInsentifTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['newInsentifTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2236,49 +2268,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Old Student</b>
+      <b>Old Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['oldInsentifTotals'])) ? $data['oldInsentifTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['oldInsentifTotals'])) ? $data['oldInsentifTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['oldInsentifTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['oldInsentifTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2287,119 +2319,119 @@
 </div>
 
 <!-- InsentifMco student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_insentif_mco" data-category="bayaran-insentif">
   <div class="card-header">
-  <b>Insentif Mco / Insentif Khas UNITI</b>
+    <b>Insentif Mco / Insentif Khas UNITI</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalInsentifMcoALL = 0;
-      @endphp
-      @foreach ($data['InsentifMco'] as $key => $rgs)
+        @php
+        $totalInsentifMcoALL = 0;
+        @endphp
+        @foreach ($data['InsentifMco'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['InsentifMcoStudDetail'][$key] as $mth)
+            @foreach ($data['InsentifMcoStudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['InsentifMcoStudMethod'][$key] as $mth)
+            @foreach ($data['InsentifMcoStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['InsentifMcoStudMethod'][$key] as $mth)
+            @foreach ($data['InsentifMcoStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['InsentifMcoStudMethod'][$key] as $mth)
+            @foreach ($data['InsentifMcoStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalInsentifMco = 0;
+            $totalInsentifMco = 0;
             @endphp
-          @foreach ($data['InsentifMcoStudDetail'][$key] as $mth)
+            @foreach ($data['InsentifMcoStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalInsentifMco += $mth->amount;
+            $totalInsentifMco += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totalInsentifMco, 2) }}</div>
             @php
-              $totalInsentifMcoALL += $totalInsentifMco;
+            $totalInsentifMcoALL += $totalInsentifMco;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totalInsentifMcoALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalInsentifMcoALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -2408,49 +2440,49 @@
 
 <div class="row justify-content-center">
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>New Student</b>
+      <b>New Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['newInsentifMcoTotals'])) ? $data['newInsentifMcoTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['newInsentifMcoTotals'])) ? $data['newInsentifMcoTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['newInsentifMcoTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['newInsentifMcoTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2458,49 +2490,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Old Student</b>
+      <b>Old Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['oldInsentifMcoTotals'])) ? $data['oldInsentifMcoTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['oldInsentifMcoTotals'])) ? $data['oldInsentifMcoTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['oldInsentifMcoTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['oldInsentifMcoTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2509,119 +2541,119 @@
 </div>
 
 <!-- Cov19 student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_covid_19" data-category="bayaran-insentif">
   <div class="card-header">
-  <b>Covid 19 / Frontliners Discount</b>
+    <b>Covid 19 / Frontliners Discount</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalCov19ALL = 0;
-      @endphp
-      @foreach ($data['Cov19'] as $key => $rgs)
+        @php
+        $totalCov19ALL = 0;
+        @endphp
+        @foreach ($data['Cov19'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['Cov19StudDetail'][$key] as $mth)
+            @foreach ($data['Cov19StudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['Cov19StudMethod'][$key] as $mth)
+            @foreach ($data['Cov19StudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['Cov19StudMethod'][$key] as $mth)
+            @foreach ($data['Cov19StudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['Cov19StudMethod'][$key] as $mth)
+            @foreach ($data['Cov19StudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalCov19 = 0;
+            $totalCov19 = 0;
             @endphp
-          @foreach ($data['Cov19StudDetail'][$key] as $mth)
+            @foreach ($data['Cov19StudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalCov19 += $mth->amount;
+            $totalCov19 += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totalCov19, 2) }}</div>
             @php
-              $totalCov19ALL += $totalCov19;
+            $totalCov19ALL += $totalCov19;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totalCov19ALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalCov19ALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -2630,49 +2662,49 @@
 
 <div class="row justify-content-center">
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>New Student</b>
+      <b>New Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['newCov19Totals'])) ? $data['newCov19Totals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['newCov19Totals'])) ? $data['newCov19Totals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['newCov19Totals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['newCov19Totals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2680,49 +2712,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Old Student</b>
+      <b>Old Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['oldCov19Totals'])) ? $data['oldCov19Totals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['oldCov19Totals'])) ? $data['oldCov19Totals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['oldCov19Totals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['oldCov19Totals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2731,119 +2763,119 @@
 </div>
 
 <!-- iNed student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_ined" data-category="bayaran-insentif">
   <div class="card-header">
-  <b>Insentif Pendidikan iNed</b>
+    <b>Insentif Pendidikan iNed</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totaliNedALL = 0;
-      @endphp
-      @foreach ($data['iNed'] as $key => $rgs)
+        @php
+        $totaliNedALL = 0;
+        @endphp
+        @foreach ($data['iNed'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['iNedStudDetail'][$key] as $mth)
+            @foreach ($data['iNedStudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['iNedStudMethod'][$key] as $mth)
+            @foreach ($data['iNedStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['iNedStudMethod'][$key] as $mth)
+            @foreach ($data['iNedStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['iNedStudMethod'][$key] as $mth)
+            @foreach ($data['iNedStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totaliNed = 0;
+            $totaliNed = 0;
             @endphp
-          @foreach ($data['iNedStudDetail'][$key] as $mth)
+            @foreach ($data['iNedStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totaliNed += $mth->amount;
+            $totaliNed += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totaliNed, 2) }}</div>
             @php
-              $totaliNedALL += $totaliNed;
+            $totaliNedALL += $totaliNed;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totaliNedALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totaliNedALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -2852,49 +2884,49 @@
 
 <div class="row justify-content-center">
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>New Student</b>
+      <b>New Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['newiNedTotals'])) ? $data['newiNedTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['newiNedTotals'])) ? $data['newiNedTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['newiNedTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['newiNedTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2902,49 +2934,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Old Student</b>
+      <b>Old Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['oldiNedTotals'])) ? $data['oldiNedTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['oldiNedTotals'])) ? $data['oldiNedTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['oldiNedTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['oldiNedTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -2953,119 +2985,119 @@
 </div>
 
 <!-- tabungkhas student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_tabung_khas" data-category="bayaran-insentif">
   <div class="card-header">
-  <b>Tabung Khas</b>
+    <b>Tabung Khas</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Date
-              </th>
-              <th style="width: 5%">
-                  No. Resit
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Method
-              </th>
-              <th style="width: 5%">
-                  Bank
-              </th>
-              <th style="width: 5%">
-                  No. Document
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-              <th style="width: 5%">
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th style="width: 15%">
+            Name
+          </th>
+          <th style="width: 5%">
+            No.Matric
+          </th>
+          <th style="width: 5%">
+            Date
+          </th>
+          <th style="width: 5%">
+            No. Resit
+          </th>
+          <th style="width: 5%">
+            Type
+          </th>
+          <th style="width: 5%">
+            Method
+          </th>
+          <th style="width: 5%">
+            Bank
+          </th>
+          <th style="width: 5%">
+            No. Document
+          </th>
+          <th style="width: 5%">
+            Amount
+          </th>
+          <th style="width: 5%">
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totaltabungkhasALL = 0;
-      @endphp
-      @foreach ($data['tabungkhas'] as $key => $rgs)
+        @php
+        $totaltabungkhasALL = 0;
+        @endphp
+        @foreach ($data['tabungkhas'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->name }}
+            {{ $rgs->name }}
           </td>
           <td>
-          {{ $rgs->no_matric }}
+            {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->ref_no }}
+            {{ $rgs->ref_no }}
           </td>
           <td>
-          @foreach ($data['tabungkhasStudDetail'][$key] as $mth)
+            @foreach ($data['tabungkhasStudDetail'][$key] as $mth)
             <div>{{ $mth->type }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['tabungkhasStudMethod'][$key] as $mth)
+            @foreach ($data['tabungkhasStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['tabungkhasStudMethod'][$key] as $mth)
+            @foreach ($data['tabungkhasStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['tabungkhasStudMethod'][$key] as $mth)
+            @foreach ($data['tabungkhasStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totaltabungkhas = 0;
+            $totaltabungkhas = 0;
             @endphp
-          @foreach ($data['tabungkhasStudDetail'][$key] as $mth)
+            @foreach ($data['tabungkhasStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totaltabungkhas += $mth->amount;
+            $totaltabungkhas += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totaltabungkhas, 2) }}</div>
             @php
-              $totaltabungkhasALL += $totaltabungkhas;
+            $totaltabungkhasALL += $totaltabungkhas;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="10" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totaltabungkhasALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="10" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totaltabungkhasALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -3074,49 +3106,49 @@
 
 <div class="row justify-content-center">
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>New Student</b>
+      <b>New Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['newtabungkhasTotals'])) ? $data['newtabungkhasTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['newtabungkhasTotals'])) ? $data['newtabungkhasTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['newtabungkhasTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['newtabungkhasTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -3124,49 +3156,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="bayaran-insentif" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Old Student</b>
+      <b>Old Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['oldtabungkhasTotals'])) ? $data['oldtabungkhasTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['oldtabungkhasTotals'])) ? $data['oldtabungkhasTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['oldtabungkhasTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['oldtabungkhasTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -3175,99 +3207,99 @@
 </div>
 
 <!-- sponsorship student -->
-<div class="card mb-3" id="stud_info">
+<div class="card mb-3 stud_info" id="card_sponsorship" data-category="penajaan-elaun">
   <div class="card-header">
-  <b>Sponsorship</b>
+    <b>Sponsorship</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th>
-                  Date
-              </th>
-              <th>
-                  Id Payment
-              </th>
-              <th>
-                  Method
-              </th>
-              <th>
-                  Bank
-              </th>
-              <th>
-                  No. Document
-              </th>
-              <th>
-                  Amount
-              </th>
-              <th>
-                  Total
-              </th>
-          </tr>
+        <tr>
+          <th style="width: 1%">
+            No.
+          </th>
+          <th>
+            Date
+          </th>
+          <th>
+            Id Payment
+          </th>
+          <th>
+            Method
+          </th>
+          <th>
+            Bank
+          </th>
+          <th>
+            No. Document
+          </th>
+          <th>
+            Amount
+          </th>
+          <th>
+            Total
+          </th>
+        </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalsponsorALL = 0;
-      @endphp
-      @foreach ($data['sponsor'] as $key => $rgs)
+        @php
+        $totalsponsorALL = 0;
+        @endphp
+        @foreach ($data['sponsor'] as $key => $rgs)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->date }}
+            {{ $rgs->date }}
           </td>
           <td>
-          {{ $rgs->sponsor_id }}
+            {{ $rgs->sponsor_id }}
           </td>
           <td>
-          @foreach ($data['sponsorStudMethod'][$key] as $mth)
+            @foreach ($data['sponsorStudMethod'][$key] as $mth)
             <div>{{ $mth->method }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['sponsorStudMethod'][$key] as $mth)
+            @foreach ($data['sponsorStudMethod'][$key] as $mth)
             <div>{{ $mth->bank }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
-          @foreach ($data['sponsorStudMethod'][$key] as $mth)
+            @foreach ($data['sponsorStudMethod'][$key] as $mth)
             <div>{{ $mth->no_document }}</div>
-          @endforeach
+            @endforeach
           </td>
           <td>
             @php
-              $totalsponsor = 0;
+            $totalsponsor = 0;
             @endphp
-          @foreach ($data['sponsorStudDetail'][$key] as $mth)
+            @foreach ($data['sponsorStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
             @php
-              $totalsponsor += $mth->amount;
+            $totalsponsor += $mth->amount;
             @endphp
-          @endforeach
+            @endforeach
           </td>
           <td>
             <div>{{ number_format($totalsponsor, 2) }}</div>
             @php
-              $totalsponsorALL += $totalsponsor;
+            $totalsponsorALL += $totalsponsor;
             @endphp
           </td>
         </tr>
-      @endforeach
+        @endforeach
       </tbody>
       <tfoot>
-          <tr>
-              <td colspan="7" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format($totalsponsorALL, 2) }}
-              </td>
-            </tr>
+        <tr>
+          <td colspan="7" style="text-align: center">
+            TOTAL
+          </td>
+          <td>
+            {{ number_format($totalsponsorALL, 2) }}
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
@@ -3276,49 +3308,49 @@
 
 <div class="row justify-content-center">
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="penajaan-elaun" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>New Student</b>
+      <b>New Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['newsponsorTotals'])) ? $data['newsponsorTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['newsponsorTotals'])) ? $data['newsponsorTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['newsponsorTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['newsponsorTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -3326,49 +3358,49 @@
   </div>
 
   <!-- pecahan -->
-  <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+  <div class="card col-md-2 mb-3 stud_info" data-category="penajaan-elaun" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Old Student</b>
+      <b>Old Student</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 2%">
-                    No. Program
-                </th>
-                <th style="width: 5%">
-                    PRG
-                </th>
-                <th style="width: 4%">
-                    QUOTE
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 2%">
+              No. Program
+            </th>
+            <th style="width: 5%">
+              PRG
+            </th>
+            <th style="width: 4%">
+              QUOTE
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @foreach ($data['program'] as $key => $prg)
-        <tr>
-          <td>
-            {{ $prg->program_ID }}
-          </td>
-          <td>
-            {{ $prg->progcode }}
-          </td>
-          <td>
-            {{ (!empty($data['oldsponsorTotals'])) ? $data['oldsponsorTotals'][$key] : 0}}
-          </td>
-        </tr>
-        @endforeach
+          @foreach ($data['program'] as $key => $prg)
+          <tr>
+            <td>
+              {{ $prg->program_ID }}
+            </td>
+            <td>
+              {{ $prg->progcode }}
+            </td>
+            <td>
+              {{ (!empty($data['oldsponsorTotals'])) ? $data['oldsponsorTotals'][$key] : 0}}
+            </td>
+          </tr>
+          @endforeach
         </tbody>
         <tfoot>
           <tr>
-              <td colspan="2" style="text-align: center">
-                  TOTAL
-              </td>
-              <td>
-                  {{ number_format(array_sum($data['oldsponsorTotals']), 2) }}
-              </td>
-            </tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format(array_sum($data['oldsponsorTotals']), 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
@@ -3376,70 +3408,110 @@
   </div>
 
   <!-- new student -->
-  <div class="card mb-3" id="stud_info">
+  <div class="card mb-3 stud_info" id="card_allowance_payment" data-category="penajaan-elaun">
     <div class="card-header">
-    <b>Allowance Payment</b>
+      <b>Allowance Payment</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
-            <tr>
-                <th style="width: 1%">
-                    No.
-                </th>
-                <th style="width: 15%">
-                    Name
-                </th>
-                <th style="width: 5%">
-                    No.Matric
-                </th>
-                <th style="width: 5%">
-                    Date
-                </th>
-                <th style="width: 5%">
-                    Amount
-                </th>
-            </tr>
+          <tr>
+            <th style="width: 1%">
+              No.
+            </th>
+            <th style="width: 15%">
+              Name
+            </th>
+            <th style="width: 5%">
+              No.Matric
+            </th>
+            <th style="width: 5%">
+              Date
+            </th>
+            <th style="width: 5%">
+              Amount
+            </th>
+          </tr>
         </thead>
         <tbody id="table">
-        @php
-        $totalAllowance = 0;
-        @endphp
-        @foreach ($data['allowance'] as $key => $alw)
+          @php
+          $totalAllowance = 0;
+          @endphp
+          @foreach ($data['allowance'] as $key => $alw)
           <tr>
             <td>
-            {{ $key+1 }}
+              {{ $key+1 }}
             </td>
             <td>
-            {{ $alw->student }}
+              {{ $alw->student }}
             </td>
             <td>
-            {{ $alw->no_matric }}
+              {{ $alw->no_matric }}
             </td>
             <td>
-            {{ $alw->date }}
+              {{ $alw->date }}
             </td>
             <td>
               <div>{{ $alw->amount }}</div>
               @php
-                $totalAllowance += $alw->amount;
+              $totalAllowance += $alw->amount;
               @endphp
             </td>
           </tr>
-        @endforeach
+          @endforeach
         </tbody>
         <tfoot>
-            <tr>
-                <td colspan="9" style="text-align: center">
-                    TOTAL
-                </td>
-                <td>
-                    {{  number_format($totalAllowance, 2) }}
-                </td>
-              </tr>
+          <tr>
+            <td colspan="9" style="text-align: center">
+              TOTAL
+            </td>
+            <td>
+              {{ number_format($totalAllowance, 2) }}
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>
     <!-- /.card-body -->
   </div>
 </div>
+
+<script>
+  (function() {
+    const checkboxes = document.querySelectorAll('.table-filter');
+    const cards = document.querySelectorAll('.stud_info[data-category]');
+
+    // Function to update visibility
+    function updateVisibility() {
+      // Check if any checkbox is checked
+      const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+      if (!anyChecked) {
+        // If no checkboxes are checked, show all
+        cards.forEach(card => card.style.display = '');
+      } else {
+        // If at least one is checked, show only matching
+        const checkedCategories = Array.from(checkboxes)
+          .filter(cb => cb.checked)
+          .map(cb => cb.value);
+
+        cards.forEach(card => {
+          const category = card.getAttribute('data-category');
+          if (checkedCategories.includes(category)) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+    }
+
+    // Add event listeners
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', updateVisibility);
+    });
+
+    // Initial check
+    updateVisibility();
+  })();
+</script>
