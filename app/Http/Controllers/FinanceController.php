@@ -6848,7 +6848,9 @@ class FinanceController extends Controller
             $data['from'] = Carbon::createFromFormat('Y-m-d', $request->from)->translatedFormat('d F Y');;
             $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');
 
-            return view('finance.report.printDailyReport', compact('data'));
+            $filters = $request->filters;
+
+            return view('finance.report.printDailyReport', compact('data', 'filters'));
         } else {
 
             return view('finance.report.getDailyReport', compact('data'));
