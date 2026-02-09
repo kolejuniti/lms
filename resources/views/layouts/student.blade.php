@@ -318,7 +318,7 @@
                       <span>Memo</span>
                       </a>
               </li> --}}
-              <li>
+              <!-- <li>
                 <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan Jun) - Edaran Pelajar.pdf') }}" target="_blank">
                   <span>Takwim Uniti (June)</span>
                 </a>
@@ -327,7 +327,7 @@
                 <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan September) - Edaran Pelajar.pdf') }}" target="_blank">
                   <span>Takwim Uniti (September)</span>
                 </a>
-              </li>
+              </li> -->
               <li>
                 <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan November) - Edaran Pelajar.pdf') }}" target="_blank">
                   <span>Takwim Uniti (November)</span>
@@ -336,6 +336,12 @@
               <li>
                 <a href="{{ asset('storage/takwim/Takwim Akademik Semester II-20242025 (UiTM) - Edaran Pelajar.pdf') }}" target="_blank">
                   <span>Takwim UiTM</span>
+                </a>
+              </li>
+
+              <li>
+                <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester II Sesi 20252026 (Kemasukan Mac) - Edaran Pelajar.pdf') }}" target="_blank">
+                  <span>Takwim UNITI (Mac)</span>
                 </a>
               </li>
             </ul>
@@ -398,12 +404,12 @@
             </li>
             <li>
               <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20252026 (Kemasukan November).pdf') }}" target="_blank">
-                <i data-feather="file-text"></i><span>Exam Timetable (UNITI)</span>
+                <i data-feather="file-text"></i><span>Final Exam Schedule (UNITI)</span>
               </a>
             </li>
             <li>
               <a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UiTM Semester I Sesi 20252026 (Kemasukan Oktober).pdf') }}" target="_blank">
-                <i data-feather="file-text"></i><span>Exam Timetable (UiTM)</span>
+                <i data-feather="file-text"></i><span>Final Exam Schedule (UiTM)</span>
               </a>
             </li>
 
@@ -440,14 +446,14 @@
             </ul>
 
             <!-- Sidebar Widget -->
-            <div class="sidebar-widgets">
+            <!-- <div class="sidebar-widgets">
               <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
                 <div class="text-center">
                   <img src="{{ asset('assets/images/svg-icon/color-svg/custom-24.svg') }}" class="sideimg p-5" alt="">
                   <h4 class="title-bx text-primary">Best Education Platform</h4>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </section>

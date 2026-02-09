@@ -420,23 +420,23 @@ $theme = DB::table('user_setting')->where('user_ic', Auth::user()->ic)->first();
 						</li>
 						<li>
 							<a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20252026 (Kemasukan November).pdf') }}" target="_blank">
-								<i data-feather="file-text"></i><span>Exam Timetable (UNITI)</span>
+								<i data-feather="file-text"></i><span>Final Exam Schedule (UNITI)</span>
 							</a>
 						</li>
 						<li>
 							<a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UiTM Semester I Sesi 20252026 (Kemasukan Oktober).pdf') }}" target="_blank">
-								<i data-feather="file-text"></i><span>Exam Timetable (UiTM)</span>
+								<i data-feather="file-text"></i><span>Final Exam Schedule (UiTM)</span>
 							</a>
 						</li>
 						</ul>
-						<div class="sidebar-widgets">
+						<!-- <div class="sidebar-widgets">
 							<div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
 								<div class="text-center">
 									<img src="{{ asset('assets/images/svg-icon/color-svg/custom-24.svg') }}" class="sideimg p-5" alt="">
 									<h4 class="title-bx text-primary">Best Education Platform</h4>
 								</div>
 							</div>
-						</div>
+						</div> -->
 					</div>
 				</div>
 			</section>
