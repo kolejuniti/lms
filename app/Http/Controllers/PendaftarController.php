@@ -833,6 +833,9 @@ class PendaftarController extends Controller
                                 Semester
                             </th>
                             <th>
+                                Status
+                            </th>
+                            <th>
                                 Last Updated
                             </th>
                             <th>
@@ -874,6 +877,9 @@ class PendaftarController extends Controller
                 </td>
                 <td>
                 ' . $student->semester . '
+                </td>
+                <td>
+                ' . $student->status . '
                 </td>
                 <td>
                 ' . ($student->updated_at ? date('d/m/Y H:i', strtotime($student->updated_at)) : '-') . '
