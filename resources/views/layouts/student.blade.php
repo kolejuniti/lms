@@ -1210,11 +1210,13 @@
         document.getElementById('examSlipLink').addEventListener('click', function(event) {
           event.preventDefault(); // Prevent default navigation
 
-          var block_status = {
-            {
-              $block_status ?? 0
-            }
-          }; // Fetch the block status from PHP
+          // var block_status = {
+          //   {
+          //     $block_status ?? 0
+          //   }
+          // }; // Fetch the block status from PHP
+
+          var block_status = @json($block_status ?? 0); // Fetch the block status
 
           if (block_status === 1) {
             // Show the overlay and modal
