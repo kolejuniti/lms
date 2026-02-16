@@ -1,4 +1,10 @@
-@extends('layouts.finance')
+@php
+$layout = 'layouts.finance';
+if(Auth::user()->usrtype == 'AR' || Auth::user()->usrtype == 'pendaftar_akademik'){
+$layout = 'layouts.pendaftar_akademik';
+}
+@endphp
+@extends($layout)
 
 @section('main')
 
