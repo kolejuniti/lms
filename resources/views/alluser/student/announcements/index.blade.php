@@ -1,7 +1,5 @@
 @extends('layouts.finance')
 
-<!-- @extends((Auth::user()->usrtype == "RGS") ? 'layouts.pendaftar' : (Auth::user()->usrtype == "FN" ? 'layouts.finance' : (Auth::user()->usrtype == "AR" ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == "UR" ? 'layouts.ur' : (Auth::user()->usrtype == "HEA" ? 'layouts.hea' : ''))))) -->
-
 @section('main')
 
 <!-- Include DataTables and other CSS files -->
