@@ -16,7 +16,7 @@ class KP_Controller extends Controller
     public function index()
     {
         //forgot current session
-        Session::forget(['User','CourseID','SessionID']);
+        Session::forget(['User', 'CourseID', 'SessionID']);
 
         Session::put('User', Auth::user());
 
@@ -29,13 +29,13 @@ class KP_Controller extends Controller
 
         // Original data for the table
         $data = subject::join('users', 'user_subjek.user_ic', '=', 'users.ic')
-                        ->join('subjek', 'user_subjek.course_id','=', 'subjek.sub_id')
-                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                        ->select('users.name','user_subjek.*','subjek.course_name','subjek.course_code','sessions.SessionName')
-                        ->where('users.faculty', $kp->faculty)
-                        ->where('sessions.Status', 'ACTIVE')
-                        //->orderBy('sessions.SessionID')
-                        ->get();
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->select('users.name', 'user_subjek.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+            ->where('users.faculty', $kp->faculty)
+            ->where('sessions.Status', 'ACTIVE')
+            //->orderBy('sessions.SessionID')
+            ->get();
 
         // Dashboard statistics
         $dashboardData = [];
@@ -57,7 +57,7 @@ class KP_Controller extends Controller
         if (!$programs->isEmpty()) {
             $dashboardData['total_students'] = DB::table('students')
                 ->whereIn('program', $programs)
-                ->whereNotIn('status', [3,4,5,6,7,8,14,15,16])
+                ->whereNotIn('status', [3, 4, 5, 6, 7, 8, 14, 15, 16])
                 ->count();
         } else {
             $dashboardData['total_students'] = 0;
@@ -72,11 +72,11 @@ class KP_Controller extends Controller
 
         // Recent lecturer assignments (last 10)
         $dashboardData['recent_assignments'] = subject::join('users', 'user_subjek.user_ic', '=', 'users.ic')
-            ->join('subjek', 'user_subjek.course_id','=', 'subjek.sub_id')
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
             ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->where('users.faculty', $kp->faculty)
-            ->select('users.name','user_subjek.*','subjek.course_name','subjek.course_code','sessions.SessionName', 'user_subjek.created_at')
+            ->select('users.name', 'user_subjek.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName', 'user_subjek.created_at')
             ->orderBy('user_subjek.created_at', 'desc')
             ->limit(10)
             ->get();
@@ -89,7 +89,7 @@ class KP_Controller extends Controller
         // Today's assessments count
         $dashboardData['todays_assessments'] = 0;
         $today = now()->format('Y-m-d');
-        
+
         $assessmentTables = ['tblclassquiz', 'tblclasstest', 'tblclasstest2', 'tblclassassign', 'tblclassmidterm', 'tblclassfinal'];
         foreach ($assessmentTables as $table) {
             $count = DB::table($table)
@@ -108,9 +108,9 @@ class KP_Controller extends Controller
                 if ($program) {
                     $studentCount = DB::table('students')
                         ->where('program', $programId)
-                        ->whereNotIn('status', [3,4,5,6,7,8,14,15,16])
+                        ->whereNotIn('status', [3, 4, 5, 6, 7, 8, 14, 15, 16])
                         ->count();
-                    
+
                     $dashboardData['program_stats'][] = [
                         'name' => $program->progname,
                         'code' => $program->progcode,
@@ -134,16 +134,16 @@ class KP_Controller extends Controller
         $programs = DB::table('tblprogramme')->get();
 
         //this will fetch user data where usrtype is not ADM
-        $user = User::whereIn('usrtype',['LCT', 'AO', 'PL'])->get();
+        $user = User::whereIn('usrtype', ['LCT', 'AO', 'PL', 'DN'])->get();
 
         //$course = DB::table('subjek')
-                  //->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
-                  
+        //->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
+
 
         $session = DB::table('sessions')->where('status', 'ACTIVE')
-                ->get();
+            ->get();
 
-        return view('ketua_program.create')->with(compact('user','programs','session'));
+        return view('ketua_program.create')->with(compact('user', 'programs', 'session'));
     }
 
     public function store()
@@ -155,18 +155,16 @@ class KP_Controller extends Controller
         //this will validate the requested data
         $data = request()->validate([
             //'group' => ['required','string'],
-            'lct' => ['required','string'],
+            'lct' => ['required', 'string'],
             'course' => ['required'],
             'session' => ['required'],
         ]);
 
         //this will create data in table [Please be noted that model need to be fillable with the same data]
-        if(DB::table('user_subjek')->where([['user_ic', $data['lct']],['course_id', $data['course']], ['session_id', $data['session']]])->exists())
-        {
+        if (DB::table('user_subjek')->where([['user_ic', $data['lct']], ['course_id', $data['course']], ['session_id', $data['session']]])->exists()) {
 
             return back()->with('message', 'Lecturer already registered with the same details, please try again!');
-
-        }else{
+        } else {
 
             subject::create([
                 //'group_name' => $data['group'],
@@ -178,7 +176,6 @@ class KP_Controller extends Controller
 
             //this will redirect user to route named ketua_program
             return back();
-
         }
     }
 
@@ -191,71 +188,69 @@ class KP_Controller extends Controller
 
     public function assessment()
     {
-       $sub_id = DB::table('subjek')->where('id', request()->course)->value('sub_id');
+        $sub_id = DB::table('subjek')->where('id', request()->course)->value('sub_id');
 
-       $marks = DB::table('tblclassmarks')->where('course_id', $sub_id);
+        $marks = DB::table('tblclassmarks')->where('course_id', $sub_id);
 
-       $data['classmark'] = $marks->get();
+        $data['classmark'] = $marks->get();
 
-       $type = $marks->pluck('assessment');
+        $type = $marks->pluck('assessment');
 
-       $data['course'] = $sub_id;
-               
+        $data['course'] = $sub_id;
 
-       $assessment = array(
-        "quiz" => "quiz",
-        "test" => "test",
-        "test2" => "test2",
-        "assignment" => "assignment",
-        "midterm" => "midterm",
-        "final" => "final",
-        // "paperwork" => "paperwork",
-        "practical" => "practical",
-        "lain-lain" => "lain-lain",
-        "extra" => "extra"
-       );
 
-       if($data['classmark']->isEmpty())
-       {
-        //    foreach($assessment as $key){
+        $assessment = array(
+            "quiz" => "quiz",
+            "test" => "test",
+            "test2" => "test2",
+            "assignment" => "assignment",
+            "midterm" => "midterm",
+            "final" => "final",
+            // "paperwork" => "paperwork",
+            "practical" => "practical",
+            "lain-lain" => "lain-lain",
+            "extra" => "extra"
+        );
 
-        //         $datas[] = DB::table('tblclassmarks')->insertGetId([
-        //             'assessment' => $key,
-        //             'course_id' => $sub_id,
-        //             'mark_percentage' => 0
-        //         ]);
+        if ($data['classmark']->isEmpty()) {
+            //    foreach($assessment as $key){
 
-        //    }
+            //         $datas[] = DB::table('tblclassmarks')->insertGetId([
+            //             'assessment' => $key,
+            //             'course_id' => $sub_id,
+            //             'mark_percentage' => 0
+            //         ]);
 
-        //    $data['classmark'] = DB::table('tblclassmarks')->whereIn('id', $datas)->get();
+            //    }
 
-        $data['classmark'] = [];
+            //    $data['classmark'] = DB::table('tblclassmarks')->whereIn('id', $datas)->get();
 
-           $data['assessment'] = $assessment;
+            $data['classmark'] = [];
 
-       }else{
+            $data['assessment'] = $assessment;
+        } else {
 
-        foreach ($data['classmark'] as $key => $value) {
-            if (($key = array_search($value->assessment, $assessment)) !== false) {
-                unset($assessment[$key]);
+            foreach ($data['classmark'] as $key => $value) {
+                if (($key = array_search($value->assessment, $assessment)) !== false) {
+                    unset($assessment[$key]);
+                }
             }
+
+            $data['assessment'] = $assessment;
         }
 
-        $data['assessment'] = $assessment;
-
-       }
- 
         return view('ketua_program.assessment', compact('data'));
     }
 
-    private function removeElementWithValue($array, $key, $value){
-        foreach($array as $subKey => $subArray){
-             if($subArray[$key] == $value){
-                  unset($array[$subKey]);
-             }
+    private function removeElementWithValue($array, $key, $value)
+    {
+        foreach ($array as $subKey => $subArray) {
+            if ($subArray[$key] == $value) {
+                unset($array[$subKey]);
+            }
         }
         return $array;
-   }
+    }
 
     public function update_marks(Request $request)
     {
@@ -270,19 +265,17 @@ class KP_Controller extends Controller
         $marks = DB::table('tblclassmarks')->where('course_id', $request->course)->get();
 
         //dd($marks);
-        
-        foreach($marks as $key=>$mark)
-        {
-                DB::table('tblclassmarks')->where([['assessment', $mark->assessment],['course_id', $request->course]])
+
+        foreach ($marks as $key => $mark) {
+            DB::table('tblclassmarks')->where([['assessment', $mark->assessment], ['course_id', $request->course]])
                 ->update([
                     'mark_percentage' => $all[$key],
                 ]);
         }
 
-        
+
 
         return back();
-
     }
 
     public function insert_marks(Request $request)
@@ -290,7 +283,7 @@ class KP_Controller extends Controller
         $request->validate([
             'assessment' => 'required'
         ]);
-        
+
         DB::table('tblclassmarks')->insert([
             'assessment' => $request->assessment,
             'course_id' => $request->course,
@@ -306,17 +299,16 @@ class KP_Controller extends Controller
         DB::table('tblclassmarks')->where('id', $request->id)->delete();
 
         return true;
-
     }
 
     public function edit()
     {
 
-       $data = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-               ->join('students', 'student_subjek.student_ic', 'students.ic')
-               ->where('user_subjek.id', request()->group)
-               ->select('student_subjek.*', 'students.name', 'students.no_matric')
-               ->get();
+        $data = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+            ->join('students', 'student_subjek.student_ic', 'students.ic')
+            ->where('user_subjek.id', request()->group)
+            ->select('student_subjek.*', 'students.name', 'students.no_matric')
+            ->get();
 
         //dd($data);
 
@@ -325,52 +317,50 @@ class KP_Controller extends Controller
 
     public function editgroup()
     {
-       $users = Auth::user();
+        $users = Auth::user();
 
-       $programs = DB::table('tblprogramme')->get();
+        $programs = DB::table('tblprogramme')->get();
 
         $data = subject::join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
             ->where('user_subjek.id', request()->group)
             ->first();
 
-        $user = User::whereIn('usrtype',['LCT', 'AO', 'PL'])->get();
+        $user = User::whereIn('usrtype', ['LCT', 'AO', 'PL'])->get();
 
 
         $session = DB::table('sessions')->where('status', 'ACTIVE')
-        ->get();
- 
+            ->get();
+
         return view('ketua_program.create', compact('data', 'user', 'programs', 'session'));
     }
 
     public function updategroup(Request $request)
     {
         $data = [
-                    'course_id' => $request->course,
-                    'session_id' => $request->session
-                ];
+            'course_id' => $request->course,
+            'session_id' => $request->session
+        ];
 
         //dd($request->id);
 
         DB::table('user_subjek')->where('id', $request->id)->update($data);
 
         return redirect(route('ketua_program'));
-
     }
 
     //this function is to update group ID into user_student table because of migrating table from external database//
-    public function student() 
+    public function student()
     {
         DB::table('user_student')
-        ->join('user_subjek', function($join)
-        {
-        $join ->on('user_student.user_ic','=','user_subjek.user_ic');
-        $join ->on('user_student.course_id','=','user_subjek.course_id');
-        $join ->on('user_student.session_id','=','user_subjek.session_id');
-        })
-        ->select('user_subjek.*')
-        ->update([
-            'user_student.group_id' => DB::raw('user_subjek.id')
-        ]);
+            ->join('user_subjek', function ($join) {
+                $join->on('user_student.user_ic', '=', 'user_subjek.user_ic');
+                $join->on('user_student.course_id', '=', 'user_subjek.course_id');
+                $join->on('user_student.session_id', '=', 'user_subjek.session_id');
+            })
+            ->select('user_subjek.*')
+            ->update([
+                'user_student.group_id' => DB::raw('user_subjek.id')
+            ]);
 
         dd('successful');
     }
@@ -384,15 +374,13 @@ class KP_Controller extends Controller
         $stud = student::find($request->students);
 
         //dd($stud);
-        
-        foreach($stud as $key)
-        {
-            if($key->status == "ACTIVE")
-            {
+
+        foreach ($stud as $key) {
+            if ($key->status == "ACTIVE") {
                 $key->update([
                     'status' => 'NOTACTIVE',
                 ]);
-            }else{
+            } else {
                 $key->update([
                     'status' => 'ACTIVE',
                 ]);
@@ -402,20 +390,17 @@ class KP_Controller extends Controller
         return redirect()->route('kp.edit', $request->group);
     }
 
-    
+
     public function create_group()
     {
         $users = Auth::user();
 
-        if(Auth::user()->usrtype == 'AR')
-        {
+        if (Auth::user()->usrtype == 'AR') {
 
             $programs = DB::table('tblprogramme')->get();
-
-        }else{
+        } else {
 
             $programs = DB::table('user_program')->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')->where('user_ic', $users->ic)->get();
-
         }
 
         $semester = DB::table('semester')->get();
@@ -424,7 +409,7 @@ class KP_Controller extends Controller
         //dd($programs);
 
         //$course = DB::table('subjek')
-                  //->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
+        //->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
 
         $session = DB::table('sessions')->where('Status', 'ACTIVE')->orderBy('SessionID', 'DESC')->get();
 
@@ -434,51 +419,44 @@ class KP_Controller extends Controller
     public function getStudentTable(Request $request)
     {
 
-        if(isset($request->session))
-        {
-            if(isset($request->course))
-            {
+        if (isset($request->session)) {
+            if (isset($request->course)) {
                 $student = DB::table('student_subjek')
-                ->select('student_subjek.*', 'students.name', 'students.semester','students.no_matric','sessions.SessionName AS intake')
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->join('sessions', 'students.intake', 'sessions.SessionID')
-                ->where('student_subjek.courseid',$request->course)
-                ->where('student_subjek.sessionid',$request->session)
-                ->where('students.program', $request->program)
-                ->where('student_subjek.group_id', null)
-                ->where('students.status', 2);
-                
-                if(isset($request->semester))
-                {
+                    ->select('student_subjek.*', 'students.name', 'students.semester', 'students.no_matric', 'sessions.SessionName AS intake')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->join('sessions', 'students.intake', 'sessions.SessionID')
+                    ->where('student_subjek.courseid', $request->course)
+                    ->where('student_subjek.sessionid', $request->session)
+                    ->where('students.program', $request->program)
+                    ->where('student_subjek.group_id', null)
+                    ->where('students.status', 2);
 
-                   $student->where('student_subjek.semesterid', $request->semester);
+                if (isset($request->semester)) {
 
+                    $student->where('student_subjek.semesterid', $request->semester);
                 }
 
                 $students = $student->orderBy('students.name')->get();
-            }else
-            {
+            } else {
                 $student = DB::table('student_subjek')
-                ->select('student_subjek.*', 'students.name', 'students.semester','students.no_matric','sessions.SessionName AS intake')
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->join('sessions', 'students.intake', 'sessions.SessionID')
-                ->where('student_subjek.sessionid',$request->session)
-                ->where('students.program', $request->program)
-                ->where('student_subjek.group_id', null)
-                ->where('students.status', 2);
+                    ->select('student_subjek.*', 'students.name', 'students.semester', 'students.no_matric', 'sessions.SessionName AS intake')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->join('sessions', 'students.intake', 'sessions.SessionID')
+                    ->where('student_subjek.sessionid', $request->session)
+                    ->where('students.program', $request->program)
+                    ->where('student_subjek.group_id', null)
+                    ->where('students.status', 2);
 
-                if(isset($request->semester))
-                {
+                if (isset($request->semester)) {
 
                     $student->where('student_subjek.semesterid', $request->semester);
-
                 }
 
 
                 $students = $student->orderBy('students.name')->get();
             }
         }
-        
+
         // else
         // {
         //     $students = DB::table('student_subjek')
@@ -502,7 +480,7 @@ class KP_Controller extends Controller
             <th></th>
             </thead>
             <tbody>';
-$content .= '<tr>
+        $content .= '<tr>
                 <td>
                     
                 </td>
@@ -535,60 +513,58 @@ $content .= '<tr>
                 </td>
             </tr>
         ';
-        foreach($students as $key => $student){
+        foreach ($students as $key => $student) {
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
                 <td>
-                    '. $key+1 .'
+                    ' . $key + 1 . '
                 </td>
                 <td >
-                    <label class="text-dark"><strong>'.$student->name.'</strong></label><br>
-                    <label>IC: '.$student->student_ic.'</label>
+                    <label class="text-dark"><strong>' . $student->name . '</strong></label><br>
+                    <label>IC: ' . $student->student_ic . '</label>
                 </td>
                 <td >
-                    <label>'.$student->no_matric.'</label>
+                    <label>' . $student->no_matric . '</label>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->intake.'</p>
+                    <p class="text-bold text-fade">' . $student->intake . '</p>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->semester.'</p>
+                    <p class="text-bold text-fade">' . $student->semester . '</p>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->group_name.'</p>
+                    <p class="text-bold text-fade">' . $student->group_name . '</p>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->status.'</p>
+                    <p class="text-bold text-fade">' . $student->status . '</p>
                 </td>
                 <td >
                     <div class="pull-right" >
-                        <input type="checkbox" id="student_checkbox_'.$student->id.'"
-                            class="filled-in" name="student[]" value="'.$student->id.'" 
+                        <input type="checkbox" id="student_checkbox_' . $student->id . '"
+                            class="filled-in" name="student[]" value="' . $student->id . '" 
                         >
-                        <label for="student_checkbox_'.$student->id.'"> </label>
+                        <label for="student_checkbox_' . $student->id . '"> </label>
                     </div>
                 </td>
             </tr>
             ';
-            }
-            $content .= '</tbody></table>';
+        }
+        $content .= '</tbody></table>';
 
-            return $content;
-
+        return $content;
     }
 
     public function getStudentTable2(Request $request)
     {
 
-        if(isset($request->lecturer))
-        {
+        if (isset($request->lecturer)) {
             $students = DB::table('student_subjek')
-                ->select('student_subjek.*', 'students.name', 'students.semester','students.no_matric','sessions.SessionName AS intake')
+                ->select('student_subjek.*', 'students.name', 'students.semester', 'students.no_matric', 'sessions.SessionName AS intake')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
-                ->where('student_subjek.courseid',$request->course)
-                ->where('student_subjek.sessionid',$request->session)
+                ->where('student_subjek.courseid', $request->course)
+                ->where('student_subjek.sessionid', $request->session)
                 ->where('student_subjek.group_id', $request->lecturer)
                 ->where('students.program', $request->program)
                 ->orderBy('students.name')
@@ -611,7 +587,7 @@ $content .= '<tr>
             <th></th>
             </thead>
             <tbody>';
-$content .= '<tr>
+        $content .= '<tr>
                 <td>
                     
                 </td>
@@ -644,69 +620,68 @@ $content .= '<tr>
                 </td>
             </tr>
         ';
-        foreach($students as $key => $student){
+        foreach ($students as $key => $student) {
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
                 <td>
-                    '. $key+1 .'
+                    ' . $key + 1 . '
                 </td>
                 <td >
-                    <label class="text-dark"><strong>'.$student->name.'</strong></label><br>
-                    <label>IC: '.$student->student_ic.'</label>
+                    <label class="text-dark"><strong>' . $student->name . '</strong></label><br>
+                    <label>IC: ' . $student->student_ic . '</label>
                 </td>
                 <td >
-                    <label>'.$student->no_matric.'</label>
+                    <label>' . $student->no_matric . '</label>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->intake.'</p>
+                    <p class="text-bold text-fade">' . $student->intake . '</p>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->semester.'</p>
+                    <p class="text-bold text-fade">' . $student->semester . '</p>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->group_name.'</p>
+                    <p class="text-bold text-fade">' . $student->group_name . '</p>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->status.'</p>
+                    <p class="text-bold text-fade">' . $student->status . '</p>
                 </td>
                 <td >
                     <div class="pull-right" >
-                        <input type="checkbox" id="student_checkbox_'.$student->id.'"
-                            class="filled-in" name="student2[]" value="'.$student->id.'" 
+                        <input type="checkbox" id="student_checkbox_' . $student->id . '"
+                            class="filled-in" name="student2[]" value="' . $student->id . '" 
                         >
-                        <label for="student_checkbox_'.$student->id.'"> </label>
+                        <label for="student_checkbox_' . $student->id . '"> </label>
                     </div>
                 </td>
             </tr>
             ';
-            }
-            $content .= '</tbody></table>';
+        }
+        $content .= '</tbody></table>';
 
-            return $content;
-
+        return $content;
     }
 
     public function getLecturerSubject(Request $request)
     {
 
         //this will fetch user data where usrtype is not ADM
-        $user = User::whereIn('usrtype',['LCT', 'AO', 'PL'])->get();
+        $user = User::whereIn('usrtype', ['LCT', 'AO', 'PL'])->get();
 
         $data['subject'] = DB::table('user_subjek')
-                           ->where('sessions.Status', 'ACTIVE')
-                           ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                           ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                           ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                           ->join('users', 'user_subjek.user_ic', 'users.ic')
-                           ->where([
-                            ['user_subjek.course_id', $request->course],
-                            ['user_subjek.session_id', $request->session], 
-                            ['subjek_structure.program_id', $request->program]
-                            ])
-                            ->groupBy('user_subjek.id')
-                           ->select('users.name', 'users.no_staf','user_subjek.id','user_subjek.user_ic','user_subjek.amali_ic', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
-                           ->get();
+            ->where('sessions.Status', 'ACTIVE')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->join('users', 'user_subjek.user_ic', 'users.ic')
+            ->where([
+                ['user_subjek.course_id', $request->course],
+                ['user_subjek.session_id', $request->session],
+                ['subjek_structure.program_id', $request->program]
+            ])
+            ->groupBy('user_subjek.id')
+            ->select('users.name', 'users.no_staf', 'user_subjek.id', 'user_subjek.user_ic', 'user_subjek.amali_ic', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+            ->get();
 
         $content = "";
         $content .= '
@@ -723,51 +698,49 @@ $content .= '<tr>
             </thead>
             <tbody>
         ';
-        foreach($data['subject'] as $i => $sbj){
+        foreach ($data['subject'] as $i => $sbj) {
             //$registered = ($sbj->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
                 <td>
-                    '. $i+1 .'
+                    ' . $i + 1 . '
                 </td>
                 <td>
                     <div class="form-group">
-                          <select class="form-select" id="main-'. $sbj->id .'" name="main-'. $sbj->id .'">
+                          <select class="form-select" id="main-' . $sbj->id . '" name="main-' . $sbj->id . '">
                               <option value="-" selected disabled>-</option>';
-                              foreach($user as $usr)
-                              {
-                                $content .= '<option value="'. $usr->ic .'" '. (($sbj->user_ic == $usr->ic) ? 'selected' : '') .'>'. $usr->name  .'</option>';
-                              }
-              $content .= '</select>
+            foreach ($user as $usr) {
+                $content .= '<option value="' . $usr->ic . '" ' . (($sbj->user_ic == $usr->ic) ? 'selected' : '') . '>' . $usr->name  . '</option>';
+            }
+            $content .= '</select>
                       </div>
                 </td>
                 <td>
-                    '. $sbj->no_staf .'
+                    ' . $sbj->no_staf . '
                 </td>
                 <td>
                     <div class="form-group">
-                          <select class="form-select" id="lct-'. $sbj->id .'" name="lct-'. $sbj->id .'">
+                          <select class="form-select" id="lct-' . $sbj->id . '" name="lct-' . $sbj->id . '">
                               <option value=" " selected>-</option>';
-                              foreach($user as $usr)
-                              {
-                                $content .= '<option value="'. $usr->ic .'" '. (($sbj->amali_ic == $usr->ic) ? 'selected' : '') .'>'. $usr->name .'</option>';
-                              }
-              $content .= '</select>
+            foreach ($user as $usr) {
+                $content .= '<option value="' . $usr->ic . '" ' . (($sbj->amali_ic == $usr->ic) ? 'selected' : '') . '>' . $usr->name . '</option>';
+            }
+            $content .= '</select>
                       </div>
                 </td>
                 <td>
-                    <p >'.$sbj->course_code.' - '.$sbj->course_name.'</p>
+                    <p >' . $sbj->course_code . ' - ' . $sbj->course_name . '</p>
                 </td>
                 <td>
-                    <p>'.$sbj->SessionName.'</p>
+                    <p>' . $sbj->SessionName . '</p>
                 </td>
                 <td>
-                    <a class="btn btn-info btn-sm" href="#" onclick="updateSubjek(\''. $sbj->id .'\')">
+                    <a class="btn btn-info btn-sm" href="#" onclick="updateSubjek(\'' . $sbj->id . '\')">
                         <i class="ti-save-alt">
                         </i>
                         Update
                     </a>
-                    <a class="btn btn-danger btn-sm" href="#" onclick="deleteSubjek(\''. $sbj->id .'\')">
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deleteSubjek(\'' . $sbj->id . '\')">
                         <i class="ti-trash">
                         </i>
                         Delete
@@ -775,28 +748,28 @@ $content .= '<tr>
                 </td>
             </tr>
             ';
-            }
-            $content .= '</tbody></table>';    
+        }
+        $content .= '</tbody></table>';
 
-            return $content;
+        return $content;
     }
 
     public function deleteLecturerSubject(Request $request)
     {
 
         DB::table('student_subjek')->where('group_id', $request->id)
-        ->update([
-            'group_id' => null,
-            'group_name' => null
-        ]);
+            ->update([
+                'group_id' => null,
+                'group_name' => null
+            ]);
 
         DB::table('user_subjek')->where('id', $request->id)->delete();
 
         $data['subject'] = DB::table('user_subjek')->where('user_ic', $request->ic)
-                           ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                           ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                           ->select('user_subjek.id', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
-                           ->get();
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->select('user_subjek.id', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+            ->get();
 
         $content = "";
         $content .= '
@@ -809,18 +782,18 @@ $content .= '<tr>
             </thead>
             <tbody>
         ';
-        foreach($data['subject'] as $sbj){
+        foreach ($data['subject'] as $sbj) {
             //$registered = ($sbj->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
                 <td >
-                    <p class="text-bold text-fade">'.$sbj->course_code.' - '.$sbj->course_name.'</p>
+                    <p class="text-bold text-fade">' . $sbj->course_code . ' - ' . $sbj->course_name . '</p>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$sbj->SessionName.'</p>
+                    <p class="text-bold text-fade">' . $sbj->SessionName . '</p>
                 </td>
                 <td >
-                    <a class="btn btn-danger btn-sm" href="#" onclick="deleteSubjek(\''. $sbj->id .'\')">
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deleteSubjek(\'' . $sbj->id . '\')">
                         <i class="ti-trash">
                         </i>
                         Delete
@@ -828,41 +801,39 @@ $content .= '<tr>
                 </td>
             </tr>
             ';
-            }
-            $content .= '</tbody></table>';    
+        }
+        $content .= '</tbody></table>';
 
-            return $content;
-
+        return $content;
     }
 
     public function getCourse(Request $request)
     {
         $course = DB::table('subjek')->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                  ->groupBy('subjek_structure.program_id')
-                  ->groupBy('subjek.id')
-                  ->select('subjek.sub_id', 'subjek.course_name', 'subjek.course_code', 'subjek_structure.semester_id')
-                  ->where('subjek_structure.program_id', $request->program)->get();
+            ->groupBy('subjek_structure.program_id')
+            ->groupBy('subjek.id')
+            ->select('subjek.sub_id', 'subjek.course_name', 'subjek.course_code', 'subjek_structure.semester_id')
+            ->where('subjek_structure.program_id', $request->program)->get();
 
         $content = "";
 
         $content .= "<option value='-' disabled selected>-</option>";
-        foreach($course as $crs){
-            $content .= '<option value='. $crs->sub_id .'>
-            '. $crs->course_code .' : '. $crs->course_name.'</option>';
+        foreach ($course as $crs) {
+            $content .= '<option value=' . $crs->sub_id . '>
+            ' . $crs->course_code . ' : ' . $crs->course_name . '</option>';
         };
         return $content;
-
     }
 
     public function getLecturer(Request $request)
     {
-        
+
         $lecturer = subject::where('course_id', $request->course)->where('session_id', $request->session)->get();
 
         $content = "";
 
         $content .= "<option value='-' disabled selected>-</option>";
-        foreach($lecturer as $lct){
+        foreach ($lecturer as $lct) {
 
             $lecturer = User::where('ic', $lct->user_ic)->first();
 
@@ -875,27 +846,26 @@ $content .= '<tr>
                         </div>
                 </div>
                 <div class="col-md-10 align-self-center lh-lg">
-                    <span><strong>'. $lecturer->name .'</strong></span><br>
-                    <span>'. $lecturer->email .' | <strong class="text-fade"">'.$lecturer->faculty .'</strong></span><br>
+                    <span><strong>' . $lecturer->name . '</strong></span><br>
+                    <span>' . $lecturer->email . ' | <strong class="text-fade"">' . $lecturer->faculty . '</strong></span><br>
                     <span class="text-fade"></span>
                 </div>
-            </div>\' value='. $lct->id .'></option>';
+            </div>\' value=' . $lct->id . '></option>';
         }
-        
+
         return $content;
     }
 
     public function updateLecturer(Request $request)
     {
-        if($request->main != '' && $request->main != DB::table('user_subjek')->where('id', $request->id)->first()->user_ic)
-        {
+        if ($request->main != '' && $request->main != DB::table('user_subjek')->where('id', $request->id)->first()->user_ic) {
 
             $old = DB::table('user_subjek')->where('id', $request->id)->first();
 
             // Get the course ID from subjek table
             $course = DB::table('subjek')
-                       ->where('sub_id', $old->course_id)
-                       ->first();
+                ->where('sub_id', $old->course_id)
+                ->first();
 
             if (!$course) {
                 return response()->json(['message' => 'Course not found'], 404);
@@ -905,234 +875,229 @@ $content .= '<tr>
 
             // Get the lecturer directory record
             $lecturer_dir = DB::table('lecturer_dir')
-                         ->where([
-                            'CourseID' => $id,
-                            'SessionID' => $old->session_id,
-                            'Addby' => $old->user_ic
-                         ])
-                         ->first();
+                ->where([
+                    'CourseID' => $id,
+                    'SessionID' => $old->session_id,
+                    'Addby' => $old->user_ic
+                ])
+                ->first();
 
-            if($lecturer_dir)
-            {
+            if ($lecturer_dir) {
                 // Update the lecturer_dir record
                 DB::table('lecturer_dir')
-                  ->where('DrID', $lecturer_dir->DrID)
-                  ->update(['Addby' => $request->main]);
+                    ->where('DrID', $lecturer_dir->DrID)
+                    ->update(['Addby' => $request->main]);
 
                 // Get material_dir records before updating
                 $material_dirs = DB::table('material_dir')
-                     ->where([
+                    ->where([
                         'LecturerDirID' => $lecturer_dir->DrID,
                         'Addby' => $old->user_ic
-                     ])
-                     ->get();
+                    ])
+                    ->get();
 
-                if($material_dirs->isNotEmpty())
-                {
+                if ($material_dirs->isNotEmpty()) {
                     // Update material_dir records
                     DB::table('material_dir')
-                     ->where([
-                        'LecturerDirID' => $lecturer_dir->DrID,
-                        'Addby' => $old->user_ic
-                     ])
-                     ->update(['Addby' => $request->main]);
+                        ->where([
+                            'LecturerDirID' => $lecturer_dir->DrID,
+                            'Addby' => $old->user_ic
+                        ])
+                        ->update(['Addby' => $request->main]);
 
                     // Process each material_dir record
-                    foreach($material_dirs as $material_dir)
-                    {
+                    foreach ($material_dirs as $material_dir) {
                         // Update materialsub_dir
                         DB::table('materialsub_dir')
-                         ->where([
-                            'MaterialDirID' => $material_dir->DrID,
-                            'Addby' => $old->user_ic
-                         ])
-                         ->update(['Addby' => $request->main]);
-
-                        // Update materialsub_url (direct MaterialDirID reference)
-                        DB::table('materialsub_url')
-                         ->where([
-                            'MaterialDirID' => $material_dir->DrID,
-                            'Addby' => $old->user_ic
-                         ])
-                         ->update(['Addby' => $request->main]);
-
-                        // Get materialsub_dir records for this material_dir
-                        $materialsub_dirs = DB::table('materialsub_dir')
-                                          ->where([
-                                            'MaterialDirID' => $material_dir->DrID,
-                                            'Addby' => $request->main // Use new addby since we just updated it
-                                          ])
-                                          ->get();
-
-                        // Update materialsub_url records that reference materialsub_dir
-                        foreach($materialsub_dirs as $materialsub_dir)
-                        {
-                            DB::table('materialsub_url')
                             ->where([
-                                'MaterialSubDirID' => $materialsub_dir->DrID,
+                                'MaterialDirID' => $material_dir->DrID,
                                 'Addby' => $old->user_ic
                             ])
                             ->update(['Addby' => $request->main]);
+
+                        // Update materialsub_url (direct MaterialDirID reference)
+                        DB::table('materialsub_url')
+                            ->where([
+                                'MaterialDirID' => $material_dir->DrID,
+                                'Addby' => $old->user_ic
+                            ])
+                            ->update(['Addby' => $request->main]);
+
+                        // Get materialsub_dir records for this material_dir
+                        $materialsub_dirs = DB::table('materialsub_dir')
+                            ->where([
+                                'MaterialDirID' => $material_dir->DrID,
+                                'Addby' => $request->main // Use new addby since we just updated it
+                            ])
+                            ->get();
+
+                        // Update materialsub_url records that reference materialsub_dir
+                        foreach ($materialsub_dirs as $materialsub_dir) {
+                            DB::table('materialsub_url')
+                                ->where([
+                                    'MaterialSubDirID' => $materialsub_dir->DrID,
+                                    'Addby' => $old->user_ic
+                                ])
+                                ->update(['Addby' => $request->main]);
                         }
                     }
                 }
-                     
             }
 
             //Change Quiz Lecturer
 
             DB::table('tblclassquiz')
-                     ->where([
-                        'classid' => $id,
-                        'sessionid' => $old->session_id,
-                        'addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'addby' => $request->main
-                     ]);
+                ->where([
+                    'classid' => $id,
+                    'sessionid' => $old->session_id,
+                    'addby' => $old->user_ic
+                ])
+                ->update([
+                    'addby' => $request->main
+                ]);
 
             //Change Test Lecturer
 
             DB::table('tblclasstest')
-                     ->where([
-                        'classid' => $id,
-                        'sessionid' => $old->session_id,
-                        'addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'addby' => $request->main
-                     ]);
+                ->where([
+                    'classid' => $id,
+                    'sessionid' => $old->session_id,
+                    'addby' => $old->user_ic
+                ])
+                ->update([
+                    'addby' => $request->main
+                ]);
 
             //Change Test2 Lecturer
 
             DB::table('tblclasstest2')
-                     ->where([
-                        'classid' => $id,
-                        'sessionid' => $old->session_id,
-                        'addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'addby' => $request->main
-                     ]);
+                ->where([
+                    'classid' => $id,
+                    'sessionid' => $old->session_id,
+                    'addby' => $old->user_ic
+                ])
+                ->update([
+                    'addby' => $request->main
+                ]);
 
             //Change Assignment Lecturer
 
             DB::table('tblclassassign')
-                     ->where([
-                        'classid' => $id,
-                        'sessionid' => $old->session_id,
-                        'addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'addby' => $request->main
-                     ]);
+                ->where([
+                    'classid' => $id,
+                    'sessionid' => $old->session_id,
+                    'addby' => $old->user_ic
+                ])
+                ->update([
+                    'addby' => $request->main
+                ]);
 
             //Change Midterm Lecturer
 
             DB::table('tblclassmidterm')
-                     ->where([
-                        'classid' => $id,
-                        'sessionid' => $old->session_id,
-                        'addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'addby' => $request->main
-                     ]);
+                ->where([
+                    'classid' => $id,
+                    'sessionid' => $old->session_id,
+                    'addby' => $old->user_ic
+                ])
+                ->update([
+                    'addby' => $request->main
+                ]);
 
             //Change Final Lecturer
 
             DB::table('tblclassfinal')
-                     ->where([
-                        'classid' => $id,
-                        'sessionid' => $old->session_id,
-                        'addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'addby' => $request->main
-                     ]);
-                     
+                ->where([
+                    'classid' => $id,
+                    'sessionid' => $old->session_id,
+                    'addby' => $old->user_ic
+                ])
+                ->update([
+                    'addby' => $request->main
+                ]);
+
             //Change Practical Lecturer
 
             DB::table('tblclasspractical')
-                     ->where([
-                        'classid' => $id,
-                        'sessionid' => $old->session_id,
-                        'addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'addby' => $request->main
-                     ]);
-                     
+                ->where([
+                    'classid' => $id,
+                    'sessionid' => $old->session_id,
+                    'addby' => $old->user_ic
+                ])
+                ->update([
+                    'addby' => $request->main
+                ]);
+
             //Change Other Lecturer
 
             DB::table('tblclassother')
-                     ->where([
-                        'classid' => $id,
-                        'sessionid' => $old->session_id,
-                        'addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'addby' => $request->main
-                     ]);  
-                    
+                ->where([
+                    'classid' => $id,
+                    'sessionid' => $old->session_id,
+                    'addby' => $old->user_ic
+                ])
+                ->update([
+                    'addby' => $request->main
+                ]);
+
             //Change Extra Lecturer
 
             DB::table('tblclassextra')
-                     ->where([
-                        'classid' => $id,
-                        'sessionid' => $old->session_id,
-                        'addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'addby' => $request->main
-                     ]);  
+                ->where([
+                    'classid' => $id,
+                    'sessionid' => $old->session_id,
+                    'addby' => $old->user_ic
+                ])
+                ->update([
+                    'addby' => $request->main
+                ]);
 
 
             //Change Forum Lecturer
 
             DB::table('tblforum_topic')
-                     ->where([
-                        'CourseID' => $id,
-                        'SessionID' => $old->session_id,
-                        'Addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'Addby' => $request->main
-                     ]);
+                ->where([
+                    'CourseID' => $id,
+                    'SessionID' => $old->session_id,
+                    'Addby' => $old->user_ic
+                ])
+                ->update([
+                    'Addby' => $request->main
+                ]);
 
 
             //Change Event Lecturer
 
             DB::table('tblevents')
-                     ->where([
-                        'user_ic' => $old->user_ic,
-                        'group_id' => $old->id,
-                        'session_id' => $old->session_id
-                     ])
-                     ->update([
-                        'user_ic' => $request->main
-                     ]);
+                ->where([
+                    'user_ic' => $old->user_ic,
+                    'group_id' => $old->id,
+                    'session_id' => $old->session_id
+                ])
+                ->update([
+                    'user_ic' => $request->main
+                ]);
 
             DB::table('tblevents_second')
-                     ->where([
-                        'user_ic' => $old->user_ic,
-                        'group_id' => $old->id,
-                        'session_id' => $old->session_id
-                     ])
-                     ->update([
-                        'user_ic' => $request->main
-                     ]);
+                ->where([
+                    'user_ic' => $old->user_ic,
+                    'group_id' => $old->id,
+                    'session_id' => $old->session_id
+                ])
+                ->update([
+                    'user_ic' => $request->main
+                ]);
 
             DB::table('tblevents_log')
-                     ->where([
-                        'user_ic' => $old->user_ic,
-                        'group_id' => $old->id,
-                        'session_id' => $old->session_id
-                     ])
-                     ->update([
-                        'user_ic' => $request->main
-                     ]);
-                     
+                ->where([
+                    'user_ic' => $old->user_ic,
+                    'group_id' => $old->id,
+                    'session_id' => $old->session_id
+                ])
+                ->update([
+                    'user_ic' => $request->main
+                ]);
+
             //Finally Change User Subjek Lecturer
 
             DB::table('user_subjek')->where('id', $request->id)->update([
@@ -1140,64 +1105,58 @@ $content .= '<tr>
             ]);
         }
 
-        if($request->ic != '')
-        {
+        if ($request->ic != '') {
 
             DB::table('user_subjek')->where('id', $request->id)->update([
                 'amali_ic' => $request->ic
             ]);
-
         }
 
         return response()->json(['message' => 'success']);
-
     }
 
-    public function getGroupOption(Request $request){
+    public function getGroupOption(Request $request)
+    {
         $group = subject::where('course_id', $request->subject)->where('session_id', $request->session)->get();
 
         $content = "";
 
         $content .= "<option value='-' disabled selected>-</option>";
-        foreach($group as $grp){
-            $content .= '<option value='. $grp->id .'>
-            '. $grp->group_name.'</option>';
+        foreach ($group as $grp) {
+            $content .= '<option value=' . $grp->id . '>
+            ' . $grp->group_name . '</option>';
         };
         return $content;
     }
 
     public function getStudentTableIndex(Request $request)
     {
-        if(isset($request->session))
-        {
-            if(isset($request->group))
-            {
+        if (isset($request->session)) {
+            if (isset($request->group)) {
                 $students = student::where('courseid', $request->subject)->where('sessionid', $request->session)->where('group_id', $request->group)->get();
-            }else
-            {
+            } else {
                 $students = student::where('courseid', $request->subject)->where('sessionid', $request->session)->get();
             }
-        }else
-        {
+        } else {
             $students = student::where('courseid', $request->subject)->get();
         }
 
         $content = "";
-        foreach($students as $key => $student){
+        foreach ($students as $key => $student) {
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
                 <td style="width: 1%">
-                  '. $key+1 .'
+                  ' . $key + 1 . '
                 </td>
                 <td style="width: 15%">
-                  '. $student->student_ic .'
+                  ' . $student->student_ic . '
                 </td>
                 <td style="width: 30%">
-                '. $student->sessionid .'
+                ' . $student->sessionid . '
                 </td>
                 <td>
-                '. $student->courseid .'
+                ' . $student->courseid . '
                 </td>
                 <td class="project-actions text-right" >
                   <a class="btn btn-info btn-sm btn-sm mr-2" href="#">
@@ -1213,56 +1172,45 @@ $content .= '<tr>
                 </td>
               </tr>
               ';
-            }
+        }
 
-            return $content;
-
+        return $content;
     }
 
     public function update_group(Request $request)
     {
-        if(isset($request->student2))
-        {
+        if (isset($request->student2)) {
 
             foreach ($request->student2 as $stud) {
 
                 student::where('id', $stud)->update([
                     'group_id' => null,
                     'group_name' => null
-                ]);      
-    
+                ]);
             }
-
         }
 
-        if(isset($request->student))
-        {
+        if (isset($request->student)) {
 
-            if(count($request->student) > 55)
-            {
+            if (count($request->student) > 55) {
 
                 return redirect()->back()->withErrors(['The limit for student in a group cannot exceed more than 55 !']);
-
-            }else{
+            } else {
 
                 foreach ($request->student as $stud) {
-    
+
                     student::where('id', $stud)->update([
                         'group_id' => $request->lecturer,
                         'group_name' => $request->group
-                    ]);      
-        
+                    ]);
                 }
-
             }
-
         }
 
         return redirect(route('kp.group'));
-
     }
 
-    public function lecturerindex() 
+    public function lecturerindex()
     {
         $faculty = Auth::user()->faculty;
 
@@ -1276,8 +1224,8 @@ $content .= '<tr>
         $faculty = Auth::user()->faculty;
 
         $lecturer = User::where('faculty', $faculty)
-        ->where('name','LIKE','%'.$request->search."%")
-        ->paginate(5);
+            ->where('name', 'LIKE', '%' . $request->search . "%")
+            ->paginate(5);
 
         return view('ketua_program.getlecturerlist', compact('lecturer'));
     }
@@ -1293,72 +1241,68 @@ $content .= '<tr>
         $lecturer = User::find($request->id);
 
         //$groupz = subject::where('user_ic', $lecturer->ic)
-                // ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                // ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
-                // ->whereIn('subjek.prgid', $programs)
-                // ->select('user_subjek.*','tblprogramme.progname','subjek.course_name','subjek.course_code','subjek.course_credit','subjek.semesterid')
-                // ->get();
+        // ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        // ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+        // ->whereIn('subjek.prgid', $programs)
+        // ->select('user_subjek.*','tblprogramme.progname','subjek.course_name','subjek.course_code','subjek.course_credit','subjek.semesterid')
+        // ->get();
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                 ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                 ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-                 ->whereIn('subjek_structure.program_id', $programs)
-                 ->where('user_subjek.user_ic', $lecturer->ic)->groupBy('student_subjek.group_id')->groupBy('student_subjek.group_name')
-                 ->select('user_subjek.*','student_subjek.group_name','tblprogramme.progname','subjek.course_name','subjek.course_code','subjek.course_credit','subjek_structure.semester_id')->get();
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+            ->whereIn('subjek_structure.program_id', $programs)
+            ->where('user_subjek.user_ic', $lecturer->ic)->groupBy('student_subjek.group_id')->groupBy('student_subjek.group_name')
+            ->select('user_subjek.*', 'student_subjek.group_name', 'tblprogramme.progname', 'subjek.course_name', 'subjek.course_code', 'subjek.course_credit', 'subjek_structure.semester_id')->get();
 
         //dd($group);
-        
+
 
         $sum = subject::where('user_ic', $lecturer->ic)
-                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                ->whereIn('subjek_structure.program_id', $programs)->sum('subjek.course_credit');
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->whereIn('subjek_structure.program_id', $programs)->sum('subjek.course_credit');
 
-                //dd($group);
+        //dd($group);
 
         $sumbyses = DB::table('sessions')->get();
 
-        foreach($sumbyses as $semses)
-        {
+        foreach ($sumbyses as $semses) {
             $sums[] = subject::where('user_ic', $lecturer->ic)
-                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                    ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                    ->whereIn('subjek_structure.program_id', $programs)
-                    ->where('user_subjek.session_id', $semses->SessionID)->sum('subjek.course_credit');
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                ->whereIn('subjek_structure.program_id', $programs)
+                ->where('user_subjek.session_id', $semses->SessionID)->sum('subjek.course_credit');
         }
 
         //dd($sums);
 
-        if($group->isNotEmpty())
-        {
-            foreach($group as $grp)
-            {
+        if ($group->isNotEmpty()) {
+            foreach ($group as $grp) {
                 $student[] = student::where([
                     ['group_name', $grp->group_name],
                     ['courseid', $grp->course_id],
                     ['sessionid', $grp->session_id],
                     ['group_id', $grp->id]
                 ])
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->get();
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->get();
             }
 
             //dd($student);
-            
 
-            foreach($group as $grp2)
-            {
+
+            foreach ($group as $grp2) {
                 $numStud[] = student::where([
                     ['group_name', $grp2->group_name],
                     ['courseid', $grp2->course_id],
                     ['sessionid', $grp2->session_id],
                     ['group_id', $grp2->id]
                 ])
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->count();
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->count();
             }
-        }else{
+        } else {
             $student = null;
 
             $numStud = null;
@@ -1369,32 +1313,29 @@ $content .= '<tr>
 
         //dd($numStud);
 
-                 //dd($group);
+        //dd($group);
 
-        return view('ketua_program.lecturer_report', compact(['lecturer', 'group', 'student', 'sum','sums','sumbyses','numStud']));
+        return view('ketua_program.lecturer_report', compact(['lecturer', 'group', 'student', 'sum', 'sums', 'sumbyses', 'numStud']));
     }
 
     public function courseMark()
     {
         $user = Auth::user();
 
-        if(Auth::user()->usrtype == 'AR')
-        {
+        if (Auth::user()->usrtype == 'AR') {
 
             $course = DB::table('subjek')
-                  ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                  ->groupBy('subjek_structure.courseID')
-                  ->select('subjek.*')->get();
-
-        }else{
+                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                ->groupBy('subjek_structure.courseID')
+                ->select('subjek.*')->get();
+        } else {
 
             $course = DB::table('subjek')
-                  ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                  ->join('user_program', 'subjek_structure.program_id', 'user_program.program_id')
-                  ->where('user_program.user_ic', $user->ic)
-                  ->groupBy('subjek_structure.courseID')
-                  ->select('subjek.*')->get();
-
+                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                ->join('user_program', 'subjek_structure.program_id', 'user_program.program_id')
+                ->where('user_program.user_ic', $user->ic)
+                ->groupBy('subjek_structure.courseID')
+                ->select('subjek.*')->get();
         }
 
         //dd($course);
@@ -1412,38 +1353,33 @@ $content .= '<tr>
 
         $usrtype = ['LCT', 'PL'];
 
-        foreach($faculty as $key => $fcl)
-        {
+        foreach ($faculty as $key => $fcl) {
             //$lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', $usrtype)->get();
 
             $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->get();
 
             //dd($lecturer);
 
-            foreach($lecturer[$key] as $key1 => $lct)
-            {
+            foreach ($lecturer[$key] as $key1 => $lct) {
                 $course[$key][$key1] = DB::table('user_subjek')
-                    ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-                    ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+                    ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                    ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
                     ->where('user_subjek.user_ic', $lct->ic)
-                    ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+                    ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID')
                     ->groupBy('subjek.sub_id', 'user_subjek.session_id')
                     ->get();
-
             }
         }
 
         //dd($course);
 
-        return view('ketua_program.report.lecturerReport', compact('faculty','lecturer','course'));
-
+        return view('ketua_program.report.lecturerReport', compact('faculty', 'lecturer', 'course'));
     }
 
     public function assessment2()
     {
 
         return view('ketua_program.report.assessment2');
-
     }
 
     public function getAssessment(Request $request)
@@ -1452,49 +1388,48 @@ $content .= '<tr>
         $user = Auth::user();
 
         $data['quiz'] = DB::table('tblclassquiz')
-        ->join('users', 'tblclassquiz.addby', 'users.ic')
-        ->where('users.faculty', $user->faculty)
-        ->whereBetween('tblclassquiz.created_at', [$request->from, $request->to])
-        ->select('tblclassquiz.*', 'users.name')->get();
+            ->join('users', 'tblclassquiz.addby', 'users.ic')
+            ->where('users.faculty', $user->faculty)
+            ->whereBetween('tblclassquiz.created_at', [$request->from, $request->to])
+            ->select('tblclassquiz.*', 'users.name')->get();
 
         $data['test'] = DB::table('tblclasstest')
-        ->join('users', 'tblclasstest.addby', 'users.ic')
-        ->where('users.faculty', $user->faculty)
-        ->whereBetween('tblclasstest.created_at', [$request->from, $request->to])
-        ->select('tblclasstest.*', 'users.name')->get();
+            ->join('users', 'tblclasstest.addby', 'users.ic')
+            ->where('users.faculty', $user->faculty)
+            ->whereBetween('tblclasstest.created_at', [$request->from, $request->to])
+            ->select('tblclasstest.*', 'users.name')->get();
 
         $data['assign'] = DB::table('tblclassassign')
-        ->join('users', 'tblclassassign.addby', 'users.ic')
-        ->where('users.faculty', $user->faculty)
-        ->whereBetween('tblclassassign.created_at', [$request->from, $request->to])
-        ->select('tblclassassign.*', 'users.name')->get();
+            ->join('users', 'tblclassassign.addby', 'users.ic')
+            ->where('users.faculty', $user->faculty)
+            ->whereBetween('tblclassassign.created_at', [$request->from, $request->to])
+            ->select('tblclassassign.*', 'users.name')->get();
 
         $data['other'] = DB::table('tblclassother')
-        ->join('users', 'tblclassother.addby', 'users.ic')
-        ->where('users.faculty', $user->faculty)
-        ->whereBetween('tblclassother.created_at', [$request->from, $request->to])
-        ->select('tblclassother.*', 'users.name')->get();
+            ->join('users', 'tblclassother.addby', 'users.ic')
+            ->where('users.faculty', $user->faculty)
+            ->whereBetween('tblclassother.created_at', [$request->from, $request->to])
+            ->select('tblclassother.*', 'users.name')->get();
 
         $data['extra'] = DB::table('tblclassextra')
-        ->join('users', 'tblclassextra.addby', 'users.ic')
-        ->where('users.faculty', $user->faculty)
-        ->whereBetween('tblclassextra.created_at', [$request->from, $request->to])
-        ->select('tblclassextra.*', 'users.name')->get();
+            ->join('users', 'tblclassextra.addby', 'users.ic')
+            ->where('users.faculty', $user->faculty)
+            ->whereBetween('tblclassextra.created_at', [$request->from, $request->to])
+            ->select('tblclassextra.*', 'users.name')->get();
 
         $data['midterm'] = DB::table('tblclassmidterm')
-        ->join('users', 'tblclassmidterm.addby', 'users.ic')
-        ->where('users.faculty', $user->faculty)
-        ->whereBetween('tblclassmidterm.created_at', [$request->from, $request->to])
-        ->select('tblclassmidterm.*', 'users.name')->get();
+            ->join('users', 'tblclassmidterm.addby', 'users.ic')
+            ->where('users.faculty', $user->faculty)
+            ->whereBetween('tblclassmidterm.created_at', [$request->from, $request->to])
+            ->select('tblclassmidterm.*', 'users.name')->get();
 
         $data['final'] = DB::table('tblclassfinal')
-        ->join('users', 'tblclassfinal.addby', 'users.ic')
-        ->where('users.faculty', $user->faculty)
-        ->whereBetween('tblclassfinal.created_at', [$request->from, $request->to])
-        ->select('tblclassfinal.*', 'users.name')->get();
+            ->join('users', 'tblclassfinal.addby', 'users.ic')
+            ->where('users.faculty', $user->faculty)
+            ->whereBetween('tblclassfinal.created_at', [$request->from, $request->to])
+            ->select('tblclassfinal.*', 'users.name')->get();
 
         return view('ketua_program.report.getAssessment', compact('data'));
-
     }
 
     public function meetingHour()
@@ -1503,21 +1438,19 @@ $content .= '<tr>
         $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         return view('ketua_program.assign.subject.meetingHour', compact('data'));
-
     }
 
     public function getMeetingHour(Request $request)
     {
 
         $data['subject'] = DB::table('subjek_structure')
-                           ->join('subjek', 'subjek_structure.courseID', 'subjek.sub_id')
-                           ->where('subjek_structure.program_id', $request->id)
-                           ->groupBy('courseID')
-                           ->select('subjek_structure.courseID', 'subjek_structure.meeting_hour', 'subjek_structure.amali_hour', 'subjek.course_name', 'subjek.course_code')
-                           ->get();
+            ->join('subjek', 'subjek_structure.courseID', 'subjek.sub_id')
+            ->where('subjek_structure.program_id', $request->id)
+            ->groupBy('courseID')
+            ->select('subjek_structure.courseID', 'subjek_structure.meeting_hour', 'subjek_structure.amali_hour', 'subjek.course_name', 'subjek.course_code')
+            ->get();
 
         return view('ketua_program.assign.subject.getMeetingHour', compact('data'));
-
     }
 
     public function submitMeetingHour(Request $request)
@@ -1530,16 +1463,15 @@ $content .= '<tr>
         if (is_array($m_ids) && is_array($m_hours) && is_array($a_hours)) {
             foreach ($m_ids as $index => $id) {
                 DB::table('subjek_structure')
-                ->where('courseID', $id)
-                ->update([
-                    'meeting_hour' => $m_hours[$index],
-                    'amali_hour' => $a_hours[$index]
-                ]);
+                    ->where('courseID', $id)
+                    ->update([
+                        'meeting_hour' => $m_hours[$index],
+                        'amali_hour' => $a_hours[$index]
+                    ]);
             }
         }
 
         return response()->json(['success' => true, 'message' => 'Successfully updated subject\'s meeting hour!']);
-
     }
 
     public function replacementClassPending()
@@ -1548,9 +1480,8 @@ $content .= '<tr>
 
         $programs = null;
 
-        if($user->usrtype == 'PL')
-        {
-        
+        if ($user->usrtype == 'PL') {
+
             // Get programs handled by this KP
             $programs = DB::table('user_program')
                 ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
@@ -1567,38 +1498,36 @@ $content .= '<tr>
             // Get replacement class applications for lecturers under this KP's programs  
             // Include both pending applications and applications with pending revised dates
             $applications = $this->getReplacementApplicationsForKP($programs, 'PENDING');
-            
+
             // Also get applications with pending revised dates (rejected but have revised date pending)
             $revisedApplications = $this->getReplacementApplicationsForKP($programs, 'NO', 'PENDING');
-            
+
             // Merge applications  
             $allApplications = collect($applications);
-            foreach($revisedApplications as $app) {
+            foreach ($revisedApplications as $app) {
                 if (!$allApplications->contains('id', $app->id)) {
                     $allApplications->push($app);
                 }
             }
-            
-            $applications = $allApplications;
 
-        } elseif($user->usrtype == 'AO' || $user->usrtype == 'DN') {
+            $applications = $allApplications;
+        } elseif ($user->usrtype == 'AO' || $user->usrtype == 'DN') {
             // AO and DN users don't need programs - they use different logic in getReplacementApplicationsForKP
             // Get replacement class applications with pending status
             $applications = $this->getReplacementApplicationsForKP(null, 'PENDING');
-            
+
             // Also get applications with pending revised dates (rejected but have revised date pending)
             $revisedApplications = $this->getReplacementApplicationsForKP(null, 'NO', 'PENDING');
-            
+
             // Merge applications  
             $allApplications = collect($applications);
-            foreach($revisedApplications as $app) {
+            foreach ($revisedApplications as $app) {
                 if (!$allApplications->contains('id', $app->id)) {
                     $allApplications->push($app);
                 }
             }
-            
-            $applications = $allApplications;
 
+            $applications = $allApplications;
         } else {
             // For other user types, return empty applications
             $applications = collect();
@@ -1611,8 +1540,7 @@ $content .= '<tr>
     {
         $user = Auth::user();
 
-        if($user->usrtype == 'PL')
-        {
+        if ($user->usrtype == 'PL') {
             // Get programs handled by this KP
             $programs = DB::table('user_program')
                 ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
@@ -1626,18 +1554,16 @@ $content .= '<tr>
             // Count pending applications and applications with pending revised dates
             $pendingCount = $this->getReplacementApplicationsForKP($programs, 'PENDING')->count();
             $revisedPendingCount = $this->getReplacementApplicationsForKP($programs, 'NO', 'PENDING')->count();
-            
+
             $totalCount = $pendingCount + $revisedPendingCount;
 
             return response()->json(['count' => $totalCount]);
-        }
-        elseif($user->usrtype == 'AO' || $user->usrtype == 'DN')
-        {
+        } elseif ($user->usrtype == 'AO' || $user->usrtype == 'DN') {
             // AO and DN users don't need programs - they use different logic in getReplacementApplicationsForKP
             // Count pending applications and applications with pending revised dates
             $pendingCount = $this->getReplacementApplicationsForKP(null, 'PENDING')->count();
             $revisedPendingCount = $this->getReplacementApplicationsForKP(null, 'NO', 'PENDING')->count();
-            
+
             $totalCount = $pendingCount + $revisedPendingCount;
 
             return response()->json(['count' => $totalCount]);
@@ -1651,8 +1577,7 @@ $content .= '<tr>
         $user = Auth::user();
 
         $programs = null;
-        if($user->usrtype == 'PL')
-        {
+        if ($user->usrtype == 'PL') {
             // Get programs handled by this KP
             $programs = DB::table('user_program')
                 ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
@@ -1668,11 +1593,9 @@ $content .= '<tr>
 
             // Get all replacement class applications for lecturers under this KP's programs
             $applications = $this->getReplacementApplicationsForKP($programs);
-
-        } elseif($user->usrtype == 'AO' || $user->usrtype == 'DN') {
+        } elseif ($user->usrtype == 'AO' || $user->usrtype == 'DN') {
             // AO and DN users don't need programs - they use different logic in getReplacementApplicationsForKP
             $applications = $this->getReplacementApplicationsForKP(null);
-            
         } else {
             // For other user types, return empty applications
             $applications = collect();
@@ -1685,50 +1608,44 @@ $content .= '<tr>
     {
         $user = Auth::user();
 
-        if($user->usrtype == 'PL')
-        {
+        if ($user->usrtype == 'PL') {
 
             $query = DB::table('replacement_class')
-            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
-            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-            ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
-            ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
-            ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
-            ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
-            ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
-            ->where('users.usrtype', 'LCT')
-            ->where(function($query) use ($programs) {
-                foreach($programs as $program) {
-                    $query->orWhereJsonContains('replacement_class.selected_programs', (string)$program);
-                }
-            });
-            
-        }elseif($user->usrtype == 'AO')
-        {
-            
-            $query = DB::table('replacement_class')
-            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
-            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-            ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
-            ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
-            ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
-            ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
-            ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
-            ->where('users.usrtype', 'PL');
-            
-        }elseif($user->usrtype == 'DN')
-        {
+                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+                ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
+                ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
+                ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
+                ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
+                ->where('users.usrtype', 'LCT')
+                ->where(function ($query) use ($programs) {
+                    foreach ($programs as $program) {
+                        $query->orWhereJsonContains('replacement_class.selected_programs', (string)$program);
+                    }
+                });
+        } elseif ($user->usrtype == 'AO') {
 
             $query = DB::table('replacement_class')
-            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
-            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-            ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
-            ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
-            ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
-            ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
-            ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
-            ->where('users.usrtype', 'AO');
+                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+                ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
+                ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
+                ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
+                ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
+                ->where('users.usrtype', 'PL');
+        } elseif ($user->usrtype == 'DN') {
 
+            $query = DB::table('replacement_class')
+                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+                ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
+                ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
+                ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
+                ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
+                ->where('users.usrtype', 'AO');
         } else {
             return response()->json(['error' => 'Unauthorized user type.'], 403);
         }
@@ -1736,28 +1653,28 @@ $content .= '<tr>
         if (!$query) {
             return response()->json(['error' => 'You do not have permission to view this application.'], 403);
         }
-        
+
 
         if ($status) {
             $query->where('replacement_class.is_verified', $status);
         }
-        
+
         if ($revisedStatus) {
             $query->where('replacement_class.revised_status', $revisedStatus);
         }
 
         $applications = $query->select(
-                'replacement_class.*',
-                'subjek.course_code',
-                'subjek.course_name',
-                'users.name as lecturer_name',
-                'users.email as lecturer_email',
-                'sessions.SessionName',
-                'tbllecture_room.name as room_name',
-                'revised_room.name as revised_room_name',
-                'kp_user.name as kp_name',
-                'kp_user.email as kp_email'
-            )
+            'replacement_class.*',
+            'subjek.course_code',
+            'subjek.course_name',
+            'users.name as lecturer_name',
+            'users.email as lecturer_email',
+            'sessions.SessionName',
+            'tbllecture_room.name as room_name',
+            'revised_room.name as revised_room_name',
+            'kp_user.name as kp_name',
+            'kp_user.email as kp_email'
+        )
             ->orderBy('replacement_class.created_at', 'desc')
             ->groupBy('replacement_class.id')
             ->get();
@@ -1787,66 +1704,61 @@ $content .= '<tr>
             $user = Auth::user();
             $application = null;
 
-        if($user->usrtype == 'PL')
-        {
-        
-            // Verify KP has permission to update this application
-            $application = DB::table('replacement_class')
-                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
-                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
-                ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
-                ->where('replacement_class.id', $request->application_id)
-                ->where('user_program.user_ic', $user->ic)
-                ->first();
+            if ($user->usrtype == 'PL') {
 
-        }elseif($user->usrtype == 'AO')
-        {
-            
-            $application = DB::table('replacement_class')
-                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
-                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
-                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
-                ->where('replacement_class.id', $request->application_id)
-                ->where('users.usrtype', 'PL')
-                ->first();
+                // Verify KP has permission to update this application
+                $application = DB::table('replacement_class')
+                    ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                    ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                    ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                    ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
+                    ->where('replacement_class.id', $request->application_id)
+                    ->where('user_program.user_ic', $user->ic)
+                    ->first();
+            } elseif ($user->usrtype == 'AO') {
 
-        }elseif($user->usrtype == 'DN'){
+                $application = DB::table('replacement_class')
+                    ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                    ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+                    ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                    ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                    ->where('replacement_class.id', $request->application_id)
+                    ->where('users.usrtype', 'PL')
+                    ->first();
+            } elseif ($user->usrtype == 'DN') {
 
-            $application = DB::table('replacement_class')
-                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
-                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
-                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
-                ->where('replacement_class.id', $request->application_id)
-                ->where('users.usrtype', 'AO')
-                ->first();
-            
-        } else {
-            return response()->json(['error' => 'Unauthorized user type.'], 403);
-        }
+                $application = DB::table('replacement_class')
+                    ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                    ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+                    ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                    ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                    ->where('replacement_class.id', $request->application_id)
+                    ->where('users.usrtype', 'AO')
+                    ->first();
+            } else {
+                return response()->json(['error' => 'Unauthorized user type.'], 403);
+            }
 
-        if (!$application) {
-            return response()->json(['error' => 'You do not have permission to update this application.'], 403);
-        }
+            if (!$application) {
+                return response()->json(['error' => 'You do not have permission to update this application.'], 403);
+            }
 
-        $updateData = [
-            'is_verified' => $request->status,
-            'kp_ic' => $user->ic,
-            'updated_at' => now()
-        ];
+            $updateData = [
+                'is_verified' => $request->status,
+                'kp_ic' => $user->ic,
+                'updated_at' => now()
+            ];
 
-        if ($request->status === 'NO') {
-            $updateData['rejection_reason'] = $request->rejection_reason;
-        } else {
-            // Clear rejection fields if approved
-            $updateData['rejection_reason'] = null;
-        }
+            if ($request->status === 'NO') {
+                $updateData['rejection_reason'] = $request->rejection_reason;
+            } else {
+                // Clear rejection fields if approved
+                $updateData['rejection_reason'] = null;
+            }
 
-        DB::table('replacement_class')
-            ->where('id', $request->application_id)
-            ->update($updateData);
+            DB::table('replacement_class')
+                ->where('id', $request->application_id)
+                ->update($updateData);
 
             return response()->json([
                 'success' => true,
@@ -1855,7 +1767,7 @@ $content .= '<tr>
         } catch (\Exception $e) {
             Log::error('Error updating replacement class status: ' . $e->getMessage());
             Log::error('Request data: ' . json_encode($request->all()));
-            
+
             return response()->json([
                 'error' => 'An error occurred while updating the application status: ' . $e->getMessage()
             ], 500);
@@ -1874,7 +1786,7 @@ $content .= '<tr>
         $application = null;
 
         // Verify KP has permission to update this application
-        if($user->usrtype == 'PL') {
+        if ($user->usrtype == 'PL') {
             $application = DB::table('replacement_class')
                 ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
                 ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
@@ -1883,7 +1795,7 @@ $content .= '<tr>
                 ->where('replacement_class.id', $request->application_id)
                 ->where('user_program.user_ic', $user->ic)
                 ->first();
-        } elseif($user->usrtype == 'AO') {
+        } elseif ($user->usrtype == 'AO') {
             $application = DB::table('replacement_class')
                 ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
                 ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
@@ -1892,7 +1804,7 @@ $content .= '<tr>
                 ->where('replacement_class.id', $request->application_id)
                 ->where('users.usrtype', 'PL')
                 ->first();
-        } elseif($user->usrtype == 'DN') {
+        } elseif ($user->usrtype == 'DN') {
             $application = DB::table('replacement_class')
                 ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
                 ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
