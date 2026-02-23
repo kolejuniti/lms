@@ -6877,6 +6877,14 @@ class FinanceController extends Controller
         $data['debitTotal'] = [];
         $data['debitTotals'] = [];
 
+        $data['debitCorrection'] = [];
+        $data['debitCorrectionTotal'] = [];
+        $data['debitCorrectionTotals'] = [];
+
+        $data['debitCorrectionIncentif'] = [];
+        $data['debitCorrectionIncentifTotal'] = [];
+        $data['debitCorrectionIncentifTotals'] = [];
+
         $data['fine'] = [];
         $data['fineTotal'] = [];
 
@@ -6977,7 +6985,7 @@ class FinanceController extends Controller
 
                     $data['oldStudentTotals'][$key] = +array_sum($data['oldStudentTotal'][$key]);
                 }
-            } elseif ($crg->process_type_id == 4 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->claim_id != 39) {
+            } elseif ($crg->process_type_id == 4 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->claim_id != 39 && (empty($crg->correction) || $crg->correction == 0)) {
 
                 $data['debit'][] = $crg;
 
@@ -6996,6 +7004,52 @@ class FinanceController extends Controller
                     }
 
                     $data['debitTotals'][$key] = +array_sum($data['debitTotal'][$key]);
+                }
+            } elseif ($crg->process_type_id == 4 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->claim_id != 39 && $crg->correction == 1 && !(
+                stripos($crg->remark ?? '', 'insentif') !== false ||
+                stripos($crg->remark ?? '', 'tabung') !== false
+            )) {
+
+                $data['debitCorrection'][] = $crg;
+
+                //program
+
+                foreach ($data['program'] as $key => $prg) {
+                    foreach ($data['debitCorrection'] as $keys => $dbt) {
+
+                        if ($dbt->program == $prg->id) {
+
+                            $data['debitCorrectionTotal'][$key][$keys] = +$dbt->amount;
+                        } else {
+
+                            $data['debitCorrectionTotal'][$key][$keys] = +0;
+                        }
+                    }
+
+                    $data['debitCorrectionTotals'][$key] = +array_sum($data['debitCorrectionTotal'][$key]);
+                }
+            } elseif ($crg->process_type_id == 4 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->claim_id != 39 && $crg->correction == 1 && (
+                stripos($crg->remark ?? '', 'insentif') !== false ||
+                stripos($crg->remark ?? '', 'tabung') !== false
+            )) {
+
+                $data['debitCorrectionIncentif'][] = $crg;
+
+                //program
+
+                foreach ($data['program'] as $key => $prg) {
+                    foreach ($data['debitCorrectionIncentif'] as $keys => $dbt) {
+
+                        if ($dbt->program == $prg->id) {
+
+                            $data['debitCorrectionIncentifTotal'][$key][$keys] = +$dbt->amount;
+                        } else {
+
+                            $data['debitCorrectionIncentifTotal'][$key][$keys] = +0;
+                        }
+                    }
+
+                    $data['debitCorrectionIncentifTotals'][$key] = +array_sum($data['debitCorrectionIncentifTotal'][$key]);
                 }
             } elseif ($crg->process_type_id == 4 && $crg->process_status_id == 2 && $crg->groupid == 4) {
 
