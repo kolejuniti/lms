@@ -29,6 +29,9 @@
             Program
           </th>
           <th>
+            Semester
+          </th>
+          <th>
             Amount
           </th>
         </tr>
@@ -61,6 +64,9 @@
             {{ $rgs->progname }}
           </td>
           <td>
+            {{ $rgs->semester_id }}
+          </td>
+          <td>
             <div>{{ $rgs->amount }}</div>
             @php
             $totalNewALL += $rgs->amount;
@@ -71,7 +77,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="7" style="text-align: center">
+          <td colspan="8" style="text-align: center">
             TOTAL
           </td>
           <td>
@@ -115,6 +121,9 @@
             Program
           </th>
           <th>
+            Semester
+          </th>
+          <th>
             Amount
           </th>
         </tr>
@@ -147,6 +156,9 @@
             {{ $rgs->progname }}
           </td>
           <td>
+            {{ $rgs->semester_id }}
+          </td>
+          <td>
             <div>{{ $rgs->amount }}</div>
             @php
             $totalOldALL += $rgs->amount;
@@ -157,7 +169,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="7" style="text-align: center">
+          <td colspan="8" style="text-align: center">
             TOTAL
           </td>
           <td>
@@ -314,6 +326,9 @@
             Program
           </th>
           <th>
+            Semester
+          </th>
+          <th>
             Claim
           </th>
           <th>
@@ -352,6 +367,9 @@
             {{ $rgs->progname }}
           </td>
           <td>
+            {{ $rgs->semester_id }}
+          </td>
+          <td>
             {{ $rgs->type }}
           </td>
           <td>
@@ -368,7 +386,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="9" style="text-align: center">
+          <td colspan="10" style="text-align: center">
             TOTAL
           </td>
           <td>
@@ -400,6 +418,7 @@
           <th>No.KP</th>
           <th>No.Matric</th>
           <th>Program</th>
+          <th>Semester</th>
           <th>Claim</th>
           <th>Remark</th>
           <th>Amount</th>
@@ -416,6 +435,7 @@
           <td>{{ $rgs->student_ic }}</td>
           <td>{{ $rgs->no_matric }}</td>
           <td>{{ $rgs->progname }}</td>
+          <td>{{ $rgs->semester_id }}</td>
           <td>{{ $rgs->type }}</td>
           <td>{{ $rgs->remark }}</td>
           <td>
@@ -427,7 +447,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="9" style="text-align: center">TOTAL</td>
+          <td colspan="10" style="text-align: center">TOTAL</td>
           <td>{{ number_format($totalDebitCorrectionALL, 2) }}</td>
         </tr>
       </tfoot>
@@ -453,6 +473,7 @@
           <th>No.KP</th>
           <th>No.Matric</th>
           <th>Program</th>
+          <th>Semester</th>
           <th>Claim</th>
           <th>Remark</th>
           <th>Amount</th>
@@ -469,6 +490,7 @@
           <td>{{ $rgs->student_ic }}</td>
           <td>{{ $rgs->no_matric }}</td>
           <td>{{ $rgs->progname }}</td>
+          <td>{{ $rgs->semester_id }}</td>
           <td>{{ $rgs->type }}</td>
           <td>{{ $rgs->remark }}</td>
           <td>
@@ -480,7 +502,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="9" style="text-align: center">TOTAL</td>
+          <td colspan="10" style="text-align: center">TOTAL</td>
           <td>{{ number_format($totalDebitIncentifALL, 2) }}</td>
         </tr>
       </tfoot>
@@ -520,6 +542,9 @@
             Program
           </th>
           <th>
+            Semester
+          </th>
+          <th>
             Claim
           </th>
           <th>
@@ -553,6 +578,9 @@
           </td>
           <td>
             {{ $rgs->progname }}
+          </td>
+          <td>
+            {{ $rgs->semester_id }}
           </td>
           <td>
             {{ $rgs->type }}
@@ -612,6 +640,9 @@
             Program
           </th>
           <th>
+            Semester
+          </th>
+          <th>
             Claim
           </th>
           <th>
@@ -645,6 +676,9 @@
           </td>
           <td>
             {{ $rgs->progname }}
+          </td>
+          <td>
+            {{ $rgs->semester_id }}
           </td>
           <td>
             {{ $rgs->type }}
@@ -740,8 +774,11 @@
             Program
           </th>
           <th>
-            Claim
+            Semester
           </th>
+          <!-- <th>
+            Claim
+          </th> -->
           <th>
             Remark
           </th>
@@ -781,8 +818,11 @@
             {{ $rgs->progname }}
           </td>
           <td>
-            {{ $rgs->reduction_id }}
+            {{ $rgs->semester_id }}
           </td>
+          <!-- <td>
+            {{ $rgs->reduction_id }}
+          </td> -->
           <td>
             {{ $rgs->remark }}
           </td>
@@ -797,7 +837,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="9" style="text-align: center">
+          <td colspan="10" style="text-align: center">
             TOTAL
           </td>
           <td>
@@ -843,8 +883,11 @@
             Program
           </th>
           <th>
-            Claim
+            Semester
           </th>
+          <!-- <th>
+            Claim
+          </th> -->
           <th>
             Remark
           </th>
@@ -881,8 +924,11 @@
             {{ $rgs->progname }}
           </td>
           <td>
-            {{ $rgs->reduction_id }}
+            {{ $rgs->semester_id }}
           </td>
+          <!-- <td>
+            {{ $rgs->reduction_id }}
+          </td> -->
           <td>
             {{ $rgs->remark }}
           </td>
@@ -943,8 +989,11 @@
             Program
           </th>
           <th>
-            Claim
+            Semester
           </th>
+          <!-- <th>
+            Claim
+          </th> -->
           <th>
             Remark
           </th>
@@ -981,8 +1030,11 @@
             {{ $rgs->progname }}
           </td>
           <td>
-            {{ $rgs->reduction_id }}
+            {{ $rgs->semester_id }}
           </td>
+          <!-- <td>
+            {{ $rgs->reduction_id }}
+          </td> -->
           <td>
             {{ $rgs->remark }}
           </td>
@@ -1043,8 +1095,11 @@
             Program
           </th>
           <th>
-            Claim
+            Semester
           </th>
+          <!-- <th>
+            Claim
+          </th> -->
           <th>
             Remark
           </th>
@@ -1081,8 +1136,11 @@
             {{ $rgs->progname }}
           </td>
           <td>
-            {{ $rgs->reduction_id }}
+            {{ $rgs->semester_id }}
           </td>
+          <!-- <td>
+            {{ $rgs->reduction_id }}
+          </td> -->
           <td>
             {{ $rgs->remark }}
           </td>
@@ -1143,8 +1201,11 @@
             Program
           </th>
           <th>
-            Claim
+            Semester
           </th>
+          <!-- <th>
+            Claim
+          </th> -->
           <th>
             Remark
           </th>
@@ -1181,8 +1242,11 @@
             {{ $rgs->progname }}
           </td>
           <td>
-            {{ $rgs->reduction_id }}
+            {{ $rgs->semester_id }}
           </td>
+          <!-- <td>
+            {{ $rgs->reduction_id }}
+          </td> -->
           <td>
             {{ $rgs->remark }}
           </td>

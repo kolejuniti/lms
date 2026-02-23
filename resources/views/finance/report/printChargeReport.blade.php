@@ -219,6 +219,7 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
+                    <th>Semester</th>
                     <th>Amount</th>
                 </tr>
             </thead>
@@ -233,6 +234,7 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
                     <td class="text-right">
                         {{ $rgs->amount }}
                         @php $totalNewALL += $rgs->amount; @endphp
@@ -242,7 +244,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="7" class="text-center">TOTAL</td>
+                    <td colspan="8" class="text-center">TOTAL</td>
                     <td class="text-right">{{ number_format($totalNewALL, 2) }}</td>
                 </tr>
             </tfoot>
@@ -260,6 +262,7 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
+                    <th>Semester</th>
                     <th>Amount</th>
                 </tr>
             </thead>
@@ -274,6 +277,7 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
                     <td class="text-right">
                         {{ $rgs->amount }}
                         @php $totalOldALL += $rgs->amount; @endphp
@@ -283,7 +287,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="7" class="text-center">TOTAL</td>
+                    <td colspan="8" class="text-center">TOTAL</td>
                     <td class="text-right">{{ number_format($totalOldALL, 2) }}</td>
                 </tr>
             </tfoot>
@@ -399,6 +403,7 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
+                    <th>Semester</th>
                     <th>Claim</th>
                     <th>Remark</th>
                     <th>Amount</th>
@@ -415,6 +420,7 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
                     <td>{{ $rgs->type }}</td>
                     <td>{{ $rgs->remark }}</td>
                     <td class="text-right">
@@ -426,7 +432,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="9" class="text-center">TOTAL</td>
+                    <td colspan="10" class="text-center">TOTAL</td>
                     <td class="text-right">{{ number_format($totalDebitALL, 2) }}</td>
                 </tr>
             </tfoot>
@@ -444,6 +450,7 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
+                    <th>Semester</th>
                     <th>Claim</th>
                     <th>Remark</th>
                     <th>Amount</th>
@@ -460,6 +467,7 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
                     <td>{{ $rgs->type }}</td>
                     <td>{{ $rgs->remark }}</td>
                     <td class="text-right">
@@ -471,7 +479,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="9" class="text-center">TOTAL</td>
+                    <td colspan="10" class="text-center">TOTAL</td>
                     <td class="text-right">{{ number_format($totalDebitCorrectionALL, 2) }}</td>
                 </tr>
             </tfoot>
@@ -489,6 +497,7 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
+                    <th>Semester</th>
                     <th>Claim</th>
                     <th>Remark</th>
                     <th>Amount</th>
@@ -505,6 +514,7 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
                     <td>{{ $rgs->type }}</td>
                     <td>{{ $rgs->remark }}</td>
                     <td class="text-right">
@@ -516,7 +526,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="9" class="text-center">TOTAL</td>
+                    <td colspan="10" class="text-center">TOTAL</td>
                     <td class="text-right">{{ number_format($totalDebitIncentifALL, 2) }}</td>
                 </tr>
             </tfoot>
@@ -534,6 +544,7 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
+                    <th>Semester</th>
                     <th>Claim</th>
                     <th>Amount</th>
                 </tr>
@@ -549,6 +560,7 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
                     <td>{{ $rgs->type }}</td>
                     <td class="text-right">
                         {{ $rgs->amount }}
@@ -559,7 +571,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="8" class="text-center">TOTAL</td>
+                    <td colspan="9" class="text-center">TOTAL</td>
                     <td class="text-right">{{ number_format($totalFineALL, 2) }}</td>
                 </tr>
             </tfoot>
@@ -577,6 +589,7 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
+                    <th>Semester</th>
                     <th>Claim</th>
                     <th>Amount</th>
                 </tr>
@@ -592,6 +605,7 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
                     <td>{{ $rgs->type }}</td>
                     <td class="text-right">
                         {{ $rgs->amount }}
@@ -602,7 +616,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="8" class="text-center">TOTAL</td>
+                    <td colspan="9" class="text-center">TOTAL</td>
                     <td class="text-right">{{ number_format($totalOtherALL, 2) }}</td>
                 </tr>
             </tfoot>
@@ -648,7 +662,8 @@
                     <th>No.Matric</th>
                     <th>Student ID</th>
                     <th>Program</th>
-                    <th>Claim</th>
+                    <th>Semester</th>
+                    <!-- <th>Claim</th> -->
                     <th>Remark</th>
                     <th>Amount</th>
                 </tr>
@@ -665,7 +680,8 @@
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->student_id ? str_pad($rgs->student_id, strlen($rgs->student_id) + 1, '1', STR_PAD_LEFT) : '' }}</td>
                     <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->reduction_id }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
+                    <!-- <td>{{ $rgs->reduction_id }}</td> -->
                     <td>{{ $rgs->remark }}</td>
                     <td class="text-right">
                         {{ $rgs->amount }}
@@ -694,7 +710,8 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
-                    <th>Claim</th>
+                    <th>Semester</th>
+                    <!-- <th>Claim</th> -->
                     <th>Remark</th>
                     <th>Amount</th>
                 </tr>
@@ -710,7 +727,8 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->reduction_id }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
+                    <!-- <td>{{ $rgs->reduction_id }}</td> -->
                     <td>{{ $rgs->remark }}</td>
                     <td class="text-right">
                         {{ $rgs->amount }}
@@ -739,7 +757,8 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
-                    <th>Claim</th>
+                    <th>Semester</th>
+                    <!-- <th>Claim</th> -->
                     <th>Remark</th>
                     <th>Amount</th>
                 </tr>
@@ -755,7 +774,8 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->reduction_id }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
+                    <!-- <td>{{ $rgs->reduction_id }}</td> -->
                     <td>{{ $rgs->remark }}</td>
                     <td class="text-right">
                         {{ $rgs->amount }}
@@ -784,7 +804,8 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
-                    <th>Claim</th>
+                    <th>Semester</th>
+                    <!-- <th>Claim</th> -->
                     <th>Remark</th>
                     <th>Amount</th>
                 </tr>
@@ -800,7 +821,8 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->reduction_id }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
+                    <!-- <td>{{ $rgs->reduction_id }}</td> -->
                     <td>{{ $rgs->remark }}</td>
                     <td class="text-right">
                         {{ $rgs->amount }}
@@ -829,7 +851,8 @@
                     <th>No.KP</th>
                     <th>No.Matric</th>
                     <th>Program</th>
-                    <th>Claim</th>
+                    <th>Semester</th>
+                    <!-- <th>Claim</th> -->
                     <th>Remark</th>
                     <th>Amount</th>
                 </tr>
@@ -845,7 +868,8 @@
                     <td>{{ $rgs->student_ic }}</td>
                     <td>{{ $rgs->no_matric }}</td>
                     <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->reduction_id }}</td>
+                    <td>{{ $rgs->semester_id }}</td>
+                    <!-- <td>{{ $rgs->reduction_id }}</td> -->
                     <td>{{ $rgs->remark }}</td>
                     <td class="text-right">
                         {{ $rgs->amount }}
