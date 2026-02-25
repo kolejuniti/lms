@@ -454,26 +454,13 @@ class AR_Controller extends Controller
 
     public function assignCourse()
     {
-
         $data = [
-
-            // 'course' => DB::table('subjek')->get(),
-            'program' => DB::table('tblprogramme')->get(),
-            'structure' => DB::table('structure')->get(),
-            'intake' => DB::table('sessions')->get(),
-            'semester' => DB::table('semester')->get(),
-            // 'assigned' => DB::table('subjek_structure')
-            //             ->join('subjek', function($join)
-            //             {
-            //                 $join->on('subjek_structure.courseID', 'subjek.sub_id');
-            //                 $join->on('subjek_structure.program_id', 'subjek.prgid');
-            //                 $join->on('subjek_structure.semester_id', 'subjek.semesterid');
-            //             })
-            //             ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
-            //             ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
-            //             ->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
-            //             ->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'sessions.SessionName', 'tblprogramme.progname')->get()
-
+            'program'        => DB::table('tblprogramme')->orderBy('progname')->get(),
+            'structure'      => DB::table('structure')->get(),
+            'intake'         => DB::table('sessions')->get(),
+            'intake_latest'  => DB::table('sessions')->orderBy('SessionID', 'desc')->limit(10)->get(),
+            'semester'       => DB::table('semester')->get(),
+            'subjek'         => DB::table('subjek')->orderBy('course_name')->get(),
         ];
 
         return view('pendaftar_akademik.course.assignSubject', compact('data'));
@@ -682,6 +669,82 @@ class AR_Controller extends Controller
         }
     }
 
+    /**
+     * Store a single subject into subjek_structure via the Add Course modal.
+     */
+    public function storeCourseToStructure(Request $request)
+    {
+        try {
+            $program   = $request->program;
+            $structure = $request->structure;
+            $subjekIds = $request->input('subjek_ids', []);  // array of subjek.id values
+            $intakeId  = $request->intake_id;
+            $semester  = $request->semester;
+
+            if (!$program || !$structure || !$intakeId || !$semester) {
+                return response()->json(['error' => 'Please fill in all required fields.']);
+            }
+
+            if (empty($subjekIds) || !is_array($subjekIds)) {
+                return response()->json(['error' => 'Please select at least one subject.']);
+            }
+
+            $inserted = 0;
+            $skipped  = 0;
+            $notFound = [];
+
+            foreach ($subjekIds as $subjekId) {
+                // Resolve sub_id from the numeric PK
+                $subjek = DB::table('subjek')->where('id', $subjekId)->first();
+
+                if (!$subjek) {
+                    $notFound[] = $subjekId;
+                    continue;
+                }
+
+                // Skip duplicates silently
+                $exists = DB::table('subjek_structure')
+                    ->where('courseID',    $subjek->sub_id)
+                    ->where('structure',   $structure)
+                    ->where('intake_id',   $intakeId)
+                    ->where('program_id',  $program)
+                    ->where('semester_id', $semester)
+                    ->exists();
+
+                if ($exists) {
+                    $skipped++;
+                    continue;
+                }
+
+                DB::table('subjek_structure')->insert([
+                    'courseID'    => $subjek->sub_id,
+                    'structure'   => $structure,
+                    'intake_id'   => $intakeId,
+                    'program_id'  => $program,
+                    'semester_id' => $semester,
+                    'created_at'  => now(),
+                    'updated_at'  => now(),
+                ]);
+
+                $inserted++;
+            }
+
+            $message = $inserted > 0
+                ? $inserted . ' subject(s) added successfully.'
+                : 'No new subjects were added.';
+
+            return response()->json([
+                'success'  => true,
+                'message'  => $message,
+                'inserted' => $inserted,
+                'skipped'  => $skipped,
+                'notFound' => $notFound,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error adding subject(s): ' . $e->getMessage()]);
+        }
+    }
+
     public function deleteCourse2(Request $request)
     {
 
@@ -698,23 +761,25 @@ class AR_Controller extends Controller
             // Validate required fields
             if (
                 !isset($data->sourceStructure) || !isset($data->sourceIntake) ||
+                !isset($data->targetStructure)  ||
                 !isset($data->targetIntakes) || !is_array($data->targetIntakes) ||
                 empty($data->targetIntakes) || !isset($data->program)
             ) {
                 return response()->json([
-                    'message' => 'Please provide all required fields: source structure, source intake, target intakes, and program'
+                    'message' => 'Please provide all required fields: source structure, source intake, target structure, target intakes, and program'
                 ], 400);
             }
 
             $sourceStructure = $data->sourceStructure;
-            $sourceIntake = $data->sourceIntake;
-            $targetIntakes = $data->targetIntakes;
-            $program = $data->program;
+            $sourceIntake    = $data->sourceIntake;
+            $targetStructure = $data->targetStructure;
+            $targetIntakes   = $data->targetIntakes;
+            $program         = $data->program;
 
-            // Get all courses from source structure and intake
+            // Get all courses from source structure + intake
             $sourceCourses = DB::table('subjek_structure')
-                ->where('structure', $sourceStructure)
-                ->where('intake_id', $sourceIntake)
+                ->where('structure',  $sourceStructure)
+                ->where('intake_id',  $sourceIntake)
                 ->where('program_id', $program)
                 ->get();
 
@@ -724,38 +789,35 @@ class AR_Controller extends Controller
                 ], 404);
             }
 
-            $copiedCount = 0;
+            $copiedCount  = 0;
             $skippedCount = 0;
             $copiedRecords = [];
 
-            // Loop through each target intake
             foreach ($targetIntakes as $targetIntake) {
-                // Skip if target intake is same as source intake
-                if ($targetIntake == $sourceIntake) {
+                // When copying to the same structure, skip the identical source intake
+                if ($targetStructure == $sourceStructure && $targetIntake == $sourceIntake) {
                     continue;
                 }
 
-                // Loop through each course in source structure
                 foreach ($sourceCourses as $course) {
-                    // Check if record already exists
+                    // Duplicate check uses TARGET structure + TARGET intake
                     $exists = DB::table('subjek_structure')
-                        ->where('courseID', $course->courseID)
-                        ->where('structure', $course->structure)
-                        ->where('intake_id', $targetIntake)
-                        ->where('program_id', $course->program_id)
+                        ->where('courseID',    $course->courseID)
+                        ->where('structure',   $targetStructure)
+                        ->where('intake_id',   $targetIntake)
+                        ->where('program_id',  $course->program_id)
                         ->where('semester_id', $course->semester_id)
                         ->exists();
 
                     if (!$exists) {
-                        // Insert new record
                         $newId = DB::table('subjek_structure')->insertGetId([
-                            'courseID' => $course->courseID,
-                            'structure' => $course->structure,
-                            'intake_id' => $targetIntake,
-                            'program_id' => $course->program_id,
+                            'courseID'    => $course->courseID,
+                            'structure'   => $targetStructure,   // <-- target structure
+                            'intake_id'   => $targetIntake,
+                            'program_id'  => $course->program_id,
                             'semester_id' => $course->semester_id,
-                            'created_at' => now(),
-                            'updated_at' => now()
+                            'created_at'  => now(),
+                            'updated_at'  => now(),
                         ]);
 
                         $copiedCount++;
@@ -766,35 +828,10 @@ class AR_Controller extends Controller
                 }
             }
 
-            // Get copied records with details for response
-            if (!empty($copiedRecords)) {
-                $copiedData = DB::table('subjek_structure')
-                    ->join('subjek', function ($join) {
-                        $join->on('subjek_structure.courseID', 'subjek.sub_id');
-                    })
-                    ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
-                    ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
-                    ->leftjoin('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-                    ->whereIn('subjek_structure.id', $copiedRecords)
-                    ->select(
-                        'subjek_structure.id',
-                        'subjek.course_name',
-                        'subjek.course_code',
-                        'structure.structure_name',
-                        'subjek_structure.semester_id',
-                        'sessions.SessionName',
-                        'tblprogramme.progname'
-                    )
-                    ->get();
-            } else {
-                $copiedData = [];
-            }
-
             return response()->json([
-                'message' => 'Copy operation completed successfully',
-                'copiedCount' => $copiedCount,
+                'message'      => 'Copy operation completed successfully',
+                'copiedCount'  => $copiedCount,
                 'skippedCount' => $skippedCount,
-                'data' => $copiedData
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -1044,6 +1081,176 @@ class AR_Controller extends Controller
             return response()->json([
                 'message' => 'Error fetching student preview: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Get subjects filtered by program + structure only,
+     * and return the linked intakes as a caption.
+     */
+    public function getSubjectsByFilter(Request $request)
+    {
+        try {
+            $program   = $request->program;
+            $structure = $request->structure;
+
+            if (!$program || !$structure) {
+                return response()->json(['error' => 'Please select both Program and Structure.']);
+            }
+
+            // Fetch DISTINCT subjects for this program + structure (one row per subject per semester)
+            $courses = DB::table('subjek_structure')
+                ->join('subjek', 'subjek_structure.courseID', '=', 'subjek.sub_id')
+                ->leftJoin('structure', 'subjek_structure.structure', '=', 'structure.id')
+                ->leftJoin('tblprogramme', 'subjek_structure.program_id', '=', 'tblprogramme.id')
+                ->where('subjek_structure.program_id', $program)
+                ->where('subjek_structure.structure', $structure)
+                ->select(
+                    DB::raw('MIN(subjek_structure.id) as id'),
+                    'subjek_structure.courseID',
+                    'subjek_structure.structure as structure_id',
+                    'subjek_structure.program_id',
+                    'subjek.course_name',
+                    'subjek.course_code',
+                    'structure.structure_name',
+                    'subjek_structure.semester_id',
+                    'tblprogramme.progname'
+                )
+                ->groupBy(
+                    'subjek_structure.courseID',
+                    'subjek_structure.structure',
+                    'subjek_structure.program_id',
+                    'subjek_structure.semester_id',
+                    'subjek.course_name',
+                    'subjek.course_code',
+                    'structure.structure_name',
+                    'tblprogramme.progname'
+                )
+                ->orderBy('subjek_structure.semester_id')
+                ->get();
+
+            // Collect distinct linked intakes for the caption only
+            $intakes = DB::table('sessions')
+                ->whereIn(
+                    'sessions.SessionID',
+                    DB::table('subjek_structure')
+                        ->where('program_id', $program)
+                        ->where('structure', $structure)
+                        ->pluck('intake_id')
+                        ->unique()
+                )
+                ->select('SessionID', 'SessionName')
+                ->orderBy('SessionName')
+                ->get();
+
+            // Build table HTML — no Intake column (shown in caption above the table)
+            $tableHtml  = '<thead><tr>';
+            $tableHtml .= '<th style="width:4%">No.</th>';
+            $tableHtml .= '<th style="width:32%">Course Name</th>';
+            $tableHtml .= '<th style="width:12%">Course Code</th>';
+            $tableHtml .= '<th style="width:12%">Structure</th>';
+            $tableHtml .= '<th style="width:16%">Program</th>';
+            $tableHtml .= '<th style="width:8%">Semester</th>';
+            $tableHtml .= '<th style="width:16%"></th>';
+            $tableHtml .= '</tr></thead>';
+            $tableHtml .= '<tbody id="table">';
+
+            foreach ($courses as $key => $crs) {
+                // Safely encode per-row data for the delete modal trigger
+                $courseId   = addslashes($crs->courseID   ?? '');
+                $structId   = addslashes($crs->structure_id ?? '');
+                $programId  = addslashes($crs->program_id  ?? '');
+                $semesterId = addslashes((string)($crs->semester_id ?? ''));
+                $courseName = addslashes($crs->course_name  ?? '');
+                $courseCode = addslashes($crs->course_code  ?? '');
+
+                $tableHtml .= '<tr>';
+                $tableHtml .= '<td style="width:4%">'   . ($key + 1)                              . '</td>';
+                $tableHtml .= '<td style="width:32%">'  . htmlspecialchars($crs->course_name    ?? '') . '</td>';
+                $tableHtml .= '<td style="width:12%">'  . htmlspecialchars($crs->course_code    ?? '') . '</td>';
+                $tableHtml .= '<td style="width:12%">'  . htmlspecialchars($crs->structure_name ?? '') . '</td>';
+                $tableHtml .= '<td style="width:16%">'  . htmlspecialchars($crs->progname       ?? '') . '</td>';
+                $tableHtml .= '<td style="width:8%">'   . htmlspecialchars((string)($crs->semester_id ?? '')) . '</td>';
+                $tableHtml .= '<td class="project-actions text-right" style="text-align:center;width:16%">';
+                $tableHtml .= "<a class=\"btn btn-danger btn-sm\" href=\"#\" onclick=\"showDeleteIntakeModal('{$courseId}','{$structId}','{$programId}','{$semesterId}','{$courseName}','{$courseCode}')\">";
+                $tableHtml .= '<i class="ti-trash"></i> Delete</a>';
+                $tableHtml .= '</td>';
+                $tableHtml .= '</tr>';
+            }
+
+            $tableHtml .= '</tbody>';
+
+            return response()->json([
+                'tableHtml' => $tableHtml,
+                'intakes'   => $intakes,
+                'count'     => $courses->count(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error loading subjects: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Return all subjek_structure records (with intake name) for a specific
+     * course + structure + program + semester combination.
+     * Used by the delete-by-intake modal.
+     */
+    public function getIntakesForCourse(Request $request)
+    {
+        try {
+            $courseId   = $request->courseId;
+            $structureId = $request->structureId;
+            $programId  = $request->programId;
+            $semester   = $request->semester;
+
+            if (!$courseId || !$structureId || !$programId || !$semester) {
+                return response()->json(['error' => 'Missing required parameters.']);
+            }
+
+            $intakes = DB::table('subjek_structure')
+                ->leftJoin('sessions', 'subjek_structure.intake_id', '=', 'sessions.SessionID')
+                ->where('subjek_structure.courseID',    $courseId)
+                ->where('subjek_structure.structure',   $structureId)
+                ->where('subjek_structure.program_id',  $programId)
+                ->where('subjek_structure.semester_id', $semester)
+                ->select(
+                    'subjek_structure.id',
+                    'sessions.SessionName',
+                    'sessions.SessionID'
+                )
+                ->orderBy('sessions.SessionName')
+                ->get();
+
+            return response()->json(['intakes' => $intakes]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching intakes: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Delete selected subjek_structure records by their IDs.
+     * Used by the delete-by-intake modal after checkboxes are confirmed.
+     */
+    public function deleteByIntakes(Request $request)
+    {
+        try {
+            $recordIds = $request->input('record_ids', []);
+
+            if (empty($recordIds) || !is_array($recordIds)) {
+                return response()->json(['error' => 'No records selected for deletion.']);
+            }
+
+            $deleted = DB::table('subjek_structure')
+                ->whereIn('id', $recordIds)
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => $deleted . ' intake record(s) removed successfully.',
+                'deleted' => $deleted,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error deleting records: ' . $e->getMessage()]);
         }
     }
 

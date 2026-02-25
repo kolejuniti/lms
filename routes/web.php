@@ -206,6 +206,10 @@ Route::post('/AR/assignCourse/copyStructure', [App\Http\Controllers\AR_Controlle
 Route::post('/AR/assignCourse/getStructurePreview', [App\Http\Controllers\AR_Controller::class, 'getStructurePreview']);
 Route::post('/AR/assignCourse/addSubjectToStudents', [App\Http\Controllers\AR_Controller::class, 'addSubjectToStudents']);
 Route::post('/AR/assignCourse/getStudentPreview', [App\Http\Controllers\AR_Controller::class, 'getStudentPreview']);
+Route::post('/AR/assignCourse/getSubjectsByFilter', [App\Http\Controllers\AR_Controller::class, 'getSubjectsByFilter']);
+Route::post('/AR/assignCourse/storeCourseToStructure', [App\Http\Controllers\AR_Controller::class, 'storeCourseToStructure']);
+Route::post('/AR/assignCourse/getIntakesForCourse', [App\Http\Controllers\AR_Controller::class, 'getIntakesForCourse']);
+Route::post('/AR/assignCourse/deleteByIntakes', [App\Http\Controllers\AR_Controller::class, 'deleteByIntakes']);
 Route::get('/AR/structureReport', [App\Http\Controllers\AR_Controller::class, 'structureReport'])->name('pendaftar_akademik.structureReport');
 Route::post('/AR/structureReport/getStructure', [App\Http\Controllers\AR_Controller::class, 'getStructure']);
 Route::post('/AR/structureReport/getStructureReport', [App\Http\Controllers\AR_Controller::class, 'getStructureReport']);
