@@ -7007,7 +7007,8 @@ class FinanceController extends Controller
                 }
             } elseif ($crg->process_type_id == 4 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->claim_id != 39 && $crg->correction == 1 && !(
                 stripos($crg->remark ?? '', 'insentif') !== false ||
-                stripos($crg->remark ?? '', 'tabung') !== false
+                stripos($crg->remark ?? '', 'tabung') !== false ||
+                stripos($crg->remark ?? '', 'uniti merdeka') !== false
             )) {
 
                 $data['debitCorrection'][] = $crg;
@@ -7030,7 +7031,8 @@ class FinanceController extends Controller
                 }
             } elseif ($crg->process_type_id == 4 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->claim_id != 39 && $crg->correction == 1 && (
                 stripos($crg->remark ?? '', 'insentif') !== false ||
-                stripos($crg->remark ?? '', 'tabung') !== false
+                stripos($crg->remark ?? '', 'tabung') !== false ||
+                stripos($crg->remark ?? '', 'uniti merdeka') !== false
             )) {
 
                 $data['debitCorrectionIncentif'][] = $crg;
