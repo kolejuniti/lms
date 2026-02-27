@@ -245,14 +245,10 @@
                         @endif
                         </td>
                         @else
-                        <td>
-
-                        </td>
+                        <td></td>
                         @endif
                         @else
-                        <td>
-
-                        </td>
+                        <td></td>
                         @endif
                         </tr>
                         @endforeach
