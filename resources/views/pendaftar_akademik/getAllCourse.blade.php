@@ -1,6 +1,6 @@
 <div class="card mb-3" id="stud_info">
     <div class="card-header">
-    <b>Student Info</b>
+        <b>Student Info</b>
     </div>
     <div class="card-body">
         <div class="row mb-5">
@@ -47,11 +47,11 @@
 
 <div class="card mb-3" id="stud_info">
     <div class="card-header">
-    <b>Register Custom</b>
+        <b>Register Custom</b>
     </div>
     <div class="card-body">
         <div class="col-12">
-              <table id="table_projectprogress_course" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
+            <table id="table_projectprogress_course" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
                 <thead class="thead-themed">
                     <tr>
                         <th>
@@ -59,10 +59,10 @@
                                 <div class="form-group">
                                     <label class="form-label" for="course2">Course</label>
                                     <select class="form-select select2" id="course2" name="course2">
-                                    <option value="" selected disabled>Search for a course...</option>
-                                      @foreach ($data['course'] as $crs)
-                                      <option value="{{ $crs->id }}">{{ $crs->course_code }} - {{ $crs->course_name }}</option> 
-                                      @endforeach
+                                        <option value="" selected disabled>Search for a course...</option>
+                                        @foreach ($data['course'] as $crs)
+                                        <option value="{{ $crs->id }}">{{ $crs->course_code }} - {{ $crs->course_name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -87,73 +87,73 @@
 <div class="col-12">
     <div class="box">
         <div class="card-header">
-        <h3 class="card-title d-flex">Unregistered Course</h3>
+            <h3 class="card-title d-flex">Unregistered Course</h3>
         </div>
         <div class="box-body">
             <div class="table-responsive">
                 <div id="complex_header_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-                <div class="row">
-                    <div class="col-sm-12">
-                    <table id="table_projectprogress_course" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
-                        <thead class="thead-themed">
-                        <tr>
-                            <th style="width: 1%">
-                            No.
-                            </th>
-                            <th style="width: 20%">
-                            Course Name
-                            </th>
-                            <th style="width: 5%">
-                            Course Code
-                            </th>
-                            <th style="width: 5%">
-                            Course Credit
-                            </th>
-                            <th style="width: 5%">
-                            Semester
-                            </th>
-                            <th style="width: 20%">
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($data['regCourse'] as $keys=>$crs)
-                            <tr>
-                                <td>
-                                {{ $keys+1 }}
-                                </td>
-                                <td >
-                                {{ $crs->course_name }}
-                                </td>
-                                <td>
-                                {{ $crs->course_code }}
-                                </td>
-                                <td>
-                                {{ $crs->course_credit }}
-                                </td>
-                                <td>
-                                {{ $crs->semesterid }}
-                                </td>
-                                <td style="text-align: center;">
-                                    <div class="pull right">
-                                        <button class="btn btn-success btn-sm mr-2" onclick="register('{{ $crs->id }}','{{ $data['student']->ic }}')">
-                                            <i class="fa fa-user-plus">
-                                            </i>
-                                            Register
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot class="tfoot-themed">
-                            <tr>
-                               
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table id="table_projectprogress_course" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
+                                <thead class="thead-themed">
+                                    <tr>
+                                        <th style="width: 1%">
+                                            No.
+                                        </th>
+                                        <th style="width: 20%">
+                                            Course Name
+                                        </th>
+                                        <th style="width: 5%">
+                                            Course Code
+                                        </th>
+                                        <th style="width: 5%">
+                                            Course Credit
+                                        </th>
+                                        <th style="width: 5%">
+                                            Semester
+                                        </th>
+                                        <th style="width: 20%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($data['regCourse'] as $keys=>$crs)
+                                    <tr>
+                                        <td>
+                                            {{ $keys+1 }}
+                                        </td>
+                                        <td>
+                                            {{ $crs->course_name }}
+                                        </td>
+                                        <td>
+                                            {{ $crs->course_code }}
+                                        </td>
+                                        <td>
+                                            {{ $crs->course_credit }}
+                                        </td>
+                                        <td>
+                                            {{ $crs->semesterid }}
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <div class="pull right">
+                                                <button class="btn btn-success btn-sm mr-2" onclick="register('{{ $crs->id }}','{{ $data['student']->ic }}')">
+                                                    <i class="fa fa-user-plus">
+                                                    </i>
+                                                    Register
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot class="tfoot-themed">
+                                    <tr>
+
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
         </div>
@@ -164,116 +164,116 @@
 <div class="col-12">
     <div class="box">
         <div class="card-header">
-        <h3 class="card-title d-flex">All Registered Course</h3>
+            <h3 class="card-title d-flex">All Registered Course</h3>
         </div>
         <div class="box-body">
             <div class="table-responsive">
                 <div id="complex_header_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-                <div class="row">
-                    <div class="col-sm-12">
-                    <table id="table_projectprogress_course" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
-                        <thead class="thead-themed">
-                        <tr>
-                            <th style="width: 1%">
-                            No.
-                            </th>
-                            <th style="width: 20%">
-                            Course Name
-                            </th>
-                            <th style="width: 5%">
-                            Course Code
-                            </th>
-                            <th style="width: 5%">
-                            Course Credit
-                            </th>
-                            <th style="width: 5%">
-                            Semester
-                            </th>
-                            <th style="width: 5%">
-                            Session
-                            </th>
-                            <th style="width: 20%">
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($data['allCourse'] as $keys=>$crs )
-                            <tr>
-                                <td>
-                                {{ $keys+1 }}
-                                </td>
-                                <td >
-                                {{ $crs->course_name }}
-                                </td>
-                                <td>
-                                {{ $crs->course_code }}
-                                </td>
-                                <td>
-                                {{ $crs->course_credit }}
-                                </td>
-                                <td>
-                                {{ $crs->semester }}
-                                </td>
-                                <td>
-                                {{ $crs->SessionName }}
-                                </td>
-                                @if(Auth::user()->usrtype == 'AR')
-                                    <td style="text-align: center;">
-                                        <div class="pull right">
-                                            <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
-                                                <i class="fa fa-user-times">
-                                                </i>
-                                                Un-Register
-                                            </button>
-                                        </div>
-                                    </td>
-                                @elseif(Auth::user()->usrtype == 'PL')
-                                    @if($data['students']->semester == $crs->semester && in_array($crs->sessionid, $data['atvSession']))
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table id="table_projectprogress_course" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
+                                <thead class="thead-themed">
+                                    <tr>
+                                        <th style="width: 1%">
+                                            No.
+                                        </th>
+                                        <th style="width: 20%">
+                                            Course Name
+                                        </th>
+                                        <th style="width: 5%">
+                                            Course Code
+                                        </th>
+                                        <th style="width: 5%">
+                                            Course Credit
+                                        </th>
+                                        <th style="width: 5%">
+                                            Semester
+                                        </th>
+                                        <th style="width: 5%">
+                                            Session
+                                        </th>
+                                        <th style="width: 20%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($data['allCourse'] as $keys=>$crs )
+                                    <tr>
+                                        <td>
+                                            {{ $keys+1 }}
+                                        </td>
+                                        <td>
+                                            {{ $crs->course_name }}
+                                        </td>
+                                        <td>
+                                            {{ $crs->course_code }}
+                                        </td>
+                                        <td>
+                                            {{ $crs->course_credit }}
+                                        </td>
+                                        <td>
+                                            {{ $crs->semester }}
+                                        </td>
+                                        <td>
+                                            {{ $crs->SessionName }}
+                                        </td>
+                                        @if(Auth::user()->usrtype == 'AR')
+                                        <td style="text-align: center;">
+                                            <div class="pull right">
+                                                <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
+                                                    <i class="fa fa-user-times">
+                                                    </i>
+                                                    Un-Register
+                                                </button>
+                                            </div>
+                                        </td>
+                                        @elseif(Auth::user()->usrtype == 'PL')
+                                        @if($data['students']->semester == $crs->semester && in_array($crs->sessionid, $data['atvSession']))
                                         <td style="text-align: center;">
                                             @php
-                                                $start_date = strtotime('2025-08-27');  // Format: YYYY-MM-DD
-                                                $end_date = strtotime('2025-09-19');    // Format: YYYY-MM-DD
-                                                $current_date = strtotime(date('Y-m-d'));  // Format: YYYY-MM-DD
+                                            $start_date = strtotime('2026-02-27'); // Format: YYYY-MM-DD
+                                            $end_date = strtotime('2025-03-22'); // Format: YYYY-MM-DD
+                                            $current_date = strtotime(date('Y-m-d')); // Format: YYYY-MM-DD
                                             @endphp
 
                                             @if ($current_date >= $start_date && $current_date <= $end_date)
                                                 <div class="float-right">
-                                                    <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
-                                                        <i class="fa fa-user-times"></i> Un-Register
-                                                    </button>
-                                                </div>
-                                            @endif
-                                        </td>
-                                    @else
-                                        <td>
+                                                <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
+                                                    <i class="fa fa-user-times"></i> Un-Register
+                                                </button>
+                        </div>
+                        @endif
+                        </td>
+                        @else
+                        <td>
 
-                                        </td>
-                                    @endif
-                                @else
-                                    <td>
+                        </td>
+                        @endif
+                        @else
+                        <td>
 
-                                    </td>
-                                @endif
-                            </tr>
+                        </td>
+                        @endif
+                        </tr>
                         @endforeach
                         </tbody>
                         <tfoot class="tfoot-themed">
                             <tr>
-                                
+
                             </tr>
                         </tfoot>
-                    </table>
+                        </table>
                     </div>
-                </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
 
 <script>
     var error = "{{ $data['error'] ?? null}}";
-    
+
     if (error != '') {
         alert(error);
     }
@@ -298,27 +298,27 @@
         border-radius: 0.375rem !important;
         padding: 6px 12px !important;
     }
-    
+
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         color: #495057 !important;
         line-height: 26px !important;
         padding-left: 0 !important;
     }
-    
+
     .select2-container--default .select2-selection--single .select2-selection__placeholder {
         color: #6c757d !important;
     }
-    
+
     .select2-container--default .select2-selection--single .select2-selection__arrow {
         height: 36px !important;
         right: 10px !important;
     }
-    
+
     .select2-dropdown {
         border: 1px solid #ced4da !important;
         border-radius: 0.375rem !important;
     }
-    
+
     .select2-container--default .select2-results__option--highlighted[aria-selected] {
         background-color: #007bff !important;
     }
