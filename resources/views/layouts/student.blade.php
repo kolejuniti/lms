@@ -403,6 +403,11 @@
               </a>
             </li>
             <li>
+              <a href="{{ asset('storage/memo/2025.02.27 - Memo 01 Ketetapan Mod Pengajian Kuliah Kolej UNITI bagi Sesi 20252026-II.pdf') }}" target="_blank">
+                <i data-feather="file-text"></i><span>Memo Pelajar</span>
+              </a>
+            </li>
+            <li>
               <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20252026 (Kemasukan November).pdf') }}" target="_blank">
                 <i data-feather="file-text"></i><span>Final Exam Schedule (UNITI)</span>
               </a>
@@ -414,7 +419,7 @@
             </li>
 
             <!-- Mini Games -->
-            <li class="treeview">
+            {{-- <li class="treeview">
               <a href="#">
                 <i data-feather="gamepad-2"></i>
                 <span>Mini Games</span>
@@ -442,7 +447,7 @@
                   </a>
                 </li>
               </ul>
-            </li>
+            </li> --}}
             </ul>
 
             <!-- Sidebar Widget -->
