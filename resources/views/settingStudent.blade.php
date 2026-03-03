@@ -475,7 +475,7 @@
                     <div class="col-lg-6 col-md-6">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="np1">Phone Number 1</label>
-                        <input type="text" class="form-control-modern" id="np1" placeholder="Enter Phone Number 1" name="np1" value="{{ $student->no_tel }}">
+                        <input type="text" class="form-control-modern readonly-field-modern" id="np1" placeholder="Enter Phone Number 1" name="np1" value="{{ $student->no_tel }}" readonly>
                         <span class="text-danger">@error('np1')
                           {{ $message }}
                         @enderror</span>
