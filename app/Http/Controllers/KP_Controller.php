@@ -814,7 +814,7 @@ class KP_Controller extends Controller
             ->groupBy('subjek.id')
             ->select('subjek.sub_id', 'subjek.course_name', 'subjek.course_code', 'subjek_structure.semester_id')
             ->where('subjek_structure.program_id', $request->program)
-            ->orderByDesc('subjek.course_code')
+            ->orderByAsc('subjek.course_code')
             ->get();
 
         $content = "";
