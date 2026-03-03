@@ -2855,59 +2855,71 @@ class AR_Controller extends Controller
                         'sessions.SessionName AS session'
                     );
             } else {
-                if (Auth::user()->usrtype === 'AR') {
-                    // Using tblevents table - optimize with better joins
-                    $query = Tblevent::join('student_subjek', function ($join) {
-                        $join->on('tblevents.group_id', 'student_subjek.group_id');
-                        $join->on('tblevents.group_name', 'student_subjek.group_name');
-                    })
-                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
-                        ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                        ->join('users', 'tblevents.user_ic', 'users.ic')
-                        ->where('sessions.Status', 'ACTIVE')
-                        ->where('student_subjek.student_ic', request()->id)
-                        ->select(
-                            'tblevents.id',
-                            'tblevents.start',
-                            'tblevents.end',
-                            'tblevents.group_id',
-                            'tblevents.group_name',
-                            'users.name AS lecturer',
-                            'subjek.course_code AS code',
-                            'subjek.course_name AS subject',
-                            'tbllecture_room.name AS room',
-                            'sessions.SessionName AS session'
-                        );
-                } else {
+                // For student schedule view, always use published table (tblevents_second)
+                $query = Tblevent2::join('student_subjek', function ($join) {
+                    $join->on('tblevents_second.group_id', 'student_subjek.group_id');
+                    $join->on('tblevents_second.group_name', 'student_subjek.group_name');
+                })
+                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                    ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
+                    ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                    ->join('users', 'tblevents_second.user_ic', 'users.ic')
+                    ->where('sessions.Status', 'ACTIVE')
+                    ->where('student_subjek.student_ic', request()->id)
+                    ->select(
+                        'tblevents_second.id',
+                        'tblevents_second.start',
+                        'tblevents_second.end',
+                        'tblevents_second.group_id',
+                        'tblevents_second.group_name',
+                        'users.name AS lecturer',
+                        'subjek.course_code AS code',
+                        'subjek.course_name AS subject',
+                        'tbllecture_room.name AS room',
+                        'sessions.SessionName AS session'
+                    );
+            }
 
-                    $query = Tblevent2::join('student_subjek', function ($join) {
-                        $join->on('tblevents_second.group_id', 'student_subjek.group_id');
-                        $join->on('tblevents_second.group_name', 'student_subjek.group_name');
-                    })
-                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+            // Retrieve events with a limit to improve performance
+            $events = $query->limit(100)->get();
+
+            $usingPublishedSchedule = true;
+
+            if ($usingPublishedSchedule) {
+                $studentLecturerIcs = DB::table('student_subjek')
+                    ->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
+                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                    ->where('student_subjek.student_ic', request()->id)
+                    ->where('sessions.Status', 'ACTIVE')
+                    ->distinct()
+                    ->pluck('user_subjek.user_ic');
+
+                if ($studentLecturerIcs->isNotEmpty()) {
+                    $programEvents = DB::table('tblevents_second')
+                        ->join('sessions', 'tblevents_second.session_id', 'sessions.SessionID')
                         ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
-                        ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                        ->join('users', 'tblevents_second.user_ic', 'users.ic')
+                        ->leftJoin('users', 'tblevents_second.user_ic', 'users.ic')
                         ->where('sessions.Status', 'ACTIVE')
-                        ->where('student_subjek.student_ic', request()->id)
+                        ->where('tblevents_second.group_id', 0)
+                        ->whereIn('tblevents_second.user_ic', $studentLecturerIcs)
                         ->select(
                             'tblevents_second.id',
                             'tblevents_second.start',
                             'tblevents_second.end',
                             'tblevents_second.group_id',
                             'tblevents_second.group_name',
+                            'tblevents_second.title',
                             'users.name AS lecturer',
-                            'subjek.course_code AS code',
-                            'subjek.course_name AS subject',
+                            DB::raw("'PROGRAM KEUSAHAWANAN' AS code"),
+                            DB::raw("'PROGRAM KEUSAHAWANAN' AS subject"),
                             'tbllecture_room.name AS room',
                             'sessions.SessionName AS session'
-                        );
+                        )
+                        ->get();
+
+                    $events = $events->concat($programEvents)->unique('id')->values();
                 }
             }
-
-            // Retrieve events with a limit to improve performance
-            $events = $query->limit(100)->get();
 
             if ($events->isEmpty()) {
                 return response()->json([]);
@@ -2969,21 +2981,29 @@ class AR_Controller extends Controller
                 $key = $event->group_id . '-' . $event->group_name;
                 $count = isset($studentCounts[$key]) ? $studentCounts[$key]->total_student : 0;
                 $programs = $programsByGroup[$key] ?? '';
+                $isProgramKeusahawanan = (int) $event->group_id === 0 || strtoupper((string) ($event->title ?? '')) === 'PROGRAM KEUSAHAWANAN';
 
                 $carbonStart = Carbon::parse($event->start);
                 $carbonEnd = Carbon::parse($event->end);
                 $dayOfWeek = $carbonStart->format('N');
                 $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+                $eventTitle = $isProgramKeusahawanan
+                    ? 'PROGRAM KEUSAHAWANAN'
+                    : $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')';
+                $eventDescription = $isProgramKeusahawanan
+                    ? ''
+                    : $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . " | " . 'Total Student: ' . $count;
+                $eventProgramInfo = $isProgramKeusahawanan ? 'PROGRAM KEUSAHAWANAN' : $programs;
 
                 return [
                     'id' => $event->id,
-                    'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
-                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . " | " . 'Total Student: ' . $count,
+                    'title' => $eventTitle,
+                    'description' => $eventDescription,
                     'startTime' => $carbonStart->format('H:i'),
                     'endTime' => $carbonEnd->format('H:i'),
                     'duration' => $carbonStart->diff($carbonEnd)->format('%H:%I'),
                     'daysOfWeek' => [$fullCalendarDayOfWeek],
-                    'programInfo' => $programs,
+                    'programInfo' => $eventProgramInfo,
                     'lectInfo' => $event->lecturer
                 ];
             });
@@ -3616,6 +3636,36 @@ class AR_Controller extends Controller
                 $events->start = $ev->start;
                 $events->end = $ev->end;
                 $events->save();
+            }
+
+            $referenceStart = $event->isNotEmpty()
+                ? Carbon::parse($event->first()->start)
+                : Carbon::now();
+
+            $programStart = $referenceStart->copy()
+                ->startOfWeek(Carbon::MONDAY)
+                ->addDay()
+                ->setTime(14, 0, 0);
+
+            $programEnd = $programStart->copy()->setTime(18, 0, 0);
+            $defaultLectureId = $event->isNotEmpty()
+                ? $event->first()->lecture_id
+                : DB::table('tbllecture_room')->orderBy('id')->value('id');
+            $defaultSessionId = $event->isNotEmpty()
+                ? $event->first()->session_id
+                : DB::table('sessions')->where('Status', 'ACTIVE')->value('SessionID');
+
+            if (!is_null($defaultLectureId) && !is_null($defaultSessionId)) {
+                $programEvent = new Tblevent2;
+                $programEvent->lecture_id = $defaultLectureId;
+                $programEvent->user_ic = $request->id;
+                $programEvent->group_id = 0;
+                $programEvent->group_name = 'PROGRAM KEUSAHAWANAN';
+                $programEvent->session_id = $defaultSessionId;
+                $programEvent->title = 'PROGRAM KEUSAHAWANAN';
+                $programEvent->start = $programStart->toDateTimeString();
+                $programEvent->end = $programEnd->toDateTimeString();
+                $programEvent->save();
             }
 
             return response()->json(['success' => 'Event has been published successfully!']);

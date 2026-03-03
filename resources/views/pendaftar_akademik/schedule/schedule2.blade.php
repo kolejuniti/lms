@@ -886,6 +886,7 @@ function setupCalendar() {
                         borderColor: '#e63946'
                     });
                 }
+
                 date.setDate(date.getDate() + 1);
             }
 
@@ -1015,7 +1016,7 @@ function setupCalendar() {
                 }
                 
                 // Lecturer info
-                if (arg.event.extendedProps.lectInfo) {
+                if (arg.event.title !== 'PROGRAM KEUSAHAWANAN' && arg.event.extendedProps.lectInfo) {
                     var lectDiv = document.createElement('div');
                     lectDiv.classList.add('event-lecturer');
                     lectDiv.style.fontSize = '0.7rem';
@@ -1245,7 +1246,7 @@ function showEventDetails(event) {
                 <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
                 ${event.extendedProps.description ? `<p><strong>Description:</strong> ${event.extendedProps.description}</p>` : ''}
                 ${event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
-                ${event.extendedProps.lectInfo ? `<p><strong>Lecturer:</strong> ${event.extendedProps.lectInfo}</p>` : ''}
+                ${event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps.lectInfo ? `<p><strong>Lecturer:</strong> ${event.extendedProps.lectInfo}</p>` : ''}
             </div>
         `,
         icon: 'info',
@@ -1978,7 +1979,7 @@ function printScheduleTable(name, ic, staffNo, email) {
                             }
                             
                             // Add lecturer info if available (was missing before)
-                            if (event.extendedProps && event.extendedProps.lectInfo) {
+                            if (event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps && event.extendedProps.lectInfo) {
                                 html += `<div class="event-description lecturer-info">Lecturer: ${event.extendedProps.lectInfo}</div>`;
                             }
                         });

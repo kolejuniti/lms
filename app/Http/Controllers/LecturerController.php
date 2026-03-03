@@ -5674,42 +5674,50 @@ class LecturerController extends Controller
     {
         $user = Auth::user();
 
-        $events = Tblevent2::join('user_subjek', 'tblevents_second.group_id', 'user_subjek.id')
-            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+        $events = Tblevent2::leftJoin('user_subjek', 'tblevents_second.group_id', 'user_subjek.id')
+            ->leftJoin('sessions', 'tblevents_second.session_id', 'sessions.SessionID')
             ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
-            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->leftJoin('subjek', 'user_subjek.course_id', 'subjek.sub_id')
             ->where([
                 ['tblevents_second.user_ic', $user->ic],
-                ['sessions.Status', 'ACTIVE']
             ])
-            ->groupBy('subjek.sub_id', 'tblevents_second.id')
+            ->where(function ($query) {
+                $query->where('sessions.Status', 'ACTIVE')
+                    ->orWhere('tblevents_second.group_id', 0);
+            })
             ->select('tblevents_second.*', 'subjek.course_code AS code', 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
 
         $formattedEvents = $events->map(function ($event) {
+            $isProgramKeusahawanan = (int) $event->group_id === 0 || strtoupper((string) $event->title) === 'PROGRAM KEUSAHAWANAN';
 
-            $count = DB::table('student_subjek')
-                ->where([
-                    ['group_id', $event->group_id],
-                    ['group_name', $event->group_name]
-                ])
-                ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                ->first();
+            if ($isProgramKeusahawanan) {
+                $count = (object) ['total_student' => 0];
+                $programInfo = 'PROGRAM KEUSAHAWANAN';
+            } else {
+                $count = DB::table('student_subjek')
+                    ->where([
+                        ['group_id', $event->group_id],
+                        ['group_name', $event->group_name]
+                    ])
+                    ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                    ->first();
 
-            $program = DB::table('student_subjek')
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                ->where([
-                    ['student_subjek.group_id', $event->group_id],
-                    ['student_subjek.group_name', $event->group_name]
-                ])
-                ->groupBy('tblprogramme.id')
-                ->select('tblprogramme.*')
-                ->get();
+                $program = DB::table('student_subjek')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                    ->where([
+                        ['student_subjek.group_id', $event->group_id],
+                        ['student_subjek.group_name', $event->group_name]
+                    ])
+                    ->groupBy('tblprogramme.id')
+                    ->select('tblprogramme.*')
+                    ->get();
 
-            // Convert program information into a string
-            $programInfo = $program->map(function ($prog) {
-                return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
-            })->implode(', ');
+                // Convert program information into a string
+                $programInfo = $program->map(function ($prog) {
+                    return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
+                })->implode(', ');
+            }
 
             // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
             $dayOfWeekMap = [
@@ -5724,11 +5732,17 @@ class LecturerController extends Controller
 
             $dayOfWeek = date('N', strtotime($event->start));
             $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+            $title = $isProgramKeusahawanan
+                ? 'PROGRAM KEUSAHAWANAN'
+                : $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')';
+            $description = $isProgramKeusahawanan
+                ? ''
+                : $programInfo . " (" . ($event->session ?? 'N/A') . ")" . "<br>" . strtoupper($event->room) . " | " . 'Total Student: ' . $count->total_student;
 
             return [
                 'id' => $event->id,
-                'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
-                'description' => $programInfo . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . " | " . 'Total Student: ' . $count->total_student,
+                'title' => $title,
+                'description' => $description,
                 'startTime' => date('H:i', strtotime($event->start)),
                 'endTime' => date('H:i', strtotime($event->end)),
                 'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
