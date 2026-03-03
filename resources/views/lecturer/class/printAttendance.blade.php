@@ -100,6 +100,13 @@ tr:hover {
     margin: 0 auto;
   }
 
+  .doc-code {
+    text-align: right;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
      </style>
   </head>
   
@@ -107,6 +114,7 @@ tr:hover {
   
  <body>
     <div class="container">
+        <div class="doc-code">UCMS - BPK.UNITI.BKD.03/01</div>
         <!-- BEGIN INVOICE -->
         <div class="col-12">
             <!--student info -->
@@ -117,7 +125,7 @@ tr:hover {
                     <div class="row mb-5">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <p>NAME PENSYARAH &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ Auth::user()->name }}</p>
+                                <p>NAMA PENSYARAH &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ Auth::user()->name }}</p>
                             </div>
                             <div class="form-group">
                                 <p>MINGGU/BULAN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; </p>
