@@ -12,6 +12,27 @@
     float: right;
     margin-left:10px;
     }
+
+    .dt-report-code-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      color: #6c757d;
+      text-transform: uppercase;
+      line-height: 1;
+      white-space: nowrap;
+      margin-right: 12px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .dt-report-code-label::before {
+      content: "UCMS - BPK.UNITI.BKD.03/01";
+    }
+
+    .dataTables_wrapper .dt-buttons {
+      float: none !important;
+    }
 </style>
 
 <!-- Add XLSX Library -->
@@ -99,7 +120,7 @@
                                     // Initialize DataTable for the table with ID 'myTable{{$grp->group_name}}'
                                     $('#myTable{{$grp->group_name}}').DataTable({
                                         // Set the DOM structure: 'l' for length changing input, 'B' for buttons, 'f' for filtering input, 'r' for processing display, 't' for the table, 'i' for table info, 'p' for pagination control
-                                        dom: 'lBfrtip',
+                                        dom: '<"d-flex justify-content-between align-items-center mb-2"<"dt-report-code-label">fB>rtip',
                                         // Set 'paging' to false to disable pagination
                                         paging: false,
                                         // Define buttons to add to the table
@@ -107,17 +128,28 @@
                                           {
                                             text: 'Excel',
                                             action: function () {
-                                              // get the HTML table to export
                                               const table = document.getElementById("myTable{{$grp->group_name}}");
-                                              
-                                              // create a new Workbook object
                                               const wb = XLSX.utils.book_new();
-                                              
-                                              // add a new worksheet to the Workbook object
-                                              const ws = XLSX.utils.table_to_sheet(table);
+
+                                              // Build a sheet with custom top heading then append table data.
+                                              const ws = XLSX.utils.aoa_to_sheet([]);
+                                              const title = "UCMS - BPK.UNITI.BKD.03/01";
+                                              XLSX.utils.sheet_add_aoa(ws, [[title]], { origin: "A1" });
+                                              XLSX.utils.sheet_add_dom(ws, table, { origin: "A3" });
+
+                                              // Merge title across the full table width.
+                                              const colCount = table.rows[0] ? table.rows[0].cells.length : 1;
+                                              ws["!merges"] = ws["!merges"] || [];
+                                              ws["!merges"].push({
+                                                s: { r: 0, c: 0 },
+                                                e: { r: 0, c: Math.max(colCount - 1, 0) }
+                                              });
+
+                                              // Optional: set a wider first column so full title is visible.
+                                              ws["!cols"] = ws["!cols"] || [];
+                                              ws["!cols"][0] = { wch: 35 };
                                               XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-                                              
-                                              // trigger the download of the Excel file
+
                                               XLSX.writeFile(wb, "exported-data.xlsx");
                                             }
                                           }
