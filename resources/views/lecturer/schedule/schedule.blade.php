@@ -797,7 +797,7 @@
                 }
 
                 // Add program info directly in the content instead of appending later
-                if (arg.event.title !== 'REHAT' && arg.event.extendedProps) {
+                if (arg.event.title !== 'REHAT' && arg.event.title !== 'PROGRAM KEUSAHAWANAN' && arg.event.extendedProps) {
                     // Program info
                     if (arg.event.extendedProps.programInfo) {
                         var programDiv = document.createElement('div');
@@ -847,7 +847,7 @@
                 <div class="event-details">
                     <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
                     ${event.extendedProps.description ? `<p><strong>Description:</strong><br>${event.extendedProps.description}</p>` : ''}
-                    ${event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
+                    ${event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
                 </div>
             `,
             icon: 'info',
