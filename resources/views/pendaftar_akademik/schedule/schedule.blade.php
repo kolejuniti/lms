@@ -1089,7 +1089,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
 
-                if (dayOfWeek === 2) {
+                if (dayOfWeek === 3) {
                     // Tuesday => 14:00 to 18:00 default entrepreneurship program
                     rehatEvents.push({
                         title: 'PROGRAM KEUSAHAWANAN',
