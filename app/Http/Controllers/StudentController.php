@@ -159,9 +159,10 @@ class StudentController extends Controller
                    ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
                    ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                    ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
+                   ->leftjoin('tblmailing_address', 'students.ic', 'tblmailing_address.student_ic')
                    ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 
                             'tblprogramme.progname', 'tblprogramme.progcode', 
-                            'sessions.SessionName as intake_name')
+                            'sessions.SessionName as intake_name', 'tblmailing_address.*')
                    ->where('students.ic', $ic)
                    ->first();
 
@@ -198,6 +199,12 @@ class StudentController extends Controller
                 'postcode' => ['nullable'],
                 'city' => ['nullable'],
                 'state' => ['nullable'],
+                'm_address1' => ['nullable'],
+                'm_address2' => ['nullable'],
+                'm_address3' => ['nullable'],
+                'm_postcode' => ['nullable'],
+                'm_city' => ['nullable'],
+                'm_state' => ['nullable'],
             ],[
                 'conpass.same' => 'The Confirm Password and Password must match!',
                 'pass.regex' => 'The Password cannot have spaces!'
@@ -244,6 +251,20 @@ class StudentController extends Controller
                     'postcode' => $data['postcode'] ?? null,
                     'city' => $data['city'] ?? null,
                     'state_id' => $data['state'] ?? null,
+                ]
+            );
+
+        // Update tblstudent_address table
+        DB::table('tblmailing_address')
+            ->updateOrInsert(
+                ['student_ic' => $ic],
+                [
+                    'm_address1' => $data['m_address1'] ?? null,
+                    'm_address2' => $data['m_address2'] ?? null,
+                    'm_address3' => $data['m_address3'] ?? null,
+                    'm_postcode' => $data['m_postcode'] ?? null,
+                    'm_city' => $data['m_city'] ?? null,
+                    'm_state_id' => $data['m_state'] ?? null,
                 ]
             );
 
