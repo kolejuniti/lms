@@ -666,7 +666,7 @@ class KP_Controller extends Controller
     {
 
         //this will fetch user data where usrtype is not ADM
-        $user = User::whereIn('usrtype', ['LCT', 'AO', 'PL'])->get();
+        $user = User::whereIn('usrtype', ['LCT', 'AO', 'PL', 'DN'])->get();
 
         $data['subject'] = DB::table('user_subjek')
             ->where('sessions.Status', 'ACTIVE')
