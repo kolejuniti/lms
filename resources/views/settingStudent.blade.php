@@ -571,7 +571,7 @@
                     <div class="col-12">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="address1">Address Line 1</label>
-                        <input type="text" class="form-control-modern" id="address1" placeholder="Street address, P.O. box" name="address1" value="{{ $student->address1 }}">
+                        <input type="text" class="form-control-modern readonly-field-modern" id="address1" placeholder="Street address, P.O. box" name="address1" value="{{ $student->address1 }}" readonly>
                         <span class="text-danger">@error('address1')
                           {{ $message }}
                         @enderror</span>
@@ -583,7 +583,7 @@
                     <div class="col-12">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="address2">Address Line 2</label>
-                        <input type="text" class="form-control-modern" id="address2" placeholder="Apartment, suite, unit, building, floor, etc." name="address2" value="{{ $student->address2 }}">
+                        <input type="text" class="form-control-modern readonly-field-modern" id="address2" placeholder="Apartment, suite, unit, building, floor, etc." name="address2" value="{{ $student->address2 }}" readonly>
                       </div>
                     </div>
                   </div>
@@ -592,7 +592,7 @@
                     <div class="col-12">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="address3">Address Line 3</label>
-                        <input type="text" class="form-control-modern" id="address3" placeholder="Additional address information (optional)" name="address3" value="{{ $student->address3 }}">
+                        <input type="text" class="form-control-modern readonly-field-modern" id="address3" placeholder="Additional address information (optional)" name="address3" value="{{ $student->address3 }}" readonly>
                       </div>
                     </div>
                   </div>
@@ -601,7 +601,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="postcode">Postcode</label>
-                        <input type="text" class="form-control-modern" id="postcode" name="postcode" placeholder="Enter Postcode" value="{{ $student->postcode }}">
+                        <input type="text" class="form-control-modern readonly-field-modern" id="postcode" name="postcode" placeholder="Enter Postcode" value="{{ $student->postcode }}" readonly>
                         <span class="text-danger">@error('postcode')
                           {{ $message }}
                         @enderror</span>
@@ -610,7 +610,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="city">City</label>
-                        <input type="text" class="form-control-modern" id="city" name="city" placeholder="Enter City" value="{{ $student->city }}">
+                        <input type="text" class="form-control-modern readonly-field-modern" id="city" name="city" placeholder="Enter City" value="{{ $student->city }}" readonly> 
                         <span class="text-danger">@error('city')
                           {{ $message }}
                         @enderror</span>
@@ -619,10 +619,81 @@
                     <div class="col-lg-4 col-md-6">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="state">State</label>
-                        <select class="form-select-modern" id="state" name="state">
+                        <select class="form-control-modern readonly-field-modern" id="state" name="state" disabled>
                           <option value="">Select State</option>
                           @foreach ($data['state'] as $state)
                             <option value="{{ $state->id }}" {{ ($student->state_id == $state->id) ? 'selected' : '' }}>{{ $state->state_name}}</option> 
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- mailing address -->
+              <div class="modern-card">
+                <div class="modern-card-header">
+                  <i class="mdi mdi-home-map-marker"></i>
+                  <b>Mailing Address</b>
+                </div>
+                <div class="modern-card-body">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="form-group-modern">
+                        <label class="form-label-modern" for="address1">Address Line 1</label>
+                        <input type="text" class="form-control-modern" id="address1" placeholder="Street address, P.O. box" name="m_address1" value="{{ $student->m_address1 }}">
+                        <span class="text-danger">@error('address1')
+                          {{ $message }}
+                        @enderror</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="form-group-modern">
+                        <label class="form-label-modern" for="address2">Address Line 2</label>
+                        <input type="text" class="form-control-modern" id="address2" placeholder="Apartment, suite, unit, building, floor, etc." name="m_address2" value="{{ $student->m_address2 }}">
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="form-group-modern">
+                        <label class="form-label-modern" for="address3">Address Line 3</label>
+                        <input type="text" class="form-control-modern" id="address3" placeholder="Additional address information (optional)" name="m_address3" value="{{ $student->m_address3 }}">
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row g-3">
+                    <div class="col-lg-4 col-md-6">
+                      <div class="form-group-modern">
+                        <label class="form-label-modern" for="postcode">Postcode</label>
+                        <input type="text" class="form-control-modern" id="postcode" name="m_postcode" placeholder="Enter Postcode" value="{{ $student->m_postcode }}">
+                        <span class="text-danger">@error('postcode')
+                          {{ $message }}
+                        @enderror</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                      <div class="form-group-modern">
+                        <label class="form-label-modern" for="city">City</label>
+                        <input type="text" class="form-control-modern" id="city" name="m_city" placeholder="Enter City" value="{{ $student->m_city }}"> 
+                        <span class="text-danger">@error('city')
+                          {{ $message }}
+                        @enderror</span>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                      <div class="form-group-modern">
+                        <label class="form-label-modern" for="state">State</label>
+                        <select class="form-control-modern" id="state" name="m_state">
+                          <option value="">Select State</option>
+                          @foreach ($data['state'] as $state)
+                            <option value="{{ $state->id }}" {{ ($student->m_state_id == $state->id) ? 'selected' : '' }}>{{ $state->state_name}}</option> 
                           @endforeach
                         </select>
                       </div>
@@ -889,13 +960,13 @@ $(document).ready(function(){
     newForm.find('input, select, textarea').val('');
     
     // Remove readonly and disabled attributes from new forms (make them editable)
-    newForm.find('input[name="w_ic[]"]').removeClass('readonly-field-modern').prop('readonly', false);
-    newForm.find('select[name="occupation[]"]').removeClass('readonly-field-modern').prop('disabled', false);
-    newForm.find('input[name="dependent[]"]').removeClass('readonly-field-modern').prop('readonly', false);
-    newForm.find('select[name="relationship[]"]').removeClass('readonly-field-modern').prop('disabled', false);
-    newForm.find('input[name="w_kasar[]"]').removeClass('readonly-field-modern').prop('readonly', false);
-    newForm.find('input[name="w_bersih[]"]').removeClass('readonly-field-modern').prop('readonly', false);
-    newForm.find('select[name="w_status[]"]').removeClass('readonly-field-modern').prop('disabled', false);
+    // newForm.find('input[name="w_ic[]"]').removeClass('readonly-field-modern').prop('readonly', false);
+    // newForm.find('select[name="occupation[]"]').removeClass('readonly-field-modern').prop('disabled', false);
+    // newForm.find('input[name="dependent[]"]').removeClass('readonly-field-modern').prop('readonly', false);
+    // newForm.find('select[name="relationship[]"]').removeClass('readonly-field-modern').prop('disabled', false);
+    // newForm.find('input[name="w_kasar[]"]').removeClass('readonly-field-modern').prop('readonly', false);
+    // newForm.find('input[name="w_bersih[]"]').removeClass('readonly-field-modern').prop('readonly', false);
+    // newForm.find('select[name="w_status[]"]').removeClass('readonly-field-modern').prop('disabled', false);
     
     // Add a delete button to the new form
     newForm.find('.modern-card-body').prepend('<div class="delete-waris-btn"><button class="btn-modern btn-danger-modern delete-form" type="button"><i class="mdi mdi-delete"></i> Remove</button></div>');
