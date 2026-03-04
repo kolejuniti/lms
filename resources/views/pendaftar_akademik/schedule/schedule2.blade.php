@@ -895,7 +895,13 @@ function setupCalendar() {
             const id = window.location.pathname.split('/').pop();
             const type = urlParams.get('type') || '';
 
-            fetch(`/AR/schedule/fetch/${id}?type=${type}`)
+            const fetchUrl = `/AR/schedule/fetch/${id}?type=${type}&_=${Date.now()}`;
+            fetch(fetchUrl, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache'
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     const coloredEvents = data.map(event => ({
