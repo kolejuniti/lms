@@ -3642,9 +3642,10 @@ class AR_Controller extends Controller
                 ? Carbon::parse($event->first()->start)
                 : Carbon::now();
 
+            // Align published entrepreneurship program with Wednesday timetable.
             $programStart = $referenceStart->copy()
                 ->startOfWeek(Carbon::MONDAY)
-                ->addDay()
+                ->addDays(2)
                 ->setTime(14, 0, 0);
 
             $programEnd = $programStart->copy()->setTime(18, 0, 0);
