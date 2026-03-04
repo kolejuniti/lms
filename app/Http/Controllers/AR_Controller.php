@@ -2917,7 +2917,24 @@ class AR_Controller extends Controller
                         )
                         ->get();
 
-                    $events = $events->concat($programEvents)->unique('id')->values();
+                    // Multiple lecturers can publish identical PROGRAM KEUSAHAWANAN slots.
+                    // Keep only one program event per same time range for student display.
+                    $programEvents = $programEvents->unique(function ($event) {
+                        return strtoupper((string) ($event->title ?? 'PROGRAM KEUSAHAWANAN')) . '|' . $event->start . '|' . $event->end;
+                    })->values();
+
+                    $events = $events
+                        ->concat($programEvents)
+                        ->unique(function ($event) {
+                            $isProgramKeusahawanan = (int) $event->group_id === 0 || strtoupper((string) ($event->title ?? '')) === 'PROGRAM KEUSAHAWANAN';
+
+                            if ($isProgramKeusahawanan) {
+                                return 'PROGRAM|' . $event->start . '|' . $event->end;
+                            }
+
+                            return 'EVENT|' . $event->id;
+                        })
+                        ->values();
                 }
             }
 
