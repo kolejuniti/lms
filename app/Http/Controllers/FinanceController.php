@@ -11112,24 +11112,24 @@ class FinanceController extends Controller
                 ->get();
 
             $val1 = 0;
-            $data['sum1_2'] = 0;
+            $total2 = [];
 
             foreach ($data['record2'] as $recKey => $req) {
 
                 if (array_intersect([2, 3, 4, 5, 11], (array) $req->process_type_id)) {
 
-                    $data['total2'][$recKey] = $val1 + $req->amount;
+                    $total2[$recKey] = $val1 + $req->amount;
 
                     $val1 = $val1 + $req->amount;
                 } elseif (array_intersect([1, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], (array) $req->process_type_id)) {
 
-                    $data['total2'][$recKey] = $val1 - $req->amount;
+                    $total2[$recKey] = $val1 - $req->amount;
 
                     $val1 = $val1 - $req->amount;
                 }
             }
 
-            $data['sum3_2'][$key] = isset($data['total2']) && !empty($data['total2']) ? end($data['total2']) : 0;
+            $data['sum3_2'][$key] = isset($total2) && !empty($total2) ? end($total2) : 0;
 
             //OTHER
 
