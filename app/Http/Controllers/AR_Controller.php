@@ -460,7 +460,7 @@ class AR_Controller extends Controller
             'intake'         => DB::table('sessions')->get(),
             'intake_latest'  => DB::table('sessions')->orderBy('SessionID', 'desc')->limit(10)->get(),
             'semester'       => DB::table('semester')->get(),
-            'subjek'         => DB::table('subjek')->orderBy('course_name')->get(),
+            'subjek'         => DB::table('subjek')->orderBy('course_name')->orderBy('course_code')->get(),
         ];
 
         return view('pendaftar_akademik.course.assignSubject', compact('data'));
