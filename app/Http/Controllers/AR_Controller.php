@@ -1284,13 +1284,11 @@ class AR_Controller extends Controller
         $structure = DB::table('subjek_structure')
             ->join('structure', 'subjek_structure.structure', 'structure.id')
             ->join('subjek', 'subjek_structure.courseID', 'subjek.sub_id')
-            ->join('tblcourse_level', 'subjek.course_level_id', 'tblcourse_level.id')
+            ->leftjoin('tblcourse_level', 'subjek.course_level_id', 'tblcourse_level.id')
             ->where('program_id', $request->program)
             ->where('structure.id', $request->structure)
             ->groupBy('subjek_structure.courseID', 'subjek_structure.semester_id')
             ->orderBy('subjek_structure.semester_id')
-            //  ->orderBy('subjek_structure.semester_id')
-            //  ->orderBy('subjek.course_code')
             ->select('structure.structure_name', 'subjek_structure.semester_id', 'subjek.course_code', 'subjek.course_name', 'subjek.course_credit', 'tblcourse_level.name AS classification')
             ->get();
 
