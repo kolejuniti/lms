@@ -1287,7 +1287,7 @@ class AR_Controller extends Controller
             ->join('tblcourse_level', 'subjek.course_level_id', 'tblcourse_level.id')
             ->where('program_id', $request->program)
             ->where('structure.id', $request->structure)
-            ->groupBy('structure.structure_name','subjek_structure.semester_id','subjek.course_code',   'subjek.course_name','subjek.course_credit','tblcourse_level.name','subjek_structure.courseID')
+            ->groupBy('subjek_structure.courseID', 'subjek_structure.semester_id')
             ->orderBy('subjek_structure.semester_id')
             ->select('structure.structure_name', 'subjek_structure.semester_id', 'subjek.course_code', 'subjek.course_name', 'subjek.course_credit', 'tblcourse_level.name AS classification')
             ->get();
