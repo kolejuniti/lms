@@ -84,7 +84,7 @@
 </head>
 <body>
     @php
-        $releaseAt = \Carbon\Carbon::create(2026, 3, 7, 18, 0, 0, config('app.timezone', 'Asia/Kuala_Lumpur'));
+        $releaseAt = \Carbon\Carbon::create(2026, 3, 17, 18, 0, 0, config('app.timezone', 'Asia/Kuala_Lumpur'));
         $canDisplaySlip = now()->greaterThanOrEqualTo($releaseAt);
     @endphp
 
@@ -260,7 +260,7 @@
     @else
     <div class="container" style="padding: 40px 20px; text-align: center;">
         <h3>Slip belum dibuka.</h3>
-        <p>Slip ini hanya akan dipaparkan bermula 7 Mac 2026 selepas jam 6:00 petang.</p>
+        <p>Slip ini hanya akan dipaparkan bermula 17 Mac 2026 selepas jam 6:00 petang.</p>
     </div>
     @endif
 </body>
