@@ -870,6 +870,9 @@ $(document).ready(function(){
     textArea.innerHTML = text;
     return textArea.value;
   }
+  
+  // Keep a clean copy of the empty heir form before existing-data hydration
+  var emptyWarisTemplate = $('#card-1').clone();
 
   // Fill the input fields in the original card element with the first row of data
   @if(count($data['waris']) > 0)
@@ -910,6 +913,8 @@ $(document).ready(function(){
     var newForm = $('#card-1').clone();
     newForm.attr('id', 'card-{{ $waris->id }}');
     newForm.attr('data-existing', 'true');
+    // Remove hidden inputs inherited from the first card to avoid index/value duplication
+    newForm.find('input[type="hidden"]').remove();
     
     // Use escaping and decoding to handle special characters properly in Blade
     newForm.find('input[name="w_name[]"]').val('{!! addslashes(htmlspecialchars_decode($waris->name ?? '')) !!}');
@@ -946,8 +951,8 @@ $(document).ready(function(){
 
   // Add new waris form
   $('#add-form').click(function() {
-    // Clone the card element with ID #card-1
-    var newForm = $('#card-1').clone();
+    // Clone from clean template (not from hydrated/locked existing card)
+    var newForm = emptyWarisTemplate.clone();
     // Remove any existing delete button from clone
     newForm.find('.delete-waris-btn').remove();
     // Remove hidden inputs that were added for disabled fields
@@ -958,6 +963,17 @@ $(document).ready(function(){
     newForm.removeAttr('data-existing');
     // Clear the input values in the cloned form
     newForm.find('input, select, textarea').val('');
+    // Ensure all fields are editable for newly added heir forms
+    newForm.find('input, select, textarea').removeClass('readonly-field-modern');
+    newForm.find('input, textarea').prop('readonly', false);
+    newForm.find('select').prop('disabled', false);
+    // Disable optional fields by default for newly added heirs
+    newForm.find('input[name="w_notel_home[]"]').addClass('readonly-field-modern').prop('disabled', true);
+    newForm.find('select[name="occupation[]"]').addClass('readonly-field-modern').prop('disabled', true);
+    newForm.find('input[name="dependent[]"]').addClass('readonly-field-modern').prop('disabled', true);
+    newForm.find('input[name="w_kasar[]"]').addClass('readonly-field-modern').prop('disabled', true);
+    newForm.find('input[name="w_bersih[]"]').addClass('readonly-field-modern').prop('disabled', true);
+    newForm.find('select[name="w_status[]"]').addClass('readonly-field-modern').prop('disabled', true);
     
     // Remove readonly and disabled attributes from new forms (make them editable)
     // newForm.find('input[name="w_ic[]"]').removeClass('readonly-field-modern').prop('readonly', false);
