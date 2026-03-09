@@ -963,7 +963,7 @@ $(document).ready(function(){
     // newForm.find('input[name="w_ic[]"]').removeClass('readonly-field-modern').prop('readonly', false);
     // newForm.find('select[name="occupation[]"]').removeClass('readonly-field-modern').prop('disabled', false);
     // newForm.find('input[name="dependent[]"]').removeClass('readonly-field-modern').prop('readonly', false);
-    // newForm.find('select[name="relationship[]"]').removeClass('readonly-field-modern').prop('disabled', false);
+    newForm.find('select[name="relationship[]"]').removeClass('readonly-field-modern').prop('disabled', false);
     // newForm.find('input[name="w_kasar[]"]').removeClass('readonly-field-modern').prop('readonly', false);
     // newForm.find('input[name="w_bersih[]"]').removeClass('readonly-field-modern').prop('readonly', false);
     // newForm.find('select[name="w_status[]"]').removeClass('readonly-field-modern').prop('disabled', false);
