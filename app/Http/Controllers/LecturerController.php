@@ -355,15 +355,29 @@ class LecturerController extends Controller
 
     public function deleteFolder(Request $request)
     {
-
         $directory = DB::table('lecturer_dir')
             ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
             ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
             ->where('material_dir.DrID', $request->dir)->first();
+        
+        if (!$directory) {
+            return false;
+        }
 
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
         Storage::disk('linode')->deleteDirectory($dir);
+
+        // Remove descendant URL records (both direct and nested) before deleting subfolders
+        $subfolderIds = DB::table('materialsub_dir')
+            ->where('MaterialDirID', $request->dir)
+            ->pluck('DrID');
+
+        DB::table('materialsub_url')->where('MaterialDirID', $request->dir)->delete();
+        if ($subfolderIds->isNotEmpty()) {
+            DB::table('materialsub_url')->whereIn('MaterialSubDirID', $subfolderIds)->delete();
+        }
+        DB::table('materialsub_dir')->where('MaterialDirID', $request->dir)->delete();
 
         DB::table('material_dir')->where('DrID', $request->dir)->delete();
 
@@ -402,10 +416,17 @@ class LecturerController extends Controller
             ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
             ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID')
             ->where('materialsub_dir.DrID', $request->dir)->first();
+        
+        if (!$directory) {
+            return false;
+        }
 
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
         Storage::disk('linode')->deleteDirectory($dir);
+
+        // Remove URL records attached to this subfolder
+        DB::table('materialsub_url')->where('MaterialSubDirID', $request->dir)->delete();
 
         DB::table('materialsub_dir')->where('DrID', $request->dir)->delete();
 
