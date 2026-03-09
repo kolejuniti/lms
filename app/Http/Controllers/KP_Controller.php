@@ -829,30 +829,39 @@ class KP_Controller extends Controller
 
     public function getLecturer(Request $request)
     {
-
-        $lecturer = subject::where('course_id', $request->course)->where('session_id', $request->session)->get();
-
         $content = "";
-
         $content .= "<option value='-' disabled selected>-</option>";
-        foreach ($lecturer as $lct) {
 
-            $lecturer = User::where('ic', $lct->user_ic)->first();
+        if (empty($request->course) || empty($request->session)) {
+            return $content;
+        }
 
-            $content .= '<option data-style="btn-inverse"  
-            data-content=\'<div class="row" >
+        $lecturers = DB::table('user_subjek')
+            ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+            ->where('user_subjek.course_id', $request->course)
+            ->where('user_subjek.session_id', $request->session)
+            ->select('user_subjek.id', 'users.name', 'users.email', 'users.faculty')
+            ->orderBy('users.name')
+            ->get();
+
+        foreach ($lecturers as $lct) {
+            $name = htmlspecialchars($lct->name ?? '-', ENT_QUOTES, 'UTF-8');
+            $email = htmlspecialchars($lct->email ?? '-', ENT_QUOTES, 'UTF-8');
+            $faculty = htmlspecialchars($lct->faculty ?? '-', ENT_QUOTES, 'UTF-8');
+
+            $content .= '<option data-style="btn-inverse"
+            data-content=\'<div class="row">
                 <div class="col-md-2">
-                <div class="d-flex justify-content-center">
-                    <img src="" 
-                        height="auto" width="70%" class="bg-light ms-0 me-2 rounded-circle">
-                        </div>
+                    <div class="d-flex justify-content-center">
+                        <img src="" height="auto" width="70%" class="bg-light ms-0 me-2 rounded-circle">
+                    </div>
                 </div>
                 <div class="col-md-10 align-self-center lh-lg">
-                    <span><strong>' . $lecturer->name . '</strong></span><br>
-                    <span>' . $lecturer->email . ' | <strong class="text-fade"">' . $lecturer->faculty . '</strong></span><br>
+                    <span><strong>' . $name . '</strong></span><br>
+                    <span>' . $email . ' | <strong class="text-fade">' . $faculty . '</strong></span><br>
                     <span class="text-fade"></span>
                 </div>
-            </div>\' value=' . $lct->id . '></option>';
+            </div>\' value="' . $lct->id . '"></option>';
         }
 
         return $content;
