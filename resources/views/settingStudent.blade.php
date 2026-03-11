@@ -625,6 +625,7 @@
                             <option value="{{ $state->id }}" {{ ($student->state_id == $state->id) ? 'selected' : '' }}>{{ $state->state_name}}</option> 
                           @endforeach
                         </select>
+                        <input type="hidden" name="state" value="{{ $student->state_id }}">
                       </div>
                     </div>
                   </div>
@@ -642,7 +643,7 @@
                     <div class="col-12">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="address1">Address Line 1</label>
-                        <input type="text" class="form-control-modern" id="address1" placeholder="Street address, P.O. box" name="m_address1" value="{{ $student->m_address1 }}">
+                        <input type="text" class="form-control-modern" id="m_address1" placeholder="Street address, P.O. box" name="m_address1" value="{{ $student->m_address1 }}">
                         <span class="text-danger">@error('address1')
                           {{ $message }}
                         @enderror</span>
@@ -654,7 +655,7 @@
                     <div class="col-12">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="address2">Address Line 2</label>
-                        <input type="text" class="form-control-modern" id="address2" placeholder="Apartment, suite, unit, building, floor, etc." name="m_address2" value="{{ $student->m_address2 }}">
+                        <input type="text" class="form-control-modern" id="m_address2" placeholder="Apartment, suite, unit, building, floor, etc." name="m_address2" value="{{ $student->m_address2 }}">
                       </div>
                     </div>
                   </div>
@@ -663,7 +664,7 @@
                     <div class="col-12">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="address3">Address Line 3</label>
-                        <input type="text" class="form-control-modern" id="address3" placeholder="Additional address information (optional)" name="m_address3" value="{{ $student->m_address3 }}">
+                        <input type="text" class="form-control-modern" id="m_address3" placeholder="Additional address information (optional)" name="m_address3" value="{{ $student->m_address3 }}">
                       </div>
                     </div>
                   </div>
@@ -672,7 +673,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="postcode">Postcode</label>
-                        <input type="text" class="form-control-modern" id="postcode" name="m_postcode" placeholder="Enter Postcode" value="{{ $student->m_postcode }}">
+                        <input type="text" class="form-control-modern" id="m_postcode" name="m_postcode" placeholder="Enter Postcode" value="{{ $student->m_postcode }}">
                         <span class="text-danger">@error('postcode')
                           {{ $message }}
                         @enderror</span>
@@ -681,7 +682,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="city">City</label>
-                        <input type="text" class="form-control-modern" id="city" name="m_city" placeholder="Enter City" value="{{ $student->m_city }}"> 
+                        <input type="text" class="form-control-modern" id="m_city" name="m_city" placeholder="Enter City" value="{{ $student->m_city }}"> 
                         <span class="text-danger">@error('city')
                           {{ $message }}
                         @enderror</span>
@@ -690,7 +691,7 @@
                     <div class="col-lg-4 col-md-6">
                       <div class="form-group-modern">
                         <label class="form-label-modern" for="state">State</label>
-                        <select class="form-control-modern" id="state" name="m_state">
+                        <select class="form-control-modern" id="m_state" name="m_state">
                           <option value="">Select State</option>
                           @foreach ($data['state'] as $state)
                             <option value="{{ $state->id }}" {{ ($student->m_state_id == $state->id) ? 'selected' : '' }}>{{ $state->state_name}}</option> 

@@ -240,6 +240,11 @@ class StudentController extends Controller
                 ]
             );
 
+        // Keep existing permanent state when the field is not submitted
+        $currentStateId = DB::table('tblstudent_address')
+            ->where('student_ic', $ic)
+            ->value('state_id');
+
         // Update tblstudent_address table
         DB::table('tblstudent_address')
             ->updateOrInsert(
@@ -250,7 +255,7 @@ class StudentController extends Controller
                     'address3' => $data['address3'] ?? null,
                     'postcode' => $data['postcode'] ?? null,
                     'city' => $data['city'] ?? null,
-                    'state_id' => $data['state'] ?? null,
+                    'state_id' => array_key_exists('state', $data) ? $data['state'] : $currentStateId,
                 ]
             );
 
