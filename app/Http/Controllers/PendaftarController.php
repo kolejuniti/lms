@@ -6519,7 +6519,7 @@ class PendaftarController extends Controller
             )
             ->where([
                 ['students.status', 2],
-                ['students.campus_id', 1],
+                ['students.campus_id', 'IN', [0,1]],
             ])
             ->whereIn('students.student_status', [1, 2, 4])
             ->select(
