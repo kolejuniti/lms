@@ -6618,6 +6618,10 @@ class PendaftarController extends Controller
             ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
             ->whereIn('tblstudent_log.student_ic', $ic)
             ->where('tblstudent_log.semester_id', 1)
+            ->where(function ($query) {
+                $query->whereNull('tblstudent_log.user_type')
+                    ->orWhere('tblstudent_log.user_type', '!=', 'FN');
+            })
             ->where('sessions.Year', $request->year)
             ->groupBy('tblstudent_log.student_ic');
 
@@ -6636,6 +6640,10 @@ class PendaftarController extends Controller
             ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
             ->whereIn('tblstudent_log.student_ic', $ic)
             ->where('tblstudent_log.semester_id', '>', 1)
+            ->where(function ($query) {
+                $query->whereNull('tblstudent_log.user_type')
+                    ->orWhere('tblstudent_log.user_type', '!=', 'FN');
+            })
             // ->whereYear('tblstudent_log.date', '=', $request->year)
             ->where('sessions.Year', $request->year)
             ->groupBy('tblstudent_log.student_ic');
