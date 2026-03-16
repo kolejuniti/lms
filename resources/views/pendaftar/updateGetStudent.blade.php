@@ -176,10 +176,12 @@
                 </tr>
             </thead>
             <tbody id="table">
+            @php $row = 1; @endphp
             @foreach ($data['history'] as $key=> $hs)
+                @if (Auth::user()->usrtype == 'FN' || $hs->user_type != 'FN')
                 <tr>
                     <td>
-                        {{ $key+1 }}
+                        {{ $row }}
                     </td>
                     <td>
                         {{ $hs->student_ic }}
@@ -209,6 +211,8 @@
                         {{ $hs->staff }}
                     </td>
                 </tr>
+                @php $row++; @endphp
+                @endif
             @endforeach
             </tbody>
             </table>

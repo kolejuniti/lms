@@ -1955,7 +1955,8 @@ class PendaftarController extends Controller
                     'block_id' => $student->block,
                     'date' => date("Y-m-d H:i:s"),
                     'remark' => $student->comment,
-                    'add_staffID' => Auth::user()->ic
+                    'add_staffID' => Auth::user()->ic,
+                    'user_type' => Auth::user()->usrtype
                 ]);
 
                 $std_log = DB::table('tblstudent_log')
