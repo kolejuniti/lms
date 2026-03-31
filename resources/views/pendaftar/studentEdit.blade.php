@@ -114,7 +114,7 @@
             </div>
           </div>
         </div>
-        <div class="card-body p-0">
+        <div class="card-body p-0 table-responsive">
           <table id="complex_header" class="table table-striped projects display dataTable">
             <thead>
                 <tr>
