@@ -83,6 +83,15 @@ input.collected-marks + label{
                         <div class="col-md-3"><b>Submisison Date</b></div>
                         <div class="col-md-9">{{ $data['subdate'] }}</div>
                     </div>
+                    @if (empty($data['studentassignstatus']))
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <div class="alert alert-info mb-0">
+                                No submission yet for this student. You can still upload a return file and publish a result.
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
                 <div class="col-xl-12 col-12">
                     <div class="d-flex justify-content-center">
