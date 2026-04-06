@@ -515,23 +515,43 @@ class AssignmentController extends Controller
             ->where('tblclassstudentassign.assignid', $id)
             ->where('tblclassstudentassign.userid', $userid)->get()->first();
 
-       
-        $data['assign'] = $assign->content;
-        //dd($data['assign']);
-        $data['return'] = $assign->return_content;
-        $data['comments'] = $assign->comments;
-        $data['mark'] = $assign->final_mark;
-        $data['assignid'] = $assign->assignid;
-        $data['assigntitle'] = $assign->title;
-        $data['totalmark'] = $assign->total_mark;
-        $data['assigndeadline'] = $assign->deadline;
-        $data['assignuserid'] = $assign->userid;
-        $data['fullname'] = $assign->name;
-        $data['IC'] = $assign->ic;
-        $data['created_at'] = $assign->created_at;
-        $data['updated_at'] = $assign->updated_at;
-        $data['subdate'] = $assign->subdate;
-        $data['studentassignstatus'] = $assign->studentassignstatus;
+        if ($assign) {
+            $data['assign'] = $assign->content;
+            //dd($data['assign']);
+            $data['return'] = $assign->return_content;
+            $data['comments'] = $assign->comments;
+            $data['mark'] = $assign->final_mark;
+            $data['assignid'] = $assign->assignid;
+            $data['assigntitle'] = $assign->title;
+            $data['totalmark'] = $assign->total_mark;
+            $data['assigndeadline'] = $assign->deadline;
+            $data['assignuserid'] = $assign->userid;
+            $data['fullname'] = $assign->name;
+            $data['IC'] = $assign->ic;
+            $data['created_at'] = $assign->created_at;
+            $data['updated_at'] = $assign->updated_at;
+            $data['subdate'] = $assign->subdate;
+            $data['studentassignstatus'] = $assign->studentassignstatus;
+        } else {
+            $assignInfo = DB::table('tblclassassign')->where('id', $id)->first();
+            $studentInfo = DB::table('students')->where('ic', $userid)->first();
+
+            $data['assign'] = $assignInfo->content ?? '';
+            $data['return'] = null;
+            $data['comments'] = null;
+            $data['mark'] = null;
+            $data['assignid'] = $assignInfo->id ?? $id;
+            $data['assigntitle'] = $assignInfo->title ?? 'Assignment';
+            $data['totalmark'] = $assignInfo->total_mark ?? 0;
+            $data['assigndeadline'] = $assignInfo->deadline ?? '';
+            $data['assignuserid'] = $userid;
+            $data['fullname'] = $studentInfo->name ?? 'N/A';
+            $data['IC'] = $studentInfo->ic ?? $userid;
+            $data['created_at'] = $assignInfo->created_at ?? now();
+            $data['updated_at'] = $assignInfo->updated_at ?? now();
+            $data['subdate'] = '-';
+            $data['studentassignstatus'] = null;
+        }
 
         return view('lecturer.courseassessment.assignmentresult', compact('data'));
     }
