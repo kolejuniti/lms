@@ -13288,9 +13288,10 @@ class FinanceController extends Controller
         $baseQuery = function () {
             return DB::table('tblstudent_ctos')
                 ->leftjoin('students', 'tblstudent_ctos.student_ic', 'students.ic')
+                ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                 ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                 ->leftjoin('users', 'tblstudent_ctos.user_ic', 'users.ic')
-                ->select('tblstudent_ctos.*', 'students.name', 'students.ic', 'users.name AS addBy', 'students.no_matric', 'tblprogramme.progcode');
+                ->select('tblstudent_ctos.*', 'students.name', 'students.ic', 'users.name AS addBy', 'students.no_matric', 'tblprogramme.progcode', 'tblstudent_status.name AS status_student');
         };
 
         $data['CTOS']  = ($baseQuery)()

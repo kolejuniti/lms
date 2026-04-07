@@ -23,6 +23,95 @@
     background-color: #fff; /* Adjust the background color to match your background */
     padding: 0 10px;
   }
+
+  .ctos-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+  }
+
+  .ctos-toolbar .form-group {
+    margin-bottom: 0;
+  }
+
+  .ctos-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+
+  .ctos-section {
+    margin-top: 16px;
+  }
+
+  .ctos-table-card {
+    margin-top: 12px;
+  }
+
+  .ctos-table-card .card-header {
+    padding: 12px 16px;
+  }
+
+  .ctos-table-card .card-body {
+    padding: 12px 16px 16px;
+  }
+
+  .ctos-table {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .ctos-table thead th,
+  .ctos-table tbody td {
+    vertical-align: middle;
+    padding: 8px 10px;
+  }
+
+  .ctos-table thead th {
+    background: #f5f7fa;
+    font-weight: 600;
+  }
+
+  .ctos-table tbody tr:nth-child(even) {
+    background: #fbfcfe;
+  }
+
+  .ctos-table tbody tr:hover {
+    background: #f0f4ff;
+  }
+
+  .ctos-col-num {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ctos-action-cell {
+    min-width: 220px;
+  }
+
+  .ctos-action-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .ctos-action-row .form-control {
+    min-width: 150px;
+  }
+
+  @media (max-width: 768px) {
+    .ctos-actions {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .ctos-action-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
 </style>
 
 <!-- Content Header (Page header) -->
@@ -66,112 +155,118 @@
               <!-- /.card-header -->
               <div class="card mb-3">
                 <div class="card-body">
-                  <div class="row">
-                    <div class="col-md-6">
+                  <div class="ctos-toolbar">
+                    <div class="col-md-5 col-sm-12">
                       <div class="form-group">
-                      <label class="form-label" for="from">File Import</label>
-                      <input type="file" class="form-control" id="excelFile" name="excelFile" accept=".xlsx, .xls" />
+                        <label class="form-label" for="excelFile">File Import</label>
+                        <input type="file" class="form-control" id="excelFile" name="excelFile" accept=".xlsx, .xls" />
                       </div>
                     </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4 col-sm-12">
                       <div class="form-group">
-                      <label class="form-label" for="from">Date</label>
-                      <input type="date" class="form-control" id="date" name="date" />
+                        <label class="form-label" for="date">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" />
                       </div>
                     </div>
+                    <div class="ctos-actions">
+                      <button class="btn btn-info" id="importButton">Import</button>
+                      <button type="submit" class="btn btn-success" onclick="exportToExcel()">Export</button>
+                    </div>
                   </div>
-                  <div>
-                    <button class="btn btn-info pull-right mb-3" id="importButton" style="margin-left: 10px;">Import</button>
-                    <button type="submit" class="btn btn-success pull-right mb-3" onclick="exportToExcel()">Export</button>
-                  </div>
-                  <div class="row">
-                    <div id="form-student">
+                  <div class="row ctos-section">
+                    <div id="form-student" class="col-12">
                       <!-- form start -->
-                      <div class="card-body">
+                      <div class="card-body p-0">
                         <div class="row">
                             <div class="col-md-12 mt-3">
                                 <div class="form-group mt-3">
-                                    <label class="form-label">Students CTOS</label>
-                                    <table class="w-100 table table-bordered display margin-top-10 w-p100" id="ctos_list">
-                                        <thead id="voucher_list">
+                                    <div class="card ctos-table-card">
+                                      <div class="card-header">
+                                        <label class="form-label mb-0">Students CTOS</label>
+                                      </div>
+                                      <div class="card-body">
+                                        <div class="table-responsive">
+                                        <table class="table table-bordered display margin-top-10 ctos-table" id="ctos_list" style="width: 100%;">
+                                            <thead id="voucher_list">
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th>
+                                                        Name
+                                                    </th>
+                                                    <th class="ctos-col-num">
+                                                        No. KP / Passport
+                                                    </th>
+                                                    <th class="ctos-col-num">
+                                                        No. Matric
+                                                    </th>
+                                                    <th>
+                                                        Program
+                                                    </th>
+                                                    <th>
+                                                        Status Pelajar
+                                                    </th>
+                                                    <th>
+                                                        Status
+                                                    </th>
+                                                    <th>
+                                                        Date CTOS
+                                                    </th>
+                                                    <th>
+                                                        Added By
+                                                    </th>
+                                                    <th>
+                                                      Action
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table1">
+                                            @foreach($data['CTOS'] as $key => $ctos)
                                             <tr>
-                                                <th style="width: 1%">
-                                                    No.
-                                                </th>
-                                                <th>
-                                                    Name
-                                                </th>
-                                                <th>
-                                                    IC / Passport No.
-                                                </th>
-                                                <th>
-                                                    No. Matric
-                                                </th>
-                                                <th>
-                                                    Program
-                                                </th>
-                                                <th>
-                                                    Status
-                                                </th>
-                                                <th>
-                                                    Date CTOS
-                                                </th>
-                                                <th>
-                                                    Added By
-                                                </th>
-                                                <th>
-                                                  Action
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="table1">
-                                        @foreach($data['CTOS'] as $key => $ctos)
-                                        <tr>
-                                          <td>
-                                              {{ $key+1 }}
-                                          </td>
-                                          <td>
-                                              {{ $ctos->name }}
-                                          </td>
-                                          <td>
-                                              {{ $ctos->ic }}
-                                          </td>
-                                          <td>
-                                              {{ $ctos->no_matric }}
-                                          </td>
-                                          <td>
-                                              {{ $ctos->progcode }}
-                                          </td>
-                                          <td>
-                                              CTOS
-                                          </td>
-                                          <td>
-                                              {{ $ctos->date_ctos }}
-                                          </td>
-                                          <td>
-                                              {{ $ctos->addBy }}
-                                          </td>
-                                          <td>
-                                            <div class="row">
-                                              <div class="col-md-8" style="margin-left: 10px;">
-                                                <div class="form-group">
-                                                <input type="date" class="form-control" id="date-{{ $ctos->id }}" name="date-{{ $ctos->id }}" />
+                                              <td>
+                                                  {{ $key+1 }}
+                                              </td>
+                                              <td>
+                                                  {{ $ctos->name }}
+                                              </td>
+                                              <td class="ctos-col-num">
+                                                  {{ $ctos->ic }}
+                                              </td>
+                                              <td class="ctos-col-num">
+                                                  {{ $ctos->no_matric }}
+                                              </td>
+                                              <td>
+                                                  {{ $ctos->progcode }}
+                                              </td>
+                                              <td>
+                                                  {{ $ctos->status_student }}
+                                              </td>
+                                              <td>
+                                                  CTOS
+                                              </td>
+                                              <td>
+                                                  {{ $ctos->date_ctos }}
+                                              </td>
+                                              <td>
+                                                  {{ $ctos->addBy }}
+                                              </td>
+                                              <td class="ctos-action-cell">
+                                                <div class="ctos-action-row">
+                                                  <input type="date" class="form-control" id="date-{{ $ctos->id }}" name="date-{{ $ctos->id }}" />
+                                                  <button type="submit" class="btn btn-primary" onclick="releaseStudent('{{ $ctos->id }}')">Release</button>
                                                 </div>
-                                              </div>
-                                              <div class="col-md-3">
-                                                <button type="submit" class="btn btn-primary pull-right mb-3" onclick="releaseStudent('{{ $ctos->id }}')">Release</button>
-                                              </div>
-                                            </div>
-                                          </td>
-                                        </tr>
-                                        @endforeach
-                                        </tbody>
-                                        <tfoot>
-                                            
-                                        </tfoot>
-                                    </table>
+                                              </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                
+                                            </tfoot>
+                                        </table>
+                                        </div>
+                                      </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -179,8 +274,13 @@
                         <div class="row">
                           <div class="col-md-12 mt-3">
                               <div class="form-group mt-3">
-                                  <label class="form-label">Students CTOS Release</label>
-                                  <table class="w-100 table table-bordered display margin-top-10 w-p100" id="ctos_list2">
+                                  <div class="card ctos-table-card">
+                                    <div class="card-header">
+                                      <label class="form-label mb-0">Students CTOS Release</label>
+                                    </div>
+                                    <div class="card-body">
+                                      <div class="table-responsive">
+                                      <table class="w-100 table table-bordered display margin-top-10 w-p100 ctos-table" id="ctos_list2">
                                       <thead id="voucher_list">
                                           <tr>
                                               <th style="width: 1%">
@@ -189,14 +289,17 @@
                                               <th>
                                                   Name
                                               </th>
-                                              <th>
-                                                  IC / Passport No.
+                                              <th class="ctos-col-num">
+                                                  No. KP / Passport
                                               </th>
-                                              <th>
+                                              <th class="ctos-col-num">
                                                   No. Matric
                                               </th>
                                               <th>
                                                   Program
+                                              </th>
+                                              <th>
+                                                    Status Pelajar
                                               </th>
                                               <th>
                                                   Status
@@ -221,14 +324,17 @@
                                         <td>
                                             {{ $ctos->name }}
                                         </td>
-                                        <td>
+                                        <td class="ctos-col-num">
                                             {{ $ctos->ic }}
                                         </td>
-                                        <td>
+                                        <td class="ctos-col-num">
                                             {{ $ctos->no_matric }}
                                         </td>
                                         <td>
                                             {{ $ctos->progcode }}
+                                        </td>
+                                        <td>
+                                            {{ $ctos->status_student }}
                                         </td>
                                         <td>
                                             Released
@@ -239,10 +345,8 @@
                                         <td>
                                             {{ $ctos->addBy }}
                                         </td>
-                                        <td style="text-align: center">
-                                          <div>
-                                            <button type="submit" class="btn btn-danger" onclick="deleteCTOS('{{ $ctos->id }}')">Delete</button>
-                                          </div>
+                                        <td class="ctos-action-cell" style="text-align: center">
+                                          <button type="submit" class="btn btn-danger" onclick="deleteCTOS('{{ $ctos->id }}')">Delete</button>
                                         </td>
                                       </tr>
                                       @endforeach    
@@ -251,6 +355,9 @@
                                           
                                       </tfoot>
                                   </table>
+                                      </div>
+                                    </div>
+                                  </div>
                               </div>
                           </div>
                       </div>
@@ -306,22 +413,17 @@ function updateCTOSTables(data) {
             <tr>
                 <td>${key + 1}</td>
                 <td>${ctos.name}</td>
-                <td>${ctos.ic}</td>
-                <td>${ctos.no_matric}</td>
+                <td class="ctos-col-num">${ctos.ic}</td>
+                <td class="ctos-col-num">${ctos.no_matric}</td>
                 <td>${ctos.progcode}</td>
+                <td>${ctos.status_student}</td>
                 <td>CTOS</td>
                 <td>${ctos.date_ctos}</td>
                 <td>${ctos.addBy}</td>
-                <td>
-                    <div class="row">
-                        <div class="col-md-8" style="margin-left: 10px;">
-                            <div class="form-group">
-                                <input type="date" class="form-control" id="date-${ctos.id}" name="date-${ctos.id}" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <button type="button" class="btn btn-primary pull-right mb-3" onclick="releaseStudent('${ctos.id}')">Release</button>
-                        </div>
+                <td class="ctos-action-cell">
+                    <div class="ctos-action-row">
+                        <input type="date" class="form-control" id="date-${ctos.id}" name="date-${ctos.id}" />
+                        <button type="button" class="btn btn-primary" onclick="releaseStudent('${ctos.id}')">Release</button>
                     </div>
                 </td>
             </tr>
@@ -342,16 +444,15 @@ function updateCTOSTables(data) {
             <tr>
                 <td>${key + 1}</td>
                 <td>${ctos2.name}</td>
-                <td>${ctos2.ic}</td>
-                <td>${ctos2.no_matric}</td>
+                <td class="ctos-col-num">${ctos2.ic}</td>
+                <td class="ctos-col-num">${ctos2.no_matric}</td>
                 <td>${ctos2.progcode}</td>
+                <td>${ctos2.status_student}</td>
                 <td>Released CTOS</td>
                 <td>${ctos2.date_release}</td>
                 <td>${ctos2.addBy}</td>
-                <td>
-                  <div>
-                    <button type="button" class="btn btn-danger" onclick="deleteCTOS('${ctos2.id}')">Delete</button>
-                  </div>
+                <td class="ctos-action-cell" style="text-align: center">
+                  <button type="button" class="btn btn-danger" onclick="deleteCTOS('${ctos2.id}')">Delete</button>
                 </td>
             </tr>
         `);
