@@ -164,6 +164,14 @@
                     </div>
                     <div class="col-md-4 col-sm-12">
                       <div class="form-group">
+                        <label class="form-label" for="statusFilter">Status Pelajar</label>
+                        <select class="form-control" id="statusFilter">
+                          <option value="">All Status</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                      <div class="form-group">
                         <label class="form-label" for="date">Date</label>
                         <input type="date" class="form-control" id="date" name="date" />
                       </div>
@@ -382,21 +390,69 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script type="text/javascript">
 
+let ctosTable = null;
+let ctosReleaseTable = null;
+
 $(document).ready(function() {
-    $('#ctos_list').DataTable({
+    ctosTable = $('#ctos_list').DataTable({
         dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
         ],
     });
 
-    $('#ctos_list2').DataTable({
+    ctosReleaseTable = $('#ctos_list2').DataTable({
         dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
         ],
     });
+
+    setupStatusFilter();
 });
+
+function setupStatusFilter() {
+    const statusSelect = $('#statusFilter');
+    const currentValue = statusSelect.val();
+
+    const statuses = new Set();
+    if (ctosTable) {
+        ctosTable.column(5).data().each(function(value) {
+            if (value) statuses.add(value.toString().trim());
+        });
+    }
+    if (ctosReleaseTable) {
+        ctosReleaseTable.column(5).data().each(function(value) {
+            if (value) statuses.add(value.toString().trim());
+        });
+    }
+
+    const sorted = Array.from(statuses).sort();
+    statusSelect.empty().append('<option value="">All Status</option>');
+    sorted.forEach(function(status) {
+        statusSelect.append(`<option value="${status}">${status}</option>`);
+    });
+
+    if (currentValue) {
+        statusSelect.val(currentValue);
+    }
+
+    statusSelect.off('change.ctos').on('change.ctos', function() {
+        const val = $(this).val();
+        const search = val ? '^' + $.fn.dataTable.util.escapeRegex(val) + '$' : '';
+
+        if (ctosTable) {
+            ctosTable.column(5).search(search, true, false).draw();
+        }
+        if (ctosReleaseTable) {
+            ctosReleaseTable.column(5).search(search, true, false).draw();
+        }
+    });
+
+    if (currentValue) {
+        statusSelect.trigger('change');
+    }
+}
 
 function updateCTOSTables(data) {
     // Destroy the existing DataTables instances
@@ -431,7 +487,7 @@ function updateCTOSTables(data) {
     });
 
     // Initialize the DataTable for #ctos_list again
-    $('#ctos_list').DataTable({
+    ctosTable = $('#ctos_list').DataTable({
         dom: 'lBfrtip',
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
@@ -459,12 +515,14 @@ function updateCTOSTables(data) {
     });
 
     // Initialize the DataTable for #ctos_list2 again
-    $('#ctos_list2').DataTable({
+    ctosReleaseTable = $('#ctos_list2').DataTable({
         dom: 'lBfrtip',
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
         ],
     });
+
+    setupStatusFilter();
 }
 
 
