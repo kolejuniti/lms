@@ -334,7 +334,7 @@
                 </a>
               </li>
               <li>
-                <a href="{{ asset('storage/takwim/Takwim Akademik Semester II-20242025 (UiTM) - Edaran Pelajar.pdf') }}" target="_blank">
+                <a href="{{ asset('storage/takwim/Takwim Akademik Semester II-20252026 (UiTM) - Edaran Pelajar.pdf') }}" target="_blank">
                   <span>Takwim UiTM</span>
                 </a>
               </li>
