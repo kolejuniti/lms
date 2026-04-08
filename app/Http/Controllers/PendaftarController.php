@@ -6506,6 +6506,8 @@ class PendaftarController extends Controller
             ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
             ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
             ->leftjoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
+            ->leftJoin('tbldun', 'tblstudent_personal.dun', 'tbldun.id')
+            ->leftJoin('tblparlimen', 'tblstudent_personal.parlimen', 'tblparlimen.id')
             ->leftJoinSub(
                 DB::table('tblstudent_waris')
                     ->select('student_ic')
@@ -6531,6 +6533,8 @@ class PendaftarController extends Controller
                 'tblstudent_status.name AS status',
                 'tblstudent_personal.no_tel',
                 DB::raw('CONCAT_WS(", ", tblstudent_address.address1, tblstudent_address.address2, tblstudent_address.address3, tblstudent_address.city, tblstudent_address.postcode, tblstate.state_name) AS full_address'),
+                'tbldun.name as dun_name',
+                'tblparlimen.name as parlimen_name',
                 'tblstate.state_name',
                 'waris_summary.total_dependent as dependent_no',
                 'waris_summary.total_kasar as gajikasar'

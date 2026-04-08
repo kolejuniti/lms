@@ -119,6 +119,12 @@
                         State
                     </th>
                     <th>
+                        Parlimen
+                    </th>
+                    <th>
+                        Dun
+                    </th>
+                    <th>
                         Dependant
                     </th>
                     <th>
