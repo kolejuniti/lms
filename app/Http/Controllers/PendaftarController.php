@@ -6520,10 +6520,8 @@ class PendaftarController extends Controller
                     $join->on('students.ic', '=', 'waris_summary.student_ic');
                 }
             )
-            ->where([
-                ['students.status', 2],
-                ['students.campus_id', 'IN', [0,1]],
-            ])
+            ->where('students.status', 2)
+            ->whereIn('students.campus_id', [0, 1])
             ->whereIn('students.student_status', [1, 2, 4])
             ->select(
                 'students.*',
