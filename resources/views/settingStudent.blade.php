@@ -880,7 +880,7 @@ $(document).ready(function(){
     var firstWaris = {!! json_encode($data['waris']->shift()) !!};
     
     // Use decoded values
-    $('#w_name').val(decodeHTMLEntities(firstWaris.name || ''));
+    $('#w_name').val(decodeHTMLEntities(firstWaris.name || '')).addClass('readonly-field-modern').prop('readonly', true);
     $('#w_ic').val(firstWaris.ic || '').addClass('readonly-field-modern').prop('readonly', true);
     $('#w_email').val(firstWaris.email || '');
     $('#w_notel_home').val(firstWaris.home_tel || '');
