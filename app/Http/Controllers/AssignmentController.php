@@ -180,11 +180,15 @@ class AssignmentController extends Controller
         $classid = Session::get('CourseIDS');
         $sessionid = Session::get('SessionIDS');
 
+        $assignid = empty($request->assign) ? '' : $request->assign;
+
+        // If we're updating an existing assignment, allow keeping the old PDF.
+        // If we're creating a new assignment, a PDF upload is required.
         $data = $request->validate([
             'assign-title' => ['required', 'string'],
             'assign-duration' => ['required'],
             'total-marks' => ['required'],
-            'myPdf' => 'required', 'mimes:pdf'
+            'myPdf' => [(!empty($assignid) ? 'nullable' : 'required'), 'file', 'mimes:pdf'],
         ]);
 
         $dir = "classassignment/" .  $classid . "/" . $user->name . "/" . $data['assign-title'];
@@ -193,71 +197,73 @@ class AssignmentController extends Controller
 
         $file = $request->file('myPdf');
 
-        $assignid = empty($request->assign) ? '' : $request->assign;
-
         //dd($file);
 
-        $file_name = $file->getClientOriginalName();
-        $file_ext = $file->getClientOriginalExtension();
-        $fileInfo = pathinfo($file_name);
-        $filename = $fileInfo['filename'];
-        $newname = $filename . "." . $file_ext;
-        $newpath = "classassignment/" .  $classid . "/" . $user->name . "/" . $data['assign-title'] . "/" . $newname;
+        $newname = null;
+        $newpath = null;
+        if ($file) {
+            $file_name = $file->getClientOriginalName();
+            $file_ext = $file->getClientOriginalExtension();
+            $fileInfo = pathinfo($file_name);
+            $filename = $fileInfo['filename'];
+            $newname = $filename . "." . $file_ext;
+            $newpath = "classassignment/" .  $classid . "/" . $user->name . "/" . $data['assign-title'] . "/" . $newname;
+        }
 
-        if($request->chapter != null && $request->chapter != null)
+        if($request->group != null && $request->chapter != null)
         {
 
             if( !empty($assignid) ){
                 
-                if(! file_exists($newname)){
-                    $assign = DB::table('tblclassassign')->where('id', $assignid)->first();
+                $assign = DB::table('tblclassassign')->where('id', $assignid)->first();
 
+                // If a new PDF is uploaded, replace the existing file. Otherwise keep it.
+                if ($file) {
                     Storage::disk('linode')->delete($assign->content);
-
-                    DB::table('tblclassassign_group')->where('assignid', $assignid)->delete();
-
-                    DB::table('tblclassassign_chapter')->where('assignid', $assignid)->delete();
-
                     Storage::disk('linode')->putFileAs(
                         $dir,
                         $file,
                         $newname,
                         'public'
                     );
-
-                    $q = DB::table('tblclassassign')->where('id', $assignid)->update([
-                        'status' => 2,
-                        'title' => $data['assign-title'],
-                        'content' => $newpath,
-                        'deadline' => $data['assign-duration'],
-                        'total_mark' => $data['total-marks']
-                    ]);
-
-                    foreach($request->group as $grp)
-                    {
-                        $gp = explode('|', $grp);
-
-                        DB::table('tblclassassign_group')->insert([
-                            "groupid" => $gp[0],
-                            "groupname" => $gp[1],
-                            "assignid" => $assignid
-                        ]);
-                    }
-
-                    foreach($request->chapter as $chp)
-                    {
-                        DB::table('tblclassassign_chapter')->insert([
-                            "chapterid" => $chp,
-                            "assignid" => $assignid
-                        ]);
-                    }
-
-                    return redirect(route('lecturer.assign', ['id' => $classid]));
                 }
+
+                DB::table('tblclassassign_group')->where('assignid', $assignid)->delete();
+
+                DB::table('tblclassassign_chapter')->where('assignid', $assignid)->delete();
+
+                $q = DB::table('tblclassassign')->where('id', $assignid)->update([
+                    'status' => 2,
+                    'title' => $data['assign-title'],
+                    'content' => ($file ? $newpath : $assign->content),
+                    'deadline' => $data['assign-duration'],
+                    'total_mark' => $data['total-marks']
+                ]);
+
+                foreach($request->group as $grp)
+                {
+                    $gp = explode('|', $grp);
+
+                    DB::table('tblclassassign_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "assignid" => $assignid
+                    ]);
+                }
+
+                foreach($request->chapter as $chp)
+                {
+                    DB::table('tblclassassign_chapter')->insert([
+                        "chapterid" => $chp,
+                        "assignid" => $assignid
+                    ]);
+                }
+
+                return redirect(route('lecturer.assign', ['id' => $classid]));
 
             }else{
 
-                if(! file_exists($newname)){
+                if ($file){
                     Storage::disk('linode')->putFileAs(
                         $dir,
                         $file,
@@ -296,6 +302,8 @@ class AssignmentController extends Controller
                     }
 
                     return redirect(route('lecturer.assign', ['id' => $classid]));
+                } else if (!$file) {
+                    return redirect()->back()->withErrors(['myPdf' => 'Please upload a PDF file.']);
                 }
             }
 
@@ -576,34 +584,52 @@ class AssignmentController extends Controller
 
         $classassign  = Storage::disk('linode')->makeDirectory($dir);
 
+        // Lecturer may update marks/comments without uploading a return file.
+        $request->validate([
+            'markss' => ['nullable', 'numeric'],
+            'commentss' => ['nullable', 'string'],
+            'myPdf' => ['nullable', 'file'],
+        ]);
+
         $file = $request->file('myPdf');
 
-        //dd($file);
-
-        $file_name = $file->getClientOriginalName();
-        $file_ext = $file->getClientOriginalExtension();
-        $fileInfo = pathinfo($file_name);
-        $filename = $fileInfo['filename'];
-        $newname = $filename . "." . $file_ext;
-        $newpath = "classassignment/" .  $classid . "/" . $assignment->name . "/" . $assignment->title . "/" . $participant . "/return" . "/" . $newname;
-
-        Storage::disk('linode')->putFileAs(
-            $dir,
-            $file,
-            $newname,
-            'public'
-          );
-      
-        $q = \DB::table('tblclassstudentassign')
+        $existing = DB::table('tblclassstudentassign')
             ->where('assignid', $assign)
-            ->where("userid", $participant)
-            ->update([
-                "return_content" => $newpath,
+            ->where('userid', $participant)
+            ->first();
+
+        // Some schemas declare return_content as NOT NULL, so default to empty string.
+        $newpath = $existing->return_content ?? '';
+        if ($file) {
+            $file_name = $file->getClientOriginalName();
+            $file_ext = $file->getClientOriginalExtension();
+            $fileInfo = pathinfo($file_name);
+            $filename = $fileInfo['filename'];
+            $newname = $filename . "." . $file_ext;
+            $newpath = "classassignment/" .  $classid . "/" . $assignment->name . "/" . $assignment->title . "/" . $participant . "/return" . "/" . $newname;
+
+            Storage::disk('linode')->putFileAs(
+                $dir,
+                $file,
+                $newname,
+                'public'
+            );
+        }
+      
+        // Some students may have no submission row yet; allow lecturer to publish marks anyway.
+        $q = \DB::table('tblclassstudentassign')->updateOrInsert(
+            [
+                'assignid' => $assign,
+                'userid' => $participant,
+            ],
+            [
+                "return_content" => ($newpath === null ? '' : $newpath),
                 "final_mark" => $final_mark,
                 //"total_mark" => $total_mark,
                 "comments" => $comments,
                 "status" => 3
-            ]);
+            ]
+        );
         
             return redirect(route('lecturer.assign.status',
         
