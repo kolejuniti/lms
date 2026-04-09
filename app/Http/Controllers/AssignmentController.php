@@ -437,10 +437,14 @@ class AssignmentController extends Controller
                     if (empty($sts)) {
                         $content .= '-';
                     } else {
-                        if ($sts->content == null) {
+                        $link = $sts->external_url ?? $sts->content;
+                        if (empty($link)) {
                             $content .= '-';
                         } else {
-                            $content .= '<a href="' . Storage::disk('linode')->url($sts->content) . '"><i class="fa fa-file-pdf-o fa-3x"></i></a>';
+                            $isUrl = is_string($link) && preg_match('/^https?:\\/\\//i', $link);
+                            $href = $isUrl ? $link : Storage::disk('linode')->url($link);
+                            $target = $isUrl ? ' target="_blank"' : '';
+                            $content .= '<a href="' . $href . '"' . $target . '><i class="fa fa-file-pdf-o fa-3x"></i></a>';
                         }
                     }
                     $content .= '</td>
@@ -491,9 +495,13 @@ class AssignmentController extends Controller
     {
         $data = DB::table('tblclassstudentassign')->where('id', $request->id)->first();
 
-        Storage::disk('linode')->delete($data->content);
+        if (!empty($data?->content) && !(is_string($data->content) && preg_match('/^https?:\\/\\//i', $data->content))) {
+            Storage::disk('linode')->delete($data->content);
+        }
 
-        Storage::disk('linode')->delete($data->return_content);
+        if (!empty($data?->return_content) && !(is_string($data->return_content) && preg_match('/^https?:\\/\\//i', $data->return_content))) {
+            Storage::disk('linode')->delete($data->return_content);
+        }
 
         DB::table('tblclassstudentassign')->where('id', $request->id)->delete();
 
@@ -524,7 +532,7 @@ class AssignmentController extends Controller
             ->where('tblclassstudentassign.userid', $userid)->get()->first();
 
         if ($assign) {
-            $data['assign'] = $assign->content;
+            $data['assign'] = $assign->external_url ?? $assign->content;
             //dd($data['assign']);
             $data['return'] = $assign->return_content;
             $data['comments'] = $assign->comments;
@@ -767,6 +775,28 @@ class AssignmentController extends Controller
     }
 
     public function submitassign(Request $request){
+        // Allow either a file upload (images/docs only) OR an external URL (no big storage usage).
+        $validated = $request->validate([
+            'submission_type' => ['required', 'in:file,url'],
+            'myPdf' => [
+                'required_if:submission_type,file',
+                'nullable',
+                'file',
+                // 10MB (in KB). Adjust as needed to control storage usage.
+                'max:10240',
+                // Extension allow-list (blocks mp4, mov, etc.).
+                'mimes:pdf,jpg,jpeg,png,webp,gif,doc,docx,xls,xlsx,ppt,pptx,txt',
+                // Extra safety: MIME allow-list to block renamed video/audio.
+                'mimetypes:application/pdf,image/jpeg,image/png,image/webp,image/gif,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain',
+            ],
+            'submission_url' => [
+                'required_if:submission_type,url',
+                'nullable',
+                'url',
+                'max:2048',
+            ],
+        ]);
+
         $id = $request->id;
 
         $assignment = DB::table('tblclassassign')
@@ -784,51 +814,57 @@ class AssignmentController extends Controller
 
         //$classassign  = Storage::disk('public')->makeDirectory($dir);
 
-        $file = $request->file('myPdf');
-
-        //dd($file);
-
-        //dd($file);
-
-        $file_name = $file->getClientOriginalName();
-        $file_ext = $file->getClientOriginalExtension();
-        $fileInfo = pathinfo($file_name);
-        $filename = $fileInfo['filename'];
-        $newname = $filename . "." . $file_ext;
-        $newpath = "classassignment/" .  $classid . "/" . $assignment->name . "/" . $assignment->title . "/" . $stud->ic . "/" . $newname;
-        
         $today = date("Y-m-d H:i:s");
 
-        if(! file_exists($newname)){
+        $externalUrl = null;
+        if ($validated['submission_type'] === 'url') {
+            $contentPath = null;
+            $externalUrl = $validated['submission_url'];
+        } else {
+            $file = $request->file('myPdf');
+
+            $file_name = $file->getClientOriginalName();
+            $file_ext = $file->getClientOriginalExtension();
+            $fileInfo = pathinfo($file_name);
+            $filename = $fileInfo['filename'];
+            $newname = $filename . "." . $file_ext;
+
+            // Avoid accidental overwrites on object storage.
+            $fullDiskPath = $dir . "/" . $newname;
+            if (Storage::disk('linode')->exists($fullDiskPath)) {
+                $newname = $filename . "_" . time() . "." . $file_ext;
+            }
+
             Storage::disk('linode')->putFileAs(
                 $dir,
                 $file,
                 $newname,
                 'public'
-              );
-            
-              if($today > $assignment->deadline)
-              {
-                 $status = 2;
-              }else {
-                 $status = 1;
-              }
+            );
 
-              $q = DB::table('tblclassstudentassign')->upsert([
-                "userid" => Session::get('StudInfos')->ic,
-                "assignid" => $id,
-                "subdate" => $today,
-                "content" => $newpath,
-                "status" => 2,
-                "status_submission" => $status
-            ],['userid', 'assignid']);
-
-
-            return redirect(route('student.assign.status',
-        
-             ['id' => $classid,'assign' => $id]
-            ));
+            $contentPath = "classassignment/" .  $classid . "/" . $assignment->name . "/" . $assignment->title . "/" . $stud->ic . "/" . $newname;
         }
+
+        if($today > $assignment->deadline)
+        {
+            $status = 2;
+        }else {
+            $status = 1;
+        }
+
+        DB::table('tblclassstudentassign')->upsert([
+            "userid" => Session::get('StudInfos')->ic,
+            "assignid" => $id,
+            "subdate" => $today,
+            "content" => $contentPath,
+            "external_url" => $externalUrl,
+            "status" => 2,
+            "status_submission" => $status
+        ],['userid', 'assignid']);
+
+        return redirect(route('student.assign.status',
+            ['id' => $classid,'assign' => $id]
+        ));
      
     }
 
@@ -857,7 +893,7 @@ class AssignmentController extends Controller
             ->where('tblclassstudentassign.userid', $userid)->get()->first();
 
        
-        $data['assign'] = $assign->content;
+        $data['assign'] = $assign->external_url ?? $assign->content;
         $data['return'] = $assign->return_content;
         $data['mark'] = $assign->final_mark;
         $data['comments'] = $assign->comments;

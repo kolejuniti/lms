@@ -104,7 +104,16 @@ input.collected-marks + label{
                                 <hr>
                                 <div class="col-md-12 justify-content-center" style="float: center">
                                     <div class="col-md-3 text-center mb-3">
-                                        <a href="{{ ($data['return'] == null) ? '' : Storage::disk('linode')->url($data['assign']) }}">
+                                        @php
+                                            $assignIsUrl = is_string($data['assign'] ?? null) && preg_match('/^https?:\\/\\//i', $data['assign']);
+                                            $assignHref = $assignIsUrl ? $data['assign'] : Storage::disk('linode')->url($data['assign']);
+                                            $assignPathForName = $assignIsUrl ? (parse_url($data['assign'], PHP_URL_PATH) ?? $data['assign']) : $data['assign'];
+                                            $assignBasename = basename($assignPathForName);
+                                            $assignExtension = $assignIsUrl
+                                                ? pathinfo($assignPathForName, PATHINFO_EXTENSION)
+                                                : pathinfo(storage_path($data['assign']), PATHINFO_EXTENSION);
+                                        @endphp
+                                        <a href="{{ ($data['return'] == null) ? '' : $assignHref }}" target="{{ $assignIsUrl ? '_blank' : '_self' }}">
                                             <svg width="5em" height="5em" enable-background="new 0 0 512 512" version="1.1" viewBox="0 0 512 512" xml:space="preserve" >
                                                 <path d="M128,0c-17.6,0-32,14.4-32,32v448c0,17.6,14.4,32,32,32h320c17.6,0,32-14.4,32-32V128L352,0H128z" fill="#E2E5E7"/>
                                                 <path d="m384 128h96l-128-128v96c0 17.6 14.4 32 32 32z" fill="#B0B7BD"/>
@@ -118,7 +127,7 @@ input.collected-marks + label{
                                                 <path d="m400 432h-304v16h304c8.8 0 16-7.2 16-16v-16c0 8.8-7.2 16-16 16z" fill="#CAD1D8"/>
                                             </svg>
                                             <div class="p-3">
-                                                {{ basename($data['assign'])}} / {{ $extension = pathinfo(storage_path($data['assign']), PATHINFO_EXTENSION); }}
+                                                {{ $assignBasename }} / {{ $assignExtension }}
                                             </div>
                                         </a>
                                     </div>

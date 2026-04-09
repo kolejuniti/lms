@@ -102,12 +102,41 @@ input.collected-marks + label{
                                         </div>
                                     </div>
                                     <hr>
-                                    <form id="" class="mb-4">
-                                        <div class="col-md-4 mb-4">
-                                            <label for="total-marks" class="form-label "><strong>Upload Your Answer Sheet here.</strong></label>
-                                            <input type="file" id="myPdf" name="myPdf" class="form-control"><br required>
+                                    <div class="mb-4">
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label"><strong>Submission Type</strong></label>
+                                            <div class="d-flex flex-wrap gap-3">
+                                                <div class="form-check me-3">
+                                                    <input class="form-check-input" type="radio" name="submission_type" id="submission_type_file" value="file" {{ old('submission_type', 'file') === 'file' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="submission_type_file">Upload file</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="submission_type" id="submission_type_url" value="url" {{ old('submission_type') === 'url' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="submission_type_url">External link (URL)</label>
+                                                </div>
+                                            </div>
+                                            @error('submission_type')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
-                                    </form>
+
+                                        <div class="col-md-6 mb-4 submission-file-wrap">
+                                            <label for="myPdf" class="form-label"><strong>Upload Your Answer Sheet</strong></label>
+                                            <input type="file" id="myPdf" name="myPdf" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,image/*">
+                                            @error('myPdf')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-md-8 mb-4 submission-url-wrap" style="display:none;">
+                                            <label for="submission_url" class="form-label"><strong>External Link (URL)</strong></label>
+                                            <input type="url" id="submission_url" name="submission_url" class="form-control" placeholder="https://drive.google.com/... or https://..." value="{{ old('submission_url') }}">
+                                            <small class="text-muted">Make sure the link has permission for your lecturer to view.</small>
+                                            @error('submission_url')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -149,17 +178,43 @@ var selected_assign = "{{ $data['assignid'] }}";
 </script>
 
 <script>
+    function toggleSubmissionType() {
+        var type = $('input[name="submission_type"]:checked').val();
+
+        if (type === 'url') {
+            $('.submission-file-wrap').hide();
+            $('.submission-url-wrap').show();
+            $('#myPdf').prop('disabled', true).val('');
+            $('#submission_url').prop('disabled', false);
+            document.getElementById("pdfbox").hidden = true;
+        } else {
+            $('.submission-file-wrap').show();
+            $('.submission-url-wrap').hide();
+            $('#myPdf').prop('disabled', false);
+            $('#submission_url').prop('disabled', true).val('');
+        }
+    }
+
+    $(document).on('change', 'input[name="submission_type"]', toggleSubmissionType);
+    $(document).ready(function () {
+        $('#submission_url').prop('disabled', true);
+        toggleSubmissionType();
+    });
+
     // Loaded via <script> tag, create shortcut to access PDF.js exports.
         var pdfjsLib = window['pdfjs-dist/build/pdf'];
     // The workerSrc property shall be specified.
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
     
     $("#myPdf").on("change", function(e){
+        var file = e.target.files[0];
+        if(!file){
+            document.getElementById("pdfbox").hidden = true;
+            return;
+        }
 
-        document.getElementById("pdfbox").hidden = false;
-
-        var file = e.target.files[0]
         if(file.type == "application/pdf"){
+            document.getElementById("pdfbox").hidden = false;
             var fileReader = new FileReader();  
             fileReader.onload = function() {
                 var pdfData = new Uint8Array(this.result);
@@ -198,6 +253,8 @@ var selected_assign = "{{ $data['assignid'] }}";
                 });
             };
             fileReader.readAsArrayBuffer(file);
+        }else{
+            document.getElementById("pdfbox").hidden = true;
         }
     });
     </script>

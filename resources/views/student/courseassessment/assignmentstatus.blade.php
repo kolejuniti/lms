@@ -100,7 +100,18 @@
                                   @if (empty($sts))
                                     -
                                   @else
-                                    <a href="{{ Storage::disk('linode')->url($sts->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                                    @php
+                                      $link = $sts->external_url ?? $sts->content;
+                                    @endphp
+                                    @if (empty($link))
+                                      -
+                                    @else
+                                      @php
+                                        $isUrl = is_string($link ?? null) && preg_match('/^https?:\\/\\//i', $link);
+                                        $href = $isUrl ? $link : Storage::disk('linode')->url($link);
+                                      @endphp
+                                      <a href="{{ $href }}" target="{{ $isUrl ? '_blank' : '_self' }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                                    @endif
                                   @endif
                               </td>
                               <td>
