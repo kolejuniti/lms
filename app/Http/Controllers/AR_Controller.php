@@ -4799,7 +4799,7 @@ class AR_Controller extends Controller
                     ->whereNotIn('tblpayment.process_type_id', [8])
                     ->select(
                         'tblpayment.*',
-                        'tblpaymentdtl.amount',
+                        DB::raw('SUM(tblpaymentdtl.amount) as amount'),
                         DB::raw('IF(tblpayment.id IS NOT NULL, 
                                         CASE
                                             WHEN IFNULL(tblpaymentdtl.amount, 0) < 250 THEN "R"
