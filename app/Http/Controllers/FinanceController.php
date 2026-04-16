@@ -760,7 +760,7 @@ class FinanceController extends Controller
 
             // Prepare the base update data
             $updateData = [
-                'status_id' => ($normalizedIc1 == $normalizedIc2) ? 19 : 18,
+                'status_id' => ($normalizedIc1 == $normalizedIc2) ? 19 : 11,
                 'reason' => ($normalizedIc1 == $normalizedIc2) ? 'R - KUPD' : null
             ];
 
