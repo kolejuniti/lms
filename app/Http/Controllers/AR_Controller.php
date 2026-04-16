@@ -4654,7 +4654,7 @@ class AR_Controller extends Controller
                         $data['below5convert']++;
                     }
 
-                    if ($student->status != 1 && $student->status != 2 && $student->status != 14) {
+                    if ($student->status != 1 && $student->status != 2 && $student->status != 14 && $student->status != 8) {
                         $data['below5others']++;
                     }
                 } elseif ($daysDiff < 10) {
@@ -4676,7 +4676,7 @@ class AR_Controller extends Controller
                         $data['below10convert']++;
                     }
 
-                    if ($student->status != 1 && $student->status != 2 && $student->status != 14) {
+                    if ($student->status != 1 && $student->status != 2 && $student->status != 14 && $student->status != 8) {
                         $data['below10others']++;
                     }
                 } elseif ($daysDiff < 15) {
@@ -4698,7 +4698,7 @@ class AR_Controller extends Controller
                         $data['below15convert']++;
                     }
 
-                    if ($student->status != 1 && $student->status != 2 && $student->status != 14) {
+                    if ($student->status != 1 && $student->status != 2 && $student->status != 14 && $student->status != 8) {
                         $data['below15others']++;
                     }
                 } elseif ($daysDiff < 20) {
@@ -4720,7 +4720,7 @@ class AR_Controller extends Controller
                         $data['below20convert']++;
                     }
 
-                    if ($student->status != 1 && $student->status != 2 && $student->status != 14) {
+                    if ($student->status != 1 && $student->status != 2 && $student->status != 14 && $student->status != 8) {
                         $data['below20others']++;
                     }
                 } elseif ($daysDiff < 25) {
@@ -4742,7 +4742,7 @@ class AR_Controller extends Controller
                         $data['below25convert']++;
                     }
 
-                    if ($student->status != 1 && $student->status != 2 && $student->status != 14) {
+                    if ($student->status != 1 && $student->status != 2 && $student->status != 14 && $student->status != 8) {
                         $data['below25others']++;
                     }
                 } elseif ($daysDiff < 30) {
@@ -4764,7 +4764,7 @@ class AR_Controller extends Controller
                         $data['below30convert']++;
                     }
 
-                    if ($student->status != 1 && $student->status != 2 && $student->status != 14) {
+                    if ($student->status != 1 && $student->status != 2 && $student->status != 14 && $student->status != 8) {
                         $data['below30others']++;
                     }
                 } else {
@@ -4786,7 +4786,7 @@ class AR_Controller extends Controller
                         $data['above30convert']++;
                     }
 
-                    if ($student->status != 1 && $student->status != 2 && $student->status != 14) {
+                    if ($student->status != 1 && $student->status != 2 && $student->status != 14 && $student->status != 8) {
                         $data['above30others']++;
                     }
                 }
