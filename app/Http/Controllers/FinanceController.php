@@ -8524,6 +8524,7 @@ class FinanceController extends Controller
             ->join('tblprocess_status', 'tblstudent_voucher.status', 'tblprocess_status.id')
             ->select('tblstudent_voucher.*', 'tblprocess_status.name')
             ->where('tblstudent_voucher.student_ic', $request->student)
+            ->orderBy('tblstudent_voucher.id', 'desc')
             ->get();
 
         $data['sum'] = DB::table('tblstudent_voucher')->where('tblstudent_voucher.student_ic', $request->student)->sum('amount');
