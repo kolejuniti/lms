@@ -72,6 +72,7 @@
                                                     <th>#</th>
                                                     <th>Address</th>
                                                     <th>Phone No.</th>
+                                                    <th>Phone No.</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -79,6 +80,7 @@
                                                     <td>1</td>
                                                     <td>{{ $data['student']->address }}</td>
                                                     <td>{{ $data['student']->no_tel }}</td>
+                                                    <td>{{ $data['student']->no_tel2 }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

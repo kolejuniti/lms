@@ -10349,6 +10349,7 @@ class FinanceController extends Controller
                 'students.no_matric',
                 DB::raw("CONCAT(tblstudent_address.address1, ',', tblstudent_address.address2, ',', tblstudent_address.address3, ',', tblstudent_address.city, ',', tblstudent_address.postcode, ',', tblstate.state_name) as address"),
                 'tblstudent_personal.no_tel',
+                'tblstudent_personal.no_tel2',
                 'students.email'
             )
             ->leftjoin('tblprogramme', 'students.program', '=', 'tblprogramme.id')
