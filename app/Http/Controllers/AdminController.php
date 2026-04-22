@@ -2138,7 +2138,7 @@ class AdminController extends Controller
     public function lecturerProgram()
     {
 
-        $data['session'] = DB::table('sessions')->where('Status', 'ACTIVE')->get();
+        $data['session'] = DB::table('sessions')->orderBy('SessionID', 'DESC')->get();
 
         return view('admin.report.lecturerProgram', compact('data'));
 
