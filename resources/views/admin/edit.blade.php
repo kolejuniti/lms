@@ -220,7 +220,7 @@
                       <div class="program-assignment mt-3" id="program-card" style="display: none;">
                         <div class="form-group">
                           <label class="form-label" for="program">
-                            <i class="fa fa-project-diagram me-2 text-primary"></i>Program Assignment
+                            <i class="fa fa-project-diagram me-2 text-primary"></i>Assign Program Lead
                           </label>
                           <div class="program-container" id="program">
                             <!-- Dynamic content will be loaded here -->
@@ -279,6 +279,58 @@
                           </div>
                           @endforeach
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Past Work Experiences Section -->
+                <div class="col-12">
+                  <div class="card box-animated" style="animation-delay: 0.45s;">
+                    <div class="card-header">
+                      <h5 class="card-title mb-0">
+                        <i class="fa fa-briefcase text-primary me-2"></i>
+                        Past Work Experiences
+                      </h5>
+                      <p class="mb-0 mt-2 opacity-75">Add and manage past work experiences</p>
+                    </div>
+                    <div class="card-body">
+                      <div class="row g-3 align-items-end">
+                        <div class="col-lg-3 col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="exp_position">Position Held</label>
+                            <input type="text" class="form-control" id="exp_position" placeholder="e.g. Lecturer" />
+                          </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="exp_employer">Employer</label>
+                            <input type="text" class="form-control" id="exp_employer" placeholder="e.g. ABC University" />
+                          </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="exp_year_start">Year Start</label>
+                            <input type="number" class="form-control" id="exp_year_start" min="1900" max="2100" placeholder="YYYY" />
+                          </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="exp_year_end">Year End</label>
+                            <input type="number" class="form-control" id="exp_year_end" min="1900" max="2100" placeholder="YYYY" />
+                          </div>
+                        </div>
+                        <div class="col-lg-1 col-md-12">
+                          <button type="button" class="btn btn-primary w-100" id="addExperienceBtn">
+                            <i class="fa fa-plus me-1"></i>Add
+                          </button>
+                        </div>
+                      </div>
+
+                      <hr class="my-4" />
+
+                      <div id="experiencesTableContainer">
+                        @include('admin.partials.experiences_table', ['experiences' => $experiences])
                       </div>
                     </div>
                   </div>
@@ -368,6 +420,57 @@
         </form>
       </div>
     </section>
+  </div>
+</div>
+
+<!-- Edit Experience Modal -->
+<div class="modal fade" id="experienceEditModal" tabindex="-1" role="dialog" aria-labelledby="experienceEditModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="experienceEditModalLabel">
+          <i class="fa fa-edit me-2"></i>Edit Experience
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit_experience_id" />
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label" for="edit_exp_position">Position Held</label>
+              <input type="text" class="form-control" id="edit_exp_position" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label" for="edit_exp_employer">Employer</label>
+              <input type="text" class="form-control" id="edit_exp_employer" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label" for="edit_exp_year_start">Year Start</label>
+              <input type="number" class="form-control" id="edit_exp_year_start" min="1900" max="2100" />
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label" for="edit_exp_year_end">Year End</label>
+              <input type="number" class="form-control" id="edit_exp_year_end" min="1900" max="2100" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="updateExperienceBtn">
+          <i class="fa fa-save me-1"></i>Save
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -862,6 +965,147 @@ $(document).ready(function() {
       $(this).removeClass('is-invalid').addClass('is-valid');
     } else {
       $(this).removeClass('is-valid');
+    }
+  });
+
+  function showMessage(type, title, text) {
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        icon: type,
+        title: title,
+        text: text,
+        confirmButtonColor: '#4361ee'
+      });
+    } else {
+      alert((title ? title + ': ' : '') + text);
+    }
+  }
+
+  function refreshExperiences(html) {
+    $('#experiencesTableContainer').html(html);
+  }
+
+  // Past Work Experiences - add
+  $('#addExperienceBtn').on('click', function() {
+    const payload = {
+      user_ic: user_ic,
+      position: $('#exp_position').val(),
+      employer: $('#exp_employer').val(),
+      year_start: $('#exp_year_start').val(),
+      year_end: $('#exp_year_end').val()
+    };
+
+    $('#addExperienceBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i>Adding');
+
+    $.ajax({
+      headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+      url: "{{ url('admin/experience/store') }}",
+      method: 'POST',
+      data: payload,
+      success: function(res) {
+        if (res && res.ok) {
+          refreshExperiences(res.html);
+          $('#exp_position').val('');
+          $('#exp_employer').val('');
+          $('#exp_year_start').val('');
+          $('#exp_year_end').val('');
+        } else {
+          showMessage('error', 'Error', (res && res.message) ? res.message : 'Failed to add experience.');
+        }
+      },
+      error: function(xhr) {
+        const msg = (xhr.responseJSON && (xhr.responseJSON.message || xhr.responseJSON.error)) ? (xhr.responseJSON.message || xhr.responseJSON.error) : 'Failed to add experience.';
+        showMessage('error', 'Error', msg);
+      },
+      complete: function() {
+        $('#addExperienceBtn').prop('disabled', false).html('<i class="fa fa-plus me-1"></i>Add');
+      }
+    });
+  });
+
+  // Past Work Experiences - open edit modal
+  $(document).on('click', '.btn-edit-experience', function() {
+    $('#edit_experience_id').val($(this).data('id'));
+    $('#edit_exp_position').val($(this).data('position'));
+    $('#edit_exp_employer').val($(this).data('employer'));
+    $('#edit_exp_year_start').val($(this).data('year_start'));
+    $('#edit_exp_year_end').val($(this).data('year_end'));
+  });
+
+  // Past Work Experiences - update
+  $('#updateExperienceBtn').on('click', function() {
+    const payload = {
+      id: $('#edit_experience_id').val(),
+      user_ic: user_ic,
+      position: $('#edit_exp_position').val(),
+      employer: $('#edit_exp_employer').val(),
+      year_start: $('#edit_exp_year_start').val(),
+      year_end: $('#edit_exp_year_end').val()
+    };
+
+    $('#updateExperienceBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-1"></i>Saving');
+
+    $.ajax({
+      headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+      url: "{{ url('admin/experience/update') }}",
+      method: 'POST',
+      data: payload,
+      success: function(res) {
+        if (res && res.ok) {
+          refreshExperiences(res.html);
+          $('#experienceEditModal').modal('hide');
+        } else {
+          showMessage('error', 'Error', (res && res.message) ? res.message : 'Failed to update experience.');
+        }
+      },
+      error: function(xhr) {
+        const msg = (xhr.responseJSON && (xhr.responseJSON.message || xhr.responseJSON.error)) ? (xhr.responseJSON.message || xhr.responseJSON.error) : 'Failed to update experience.';
+        showMessage('error', 'Error', msg);
+      },
+      complete: function() {
+        $('#updateExperienceBtn').prop('disabled', false).html('<i class="fa fa-save me-1"></i>Save');
+      }
+    });
+  });
+
+  // Past Work Experiences - delete
+  $(document).on('click', '.btn-delete-experience', function() {
+    const expId = $(this).data('id');
+
+    const proceed = () => {
+      $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: "{{ url('admin/experience/delete') }}",
+        method: 'POST',
+        data: { id: expId, user_ic: user_ic },
+        success: function(res) {
+          if (res && res.ok) {
+            refreshExperiences(res.html);
+          } else {
+            showMessage('error', 'Error', (res && res.message) ? res.message : 'Failed to delete experience.');
+          }
+        },
+        error: function(xhr) {
+          const msg = (xhr.responseJSON && (xhr.responseJSON.message || xhr.responseJSON.error)) ? (xhr.responseJSON.message || xhr.responseJSON.error) : 'Failed to delete experience.';
+          showMessage('error', 'Error', msg);
+        }
+      });
+    };
+
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Delete experience?',
+        text: 'This action cannot be undone.',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#dc3545'
+      }).then((result) => {
+        if (result.isConfirmed) proceed();
+      });
+    } else {
+      if (confirm('Delete this experience?')) proceed();
     }
   });
 

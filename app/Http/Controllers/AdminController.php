@@ -131,8 +131,13 @@ class AdminController extends Controller
 
         //dd($academic);
 
+        $experiences = DB::table('tbluser_experiences')
+            ->where('user_ic', $id->ic)
+            ->orderBy('year_start', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
 
-        return view('admin.edit' , compact('id', 'faculty', 'academic', 'academics'));
+        return view('admin.edit' , compact('id', 'faculty', 'academic', 'academics', 'experiences'));
     }
 
     //a function with (Modal $variable) is to make sql query *example = select * from User where id = $id
@@ -289,7 +294,7 @@ class AdminController extends Controller
         <div class="table-responsive" style="width:99.7%">
         <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
             <thead class="thead-themed">
-            <th>Sub Chapter</th>
+            <th>#</th>
             <th>Name</th>
             <th></th>
             </thead>
@@ -326,6 +331,147 @@ class AdminController extends Controller
             $content .= '</tbody></table>';
 
             return $content;
+    }
+
+    public function experienceStore(Request $request)
+    {
+        $data = $request->validate([
+            'user_ic' => ['required', 'string', 'max:12'],
+            'position' => ['required', 'string', 'max:255'],
+            'employer' => ['required', 'string', 'max:255'],
+            'year_start' => ['required', 'integer', 'min:1900', 'max:2100'],
+            'year_end' => ['nullable', 'integer', 'min:1900', 'max:2100'],
+        ]);
+
+        $userExists = User::where('ic', $data['user_ic'])->exists();
+        if (!$userExists) {
+            abort(404);
+        }
+
+        if (!empty($data['year_end']) && (int)$data['year_end'] < (int)$data['year_start']) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Year End must be greater than or equal to Year Start.',
+            ], 422);
+        }
+
+        DB::table('tbluser_experiences')->insert([
+            'user_ic' => $data['user_ic'],
+            'position' => $data['position'],
+            'employer' => $data['employer'],
+            'year_start' => $data['year_start'],
+            'year_end' => $data['year_end'] ?? null,
+            'created_at' => Carbon::now(),
+        ]);
+
+        $experiences = DB::table('tbluser_experiences')
+            ->where('user_ic', $data['user_ic'])
+            ->orderBy('year_start', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $html = view('admin.partials.experiences_table', compact('experiences'))->render();
+
+        return response()->json([
+            'ok' => true,
+            'html' => $html,
+        ]);
+    }
+
+    public function experienceUpdate(Request $request)
+    {
+        $data = $request->validate([
+            'id' => ['required', 'integer'],
+            'user_ic' => ['required', 'string', 'max:12'],
+            'position' => ['required', 'string', 'max:255'],
+            'employer' => ['required', 'string', 'max:255'],
+            'year_start' => ['required', 'integer', 'min:1900', 'max:2100'],
+            'year_end' => ['nullable', 'integer', 'min:1900', 'max:2100'],
+        ]);
+
+        $userExists = User::where('ic', $data['user_ic'])->exists();
+        if (!$userExists) {
+            abort(404);
+        }
+
+        if (!empty($data['year_end']) && (int)$data['year_end'] < (int)$data['year_start']) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Year End must be greater than or equal to Year Start.',
+            ], 422);
+        }
+
+        $experienceExists = DB::table('tbluser_experiences')
+            ->where('id', $data['id'])
+            ->where('user_ic', $data['user_ic'])
+            ->exists();
+
+        if (!$experienceExists) {
+            abort(404);
+        }
+
+        DB::table('tbluser_experiences')
+            ->where('id', $data['id'])
+            ->where('user_ic', $data['user_ic'])
+            ->update([
+                'position' => $data['position'],
+                'employer' => $data['employer'],
+                'year_start' => $data['year_start'],
+                'year_end' => $data['year_end'] ?? null,
+            ]);
+
+        $experiences = DB::table('tbluser_experiences')
+            ->where('user_ic', $data['user_ic'])
+            ->orderBy('year_start', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $html = view('admin.partials.experiences_table', compact('experiences'))->render();
+
+        return response()->json([
+            'ok' => true,
+            'html' => $html,
+        ]);
+    }
+
+    public function experienceDelete(Request $request)
+    {
+        $data = $request->validate([
+            'id' => ['required', 'integer'],
+            'user_ic' => ['required', 'string', 'max:12'],
+        ]);
+
+        $userExists = User::where('ic', $data['user_ic'])->exists();
+        if (!$userExists) {
+            abort(404);
+        }
+
+        $experienceExists = DB::table('tbluser_experiences')
+            ->where('id', $data['id'])
+            ->where('user_ic', $data['user_ic'])
+            ->exists();
+
+        if (!$experienceExists) {
+            abort(404);
+        }
+
+        DB::table('tbluser_experiences')
+            ->where('id', $data['id'])
+            ->where('user_ic', $data['user_ic'])
+            ->delete();
+
+        $experiences = DB::table('tbluser_experiences')
+            ->where('user_ic', $data['user_ic'])
+            ->orderBy('year_start', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $html = view('admin.partials.experiences_table', compact('experiences'))->render();
+
+        return response()->json([
+            'ok' => true,
+            'html' => $html,
+        ]);
     }
 
     

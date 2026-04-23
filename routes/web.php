@@ -60,6 +60,11 @@ Route::post('/admin/store', [App\Http\Controllers\AdminController::class, 'store
 Route::delete('/admin/delete', [App\Http\Controllers\AdminController::class, 'delete'])->name('admin.delete');
 Route::post('/admin/getProgramoptions', [App\Http\Controllers\AdminController::class, 'getProgramoptions']);
 Route::post('/admin/getProgramoptions2', [App\Http\Controllers\AdminController::class, 'getProgramoptions2']);
+
+// Past Work Experiences (tbluser_experiences)
+Route::post('/admin/experience/store', [App\Http\Controllers\AdminController::class, 'experienceStore'])->name('admin.experience.store');
+Route::post('/admin/experience/update', [App\Http\Controllers\AdminController::class, 'experienceUpdate'])->name('admin.experience.update');
+Route::post('/admin/experience/delete', [App\Http\Controllers\AdminController::class, 'experienceDelete'])->name('admin.experience.delete');
 Route::get('/admin/report/lecturer', [App\Http\Controllers\AdminController::class, 'getReportLecturer'])->name('admin.report.lecturer');
 Route::post('/admin/report/lecturer/getLecturer', [App\Http\Controllers\AdminController::class, 'getReportLecturerList']);
 Route::post('/admin/report/lecturer/getSubject', [App\Http\Controllers\AdminController::class, 'getReportSubjectList']);
