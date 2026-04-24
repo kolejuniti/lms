@@ -146,6 +146,14 @@
                         <input type="tel" class="form-control form-control-lg" id="no_tel" name="no_tel" 
                                placeholder="Enter phone number" value="{{ $id->no_tel }}" maxlength="15" required>
                       </div>
+
+                      <div class="form-group mb-3">
+                        <label class="form-label" for="teaching_permit">
+                          <i class="fa fa-certificate me-2 text-primary"></i>Teaching Permit
+                        </label>
+                        <input type="text" class="form-control form-control-lg" id="teaching_permit" name="teaching_permit"
+                               placeholder="Enter teaching permit" value="{{ $id->teaching_permit }}">
+                      </div>
                     </div>
                   </div>
                 </div>

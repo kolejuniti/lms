@@ -23,6 +23,7 @@ class User extends Authenticatable
         'ic',
         'email',
         'no_tel',
+        'teaching_permit',
         'usrtype',
         'faculty',
         'programid',

@@ -149,6 +149,7 @@ class AdminController extends Controller
             'usrtype' => 'required',
             'email' => 'required',
             'no_tel' => 'required',
+            'teaching_permit' => 'nullable|string|max:255',
         ]);
 
         $data2 = [
