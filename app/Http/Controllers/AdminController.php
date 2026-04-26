@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
 use Intervention\Image\Facades\Image;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AcademicStaffProgramExport;
 
 class AdminController extends Controller
 {
@@ -90,6 +92,7 @@ class AdminController extends Controller
             $pgname = array_values(array_filter(request()->prg,function($v){return !is_null($v);}));
 
             $uniname = array_values(array_filter(request()->uni,function($v){return !is_null($v);}));
+            $yearAward = array_values(array_filter(request()->year_award, function($v){return !is_null($v) && $v !== ''; }));
 
             foreach(request()->academic as $key => $ac)
             {
@@ -97,7 +100,8 @@ class AdminController extends Controller
                     'user_ic' => $data['ic'],
                     'academic_id' => $ac,
                     'academic_name' => $pgname[$key],
-                    'university_name' => $uniname[$key]
+                    'university_name' => $uniname[$key],
+                    'year_award' => $yearAward[$key] ?? null
                 ]);
             }
         }
@@ -219,6 +223,7 @@ class AdminController extends Controller
             $pgname = $pgname = array_values(array_filter(request()->prg,function($v){return !is_null($v);}));
 
             $uniname = array_values(array_filter(request()->uni,function($v){return !is_null($v);}));
+            $yearAward = array_values(array_filter(request()->year_award, function($v){return !is_null($v) && $v !== ''; }));
 
             DB::table('tbluser_academic')->where('user_ic', $data['ic'])->delete();
 
@@ -228,7 +233,8 @@ class AdminController extends Controller
                     'user_ic' => $data['ic'],
                     'academic_id' => $ac,
                     'academic_name' => $pgname[$key],
-                    'university_name' => $uniname[$key]
+                    'university_name' => $uniname[$key],
+                    'year_award' => $yearAward[$key] ?? null
                 ]);
             }
         }
@@ -2289,6 +2295,196 @@ class AdminController extends Controller
 
         return view('admin.report.lecturerProgram', compact('data'));
 
+    }
+
+    public function academicStaffProgram(Request $request)
+    {
+        $selectedProgramId = $request->program_id;
+        $selectedSessionId = $request->session_id;
+
+        $rows = $this->buildAcademicStaffProgramRows(null, $selectedProgramId, $selectedSessionId);
+        $programmes = DB::table('subjek_structure as ss')
+            ->join('tblprogramme as p', 'ss.program_id', 'p.id')
+            ->select('p.id', 'p.progcode', 'p.progname')
+            ->distinct()
+            ->orderBy('p.progcode', 'asc')
+            ->orderBy('p.progname', 'asc')
+            ->get();
+
+        $sessions = DB::table('sessions')
+            ->orderBy('SessionID', 'DESC')
+            ->get();
+
+        return view('admin.report.academicStaffProgram', compact('rows', 'programmes', 'sessions', 'selectedProgramId', 'selectedSessionId'));
+    }
+
+    public function getAcademicStaffProgram(Request $request)
+    {
+        // Search is temporarily disabled; always return full list
+        $rows = $this->buildAcademicStaffProgramRows();
+
+        return view('admin.report.partials.academicStaffProgramRows', compact('rows'));
+    }
+
+    public function exportAcademicStaffProgram(Request $request)
+    {
+        // Search is temporarily disabled; always export full list
+        $rows = $this->buildAcademicStaffProgramRows(null, $request->program_id, $request->session_id);
+
+        $filename = 'academic_staff_program_' . date('YmdHis') . '.xlsx';
+
+        return Excel::download(new AcademicStaffProgramExport($rows), $filename);
+    }
+
+    private function buildAcademicStaffProgramRows($search = null, $programId = null, $sessionId = null): array
+    {
+        $staffQuery = DB::table('users')
+            ->whereIn('usrtype', ['LCT', 'DN', 'PL', 'AO'])
+            ->where('status', 'ACTIVE')
+            ->select('ic', 'name', 'usrtype')
+            ->distinct();
+
+        // Order by the requested usrtype priority, then by name
+        $staff = $staffQuery
+            ->orderByRaw("FIELD(usrtype,'LCT','DN','PL','AO')")
+            ->orderBy('name', 'asc')
+            ->get();
+        $staffIcs = $staff->pluck('ic')->values()->all();
+
+        $coursesByUser = collect();
+        $coursesOtherByUser = collect();
+        if (!empty($programId) && !empty($sessionId) && count($staffIcs) > 0) {
+            $coursesByUser = DB::table('user_subjek as us')
+                ->join('subjek as s', 'us.course_id', 's.sub_id')
+                ->join('subjek_structure as ss', 'ss.courseID', 's.sub_id')
+                ->whereIn('us.user_ic', $staffIcs)
+                ->where('ss.program_id', $programId)
+                ->where('us.session_id', $sessionId)
+                ->select('us.user_ic', 's.course_code', 's.course_name')
+                ->distinct()
+                ->get()
+                ->groupBy('user_ic');
+
+            $coursesOtherByUser = DB::table('user_subjek as us')
+                ->join('subjek as s', 'us.course_id', 's.sub_id')
+                ->join('subjek_structure as ss', 'ss.courseID', 's.sub_id')
+                ->whereIn('us.user_ic', $staffIcs)
+                ->where('ss.program_id', '<>', $programId)
+                ->where('us.session_id', $sessionId)
+                ->select('us.user_ic', 's.course_code', 's.course_name')
+                ->distinct()
+                ->get()
+                ->groupBy('user_ic');
+        }
+
+        $academics = DB::table('tbluser_academic')
+            ->whereIn('user_ic', $staffIcs)
+            ->orderBy('academic_id', 'asc')
+            ->get()
+            ->groupBy('user_ic');
+
+        $experiences = DB::table('tbluser_experiences')
+            ->whereIn('user_ic', $staffIcs)
+            ->orderBy('year_start', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->groupBy('user_ic');
+
+        $designationLabels = [
+            'LCT' => 'Lecturer',
+            'DN' => 'Dean',
+            'PL' => 'Program Lead',
+            'AO' => 'Administrative Officer',
+        ];
+
+        $academicLabels = [
+            'DP' => 'DIPLOMA',
+            'DG' => 'DEGREE',
+            'MS' => 'MASTER',
+            'PHD' => 'PHD',
+        ];
+
+        $rows = [];
+        foreach ($staff as $index => $person) {
+            $designation = $designationLabels[$person->usrtype] ?? (string) $person->usrtype;
+            $lecAcademics = $academics->get($person->ic, collect());
+            $qualificationsCol = $lecAcademics
+                ->map(fn($a) => $academicLabels[$a->academic_id] ?? (string) $a->academic_id)
+                ->implode("\n");
+
+            $fieldCol = $lecAcademics
+                ->map(fn($a) => mb_strtoupper((string) ($a->academic_name ?? ''), 'UTF-8'))
+                ->filter()
+                ->implode("\n");
+
+            $yearCol = $lecAcademics
+                ->map(fn($a) => (string) ($a->year_award ?? ''))
+                ->filter()
+                ->implode("\n");
+
+            $instCol = $lecAcademics
+                ->map(fn($a) => (string) ($a->university_name ?? ''))
+                ->filter()
+                ->implode("\n");
+
+            $lecExp = $experiences->get($person->ic, collect());
+            $positionsCol = $lecExp->map(fn($e) => (string) ($e->position ?? ''))->filter()->implode("\n");
+            $employerCol = $lecExp->map(fn($e) => (string) ($e->employer ?? ''))->filter()->implode("\n");
+            $yearsCol = $lecExp->map(function ($e) {
+                $start = (string) ($e->year_start ?? '');
+                $end = (string) ($e->year_end ?? '');
+                if ($start === '' && $end === '') {
+                    return '';
+                }
+                if ($end === '') {
+                    $end = 'Present';
+                }
+                return $start . ' - ' . $end;
+            })->filter()->implode("\n");
+
+            $coursesThisProgramme = '';
+            $coursesOtherProgramme = '';
+            if (!empty($programId) && !empty($sessionId)) {
+                $coursesThisProgramme = $coursesByUser
+                    ->get($person->ic, collect())
+                    ->map(function ($c) {
+                        $code = trim((string) ($c->course_code ?? ''));
+                        $name = trim((string) ($c->course_name ?? ''));
+                        return $code !== '' ? ($code . ' - ' . $name) : $name;
+                    })
+                    ->unique()
+                    ->implode("\n");
+
+                $coursesOtherProgramme = $coursesOtherByUser
+                    ->get($person->ic, collect())
+                    ->map(function ($c) {
+                        $code = trim((string) ($c->course_code ?? ''));
+                        $name = trim((string) ($c->course_name ?? ''));
+                        return $code !== '' ? ($code . ' - ' . $name) : $name;
+                    })
+                    ->unique()
+                    ->implode("\n");
+            }
+
+            $rows[] = [
+                'no' => $index + 1,
+                'name_designation' => (string) $person->name,
+                'appointment_status' => 'Full-time',
+                'nationality' => 'Malaysian',
+                'courses_this_program' => $coursesThisProgramme,
+                'courses_other_program' => $coursesOtherProgramme,
+                'qualification' => $qualificationsCol,
+                'field' => $fieldCol,
+                'year' => $yearCol,
+                'institution' => $instCol,
+                'research_focus' => '',
+                'positions' => $positionsCol,
+                'employer' => $employerCol,
+                'years_service' => $yearsCol,
+            ];
+        }
+
+        return $rows;
     }
 
     public function getLecturerProgram(Request $request)

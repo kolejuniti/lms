@@ -281,6 +281,12 @@
                                            placeholder="University/Institution" name="uni[]" 
                                            value="{{ $isChecked ? $academic[$key]->university_name : '' }}">
                                   </div>
+                                  <div class="col-12">
+                                    <input type="number" class="form-control" id="year_award_{{ $ace[0] }}"
+                                           placeholder="Year of Award" name="year_award[]"
+                                           min="1900" max="2100"
+                                           value="{{ $isChecked ? ($academic[$key]->year_award ?? '') : '' }}">
+                                  </div>
                                 </div>
                               </div>
                             </div>
