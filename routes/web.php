@@ -79,6 +79,9 @@ Route::post('/admin/report/assessment/getAssessment', [App\Http\Controllers\Admi
 Route::post('/admin/report/lecturer/getUserLog', [App\Http\Controllers\AdminController::class, 'getUserLog']);
 Route::get('/admin/report/student', [App\Http\Controllers\AdminController::class, 'assessmentreport'])->name('admin.report.student');
 Route::get('/admin/report/lecturerProgram', [App\Http\Controllers\AdminController::class, 'lecturerProgram'])->name('admin.report.lecturerProgram');
+Route::get('/admin/report/academicStaffProgram', [App\Http\Controllers\AdminController::class, 'academicStaffProgram'])->name('admin.report.academicStaffProgram');
+Route::post('/admin/report/academicStaffProgram/get', [App\Http\Controllers\AdminController::class, 'getAcademicStaffProgram'])->name('admin.report.academicStaffProgram.get');
+Route::get('/admin/report/academicStaffProgram/export', [App\Http\Controllers\AdminController::class, 'exportAcademicStaffProgram'])->name('admin.report.academicStaffProgram.export');
 Route::post('/admin/report/lecturerProgram/getLecturerProgram', [App\Http\Controllers\AdminController::class, 'getLecturerProgram'])->name('admin.getLecturerProgram');
 Route::get('/admin/training', [App\Http\Controllers\AdminController::class, 'userTraining'])->name('admin.training');
 Route::post('/admin/training/getUserList', [App\Http\Controllers\AdminController::class, 'getUserList']);

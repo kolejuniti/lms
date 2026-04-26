@@ -280,6 +280,7 @@
 						<li><a href="/admin/report/lecturer">Lecturer</a></li>
 						<li><a href="/admin/report/assessment">Assessment</a></li>
 						<li><a href="/admin/report/lecturerProgram">Lecturer Program</a></li>
+						<li><a href="{{ route('admin.report.academicStaffProgram') }}">Academic Staff &amp; Program</a></li>
 					</ul>
 				</li>
 				
