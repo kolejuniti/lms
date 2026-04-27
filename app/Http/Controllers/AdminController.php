@@ -2414,22 +2414,30 @@ class AdminController extends Controller
 
     private function buildAcademicStaffProgramRows($search = null, $programId = null, $sessionId = null): array
     {
-        $staffQuery = DB::table('users')
-            ->whereIn('usrtype', ['LCT', 'DN', 'PL', 'AO'])
-            ->where('status', 'ACTIVE')
-            ->select('ic', 'name', 'usrtype')
+        if (empty($programId) || empty($sessionId)) {
+            return [];
+        }
+
+        $staffQuery = DB::table('users as u')
+            ->join('user_subjek as us', 'us.user_ic', 'u.ic')
+            ->join('subjek as s', 'us.course_id', 's.sub_id')
+            ->join('subjek_structure as ss', 'ss.courseID', 's.sub_id')
+            ->whereIn('u.usrtype', ['LCT', 'DN', 'PL', 'AO'])
+            ->where('u.status', 'ACTIVE')
+            ->where('ss.program_id', $programId)
+            ->where('us.session_id', $sessionId)
+            ->select('u.ic', 'u.name', 'u.usrtype')
             ->distinct();
 
-        // Order by the requested usrtype priority, then by name
         $staff = $staffQuery
-            ->orderByRaw("FIELD(usrtype,'LCT','DN','PL','AO')")
-            ->orderBy('name', 'asc')
+            ->orderByRaw("FIELD(u.usrtype,'LCT','DN','PL','AO')")
+            ->orderBy('u.name', 'asc')
             ->get();
         $staffIcs = $staff->pluck('ic')->values()->all();
 
         $coursesByUser = collect();
         $coursesOtherByUser = collect();
-        if (!empty($programId) && !empty($sessionId) && count($staffIcs) > 0) {
+        if (count($staffIcs) > 0) {
             $coursesByUser = DB::table('user_subjek as us')
                 ->join('subjek as s', 'us.course_id', 's.sub_id')
                 ->join('subjek_structure as ss', 'ss.courseID', 's.sub_id')
