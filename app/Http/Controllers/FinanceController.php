@@ -793,10 +793,7 @@ class FinanceController extends Controller
             ->where('ic', $request->student)->first();
 
         $data['claim'] = DB::table('tblstudentclaimpackage')
-            ->where([
-                ['program_id', $data['student']->progid],
-                ['intake_id', $data['student']->intake]
-            ])->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
+            ->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
             ->distinct('tblstudentclaimpackage.claim_id')
             ->select('tblstudentclaim.id', 'tblstudentclaim.name')->get();
 
