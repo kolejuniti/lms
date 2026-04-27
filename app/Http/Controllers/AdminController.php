@@ -2389,21 +2389,22 @@ class AdminController extends Controller
 
             $rowspan = max(count($coursesThis), count($coursesOther), 1);
             for ($i = 0; $i < $rowspan; $i++) {
+                $isFirst = $i === 0;
                 $exportRows[] = [
-                    '#' => $row['no'],
-                    'Name and Designation of Academic Staff' => $row['name_designation'],
-                    'Appointment Status (full-time, part-time, contract, etc.)' => $row['appointment_status'],
-                    'Nationality' => $row['nationality'],
+                    '#' => $isFirst ? $row['no'] : '',
+                    'Name and Designation of Academic Staff' => $isFirst ? $row['name_designation'] : '',
+                    'Appointment Status (full-time, part-time, contract, etc.)' => $isFirst ? $row['appointment_status'] : '',
+                    'Nationality' => $isFirst ? $row['nationality'] : '',
                     'Courses Taught in This Programme' => $coursesThis[$i] ?? '',
                     'Courses Taught in Other Programmes' => $coursesOther[$i] ?? '',
-                    'Academic Qualifications - Qualifications' => $row['qualification'],
-                    'Academic Qualifications - Field of Specialisation' => $row['field'],
-                    'Academic Qualifications - Year of Award' => $row['year'],
-                    'Academic Qualifications - Name of Awarding Institution and Country' => $row['institution'],
-                    'Research Focus Areas (Bachelor and above)' => $row['research_focus'],
-                    'Past Work Experience - Positions Held' => $row['positions'],
-                    'Past Work Experience - Employer' => $row['employer'],
-                    'Past Work Experience - Years of Service (start and end)' => $row['years_service'],
+                    'Academic Qualifications - Qualifications' => $isFirst ? $row['qualification'] : '',
+                    'Academic Qualifications - Field of Specialisation' => $isFirst ? $row['field'] : '',
+                    'Academic Qualifications - Year of Award' => $isFirst ? $row['year'] : '',
+                    'Academic Qualifications - Name of Awarding Institution and Country' => $isFirst ? $row['institution'] : '',
+                    'Research Focus Areas (Bachelor and above)' => $isFirst ? $row['research_focus'] : '',
+                    'Past Work Experience - Positions Held' => $isFirst ? $row['positions'] : '',
+                    'Past Work Experience - Employer' => $isFirst ? $row['employer'] : '',
+                    'Past Work Experience - Years of Service (start and end)' => $isFirst ? $row['years_service'] : '',
                 ];
             }
         }
