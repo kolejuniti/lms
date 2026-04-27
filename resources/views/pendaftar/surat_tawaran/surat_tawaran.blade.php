@@ -94,7 +94,7 @@ use Carbon\Carbon;
         <div class="col-5 mb-1 mt-1">
             <div style="border: 1px solid black; padding: 10px;">
             <p>Tarikh : {{ Carbon::createFromFormat('Y-m-d', $data['student']->date_offer)->format('d/m/Y') }}</p>
-            <p>Masa : 9.00 Pagi - 3.00 Petang</p>
+            <p>Masa : 9.00 Pagi - 12.30 Petang</p>
             <p>Tempat : PEJABAT PENTADBIRAN KOLEJ UNITI</p>
             </div>
         </div>
