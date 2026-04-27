@@ -16,8 +16,7 @@ use Carbon\Carbon;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
 use Intervention\Image\Facades\Image;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\AcademicStaffProgramExport;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class AdminController extends Controller
 {
@@ -2328,12 +2327,78 @@ class AdminController extends Controller
 
     public function exportAcademicStaffProgram(Request $request)
     {
-        // Search is temporarily disabled; always export full list
-        $rows = $this->buildAcademicStaffProgramRows(null, $request->program_id, $request->session_id);
+        $programId = $request->program_id;
+        $sessionId = $request->session_id;
 
-        $filename = 'academic_staff_program_' . date('YmdHis') . '.xlsx';
+        if (empty($programId) || empty($sessionId)) {
+            return redirect()->route('admin.report.academicStaffProgram', [
+                'program_id' => $programId,
+                'session_id' => $sessionId,
+            ])->with('error', 'Please select Programme and Session before exporting.');
+        }
 
-        return Excel::download(new AcademicStaffProgramExport($rows), $filename);
+        @set_time_limit(0);
+
+        $rows = $this->buildAcademicStaffProgramRows(null, $programId, $sessionId);
+        $exportRows = $this->flattenAcademicStaffProgramRowsForExport($rows);
+
+        $filenameBase = 'academic_staff_program_' . date('YmdHis');
+        $format = strtolower((string) $request->get('format', 'xlsx'));
+
+        if ($format === 'csv') {
+            return response()->streamDownload(function () use ($exportRows) {
+                $out = fopen('php://output', 'w');
+                if ($out === false) {
+                    return;
+                }
+
+                if (count($exportRows) > 0) {
+                    fputcsv($out, array_keys($exportRows[0]));
+                }
+
+                foreach ($exportRows as $row) {
+                    fputcsv($out, $row);
+                }
+
+                fclose($out);
+            }, $filenameBase . '.csv', [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+            ]);
+        }
+
+        return (new FastExcel(collect($exportRows)))->download($filenameBase . '.xlsx');
+    }
+
+    private function flattenAcademicStaffProgramRowsForExport(array $rows): array
+    {
+        $exportRows = [];
+
+        foreach ($rows as $row) {
+            $coursesThis = is_array($row['courses_this_program'] ?? null) ? $row['courses_this_program'] : [];
+            $coursesOther = is_array($row['courses_other_program'] ?? null) ? $row['courses_other_program'] : [];
+
+            $rowspan = max(count($coursesThis), count($coursesOther), 1);
+            for ($i = 0; $i < $rowspan; $i++) {
+                $exportRows[] = [
+                    '#' => $row['no'],
+                    'Name and Designation of Academic Staff' => $row['name_designation'],
+                    'Appointment Status (full-time, part-time, contract, etc.)' => $row['appointment_status'],
+                    'Nationality' => $row['nationality'],
+                    'Courses Taught in This Programme' => $coursesThis[$i] ?? '',
+                    'Courses Taught in Other Programmes' => $coursesOther[$i] ?? '',
+                    'Academic Qualifications - Qualifications' => $row['qualification'],
+                    'Academic Qualifications - Field of Specialisation' => $row['field'],
+                    'Academic Qualifications - Year of Award' => $row['year'],
+                    'Academic Qualifications - Name of Awarding Institution and Country' => $row['institution'],
+                    'Research Focus Areas (Bachelor and above)' => $row['research_focus'],
+                    'Past Work Experience - Positions Held' => $row['positions'],
+                    'Past Work Experience - Employer' => $row['employer'],
+                    'Past Work Experience - Years of Service (start and end)' => $row['years_service'],
+                ];
+            }
+        }
+
+        return $exportRows;
     }
 
     private function buildAcademicStaffProgramRows($search = null, $programId = null, $sessionId = null): array
