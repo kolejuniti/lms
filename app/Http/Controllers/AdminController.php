@@ -2376,8 +2376,16 @@ class AdminController extends Controller
         $exportRows = [];
 
         foreach ($rows as $row) {
-            $coursesThis = is_array($row['courses_this_program'] ?? null) ? $row['courses_this_program'] : [];
-            $coursesOther = is_array($row['courses_other_program'] ?? null) ? $row['courses_other_program'] : [];
+            $coursesThisRaw = $row['courses_this_program'] ?? [];
+            $coursesOtherRaw = $row['courses_other_program'] ?? [];
+
+            $coursesThis = is_array($coursesThisRaw)
+                ? $coursesThisRaw
+                : array_values(array_filter(array_map('trim', explode("\n", (string) $coursesThisRaw))));
+
+            $coursesOther = is_array($coursesOtherRaw)
+                ? $coursesOtherRaw
+                : array_values(array_filter(array_map('trim', explode("\n", (string) $coursesOtherRaw))));
 
             $rowspan = max(count($coursesThis), count($coursesOther), 1);
             for ($i = 0; $i < $rowspan; $i++) {
