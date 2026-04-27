@@ -2337,7 +2337,9 @@ class AdminController extends Controller
             ])->with('error', 'Please select Programme and Session before exporting.');
         }
 
-        @set_time_limit(0);
+        if (function_exists('set_time_limit')) {
+            @\set_time_limit(0);
+        }
 
         $rows = $this->buildAcademicStaffProgramRows(null, $programId, $sessionId);
         $exportRows = $this->flattenAcademicStaffProgramRowsForExport($rows);
