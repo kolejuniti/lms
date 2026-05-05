@@ -6115,7 +6115,7 @@ class LecturerController extends Controller
                 'kp_user.email as kp_email'
             )
             ->orderBy('replacement_class.created_at', 'desc')
-            ->paginate(10);
+            ->paginate(50);
 
         // Get program details for each application
         foreach ($applications as $app) {
