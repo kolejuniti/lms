@@ -25,35 +25,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <style>
       @page {
-         size: 21cm 14cm landscape; 
-         margin: 0.5cm;
+         size: A4 potrait; 
+         margin: 1cm; /* reduce margin */
       }
       @media print {
-         * {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            outline: 0;
-            page-break-after: avoid;
-         }
-         body {
-            font-size: 12pt;
-            line-height: 1.4;
-            margin: 0;
-            padding: 0;
-         }
          .container {
-            width: 100%;
-            max-width: 100%;
-            margin: 0;
-            padding: 0;
-            page-break-after: avoid;
-         }
-         .grid, .invoice, .grid-body {
-            page-break-after: avoid;
+            transform: scale(1.0);
+            transform-origin: top left;
          }
          hr {
-            border-top: 1px solid #000;
+            border-top: 1px solid #000; /* make sure the color is dark enough */
          }
       }
 
@@ -64,8 +45,7 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 12px;
-         font-family: 'Courier New', Courier, monospace;
+         font-size: 10px; /* reduce font-size */
          table-layout: fixed;
       }
       h2,h3,p {
@@ -75,44 +55,18 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 12px;
-         font-family: 'Courier New', Courier, monospace;
-         font-weight: normal;
-      }
-      h3 {
-         font-size: 13px;
-         font-weight: bold;
-         margin: 5px 0 3px 0;
-      }
-      body {
-         margin: 0;
-         padding: 0;
-         text-align: center;
+         font-size: 10px; /* reduce font-size */
       }
       .container {
-         width: 90%;
-         margin: 0 auto;
-         padding: 0;
-         display: inline-block;
+         transform: scale(0.1); /* scale down everything */
       }
       table {
-         width: 100%;
+         width: 100%; /* or a fixed width */
          table-layout: fixed;
-         font-family: 'Courier New', Courier, monospace;
-         border-collapse: collapse;
       }
       td, th {
-         padding: 3px 4px;
-         font-family: 'Courier New', Courier, monospace;
-         font-size: 12px;
-         line-height: 1.3;
-      }
-      address {
-         font-family: 'Courier New', Courier, monospace;
-         font-size: 11px;
-         line-height: 1.4;
-         font-style: normal;
-         text-align: left;
+         width: 50%; /* Adjust the width as needed */
+         padding: 2px; /* Reduce padding */
       }
 
 
@@ -131,7 +85,7 @@
             <div class="invoice-title">
                <div class="row mb-2">
                   <div class="col-12 d-flex">
-                     <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="80">
+                     <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="50">
                      <address>
                         <strong>KOLEJ UNITI</strong><br>
                         PERSIARAN UNITI VILLAGE, TANJUNG AGAS<br>
@@ -150,57 +104,38 @@
             </div>
             <hr>
             <div class="row">
-               <div class="col-md-12 p-2">
-                  <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
-                     <!-- Row 1: Name -->
-                     <tr>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NAMA</strong></td>
-                        <td colspan="3" style="width: 75%; padding: 2px 5px;">{{ $data['student']->name }}</td>
-                     </tr>
-                     <!-- Row 2: No. KP / No. Passport and No. TIN -->
-                     <tr>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NO. KP / NO. PASSPORT</strong></td>
-                        <td style="width: 25%; padding: 2px 5px;">{{ $data['student']->ic }}</td>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NO. TIN</strong></td>
-                        <td style="width: 25%; padding: 2px 5px;">{{ $data['student']->tin_number }}</td>
-                     </tr>
-                     <!-- Row 3: Program and Sesi Kemasukan -->
-                     <tr>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>PROGRAM</strong></td>
-                        <td colspan="3" style="width: 75%; padding: 2px 5px;">{{ $data['payment']->program }}</td>
-                     </tr>
-                     <tr>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>SESI KEMASUKAN</strong></td>
-                        <td style="width: 25%; padding: 2px 5px;">{{ $data['student']->intake }}</td>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NO. MATRIKS</strong></td>
-                        <td style="width: 25%; padding: 2px 5px;">{{ $data['student']->no_matric }}</td>
-                     </tr>
-                     <!-- Row 4: Sesi Semasa and Semester -->
-                     <tr>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>SESI SEMASA</strong></td>
-                        <td style="width: 25%; padding: 2px 5px;">{{ $data['payment']->session }}</td>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>SEMESTER</strong></td>
-                        <td style="width: 25%; padding: 2px 5px;">{{ $data['payment']->semester_id }}</td>
-                     </tr>
-                     <!-- Row 5: Tarikh and No. Resit -->
-                     <tr>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>TARIKH</strong></td>
-                        <td style="width: 25%; padding: 2px 5px;">{{ $data['date'] }}</td>
-                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NO. RESIT</strong></td>
-                        <td style="width: 25%; padding: 2px 5px;">{{ $data['payment']->ref_no }}</td>
-                     </tr>
-                  </table>
+               <div class="col-md-12 d-flex p-2">
+                  <div class="col-md-6" style="margin-right: 10px">
+                     <div class="form-group">
+                           <p>Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->name }}</p>
+                           <p>No. Resit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->ref_no }}</p>
+                           <p>No. KP / No. Passport &thinsp;&thinsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->ic }}</p>
+                           <p>No. TIN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->tin_number }}</p>
+                           <p>Sesi Kemasukan &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->intake }}</p>
+                           <p>Sesi Semasa &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->session }}</p>
+                           <p>No. Matriks &thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->no_matric }}</p>
+                           <p>Program &thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->program }}</p>
+                     </div>
+                  </div>
+                  <div class="col-md-4">
+                     <div class="form-group">
+                           <p>Tarikh &thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['date'] }}</p>
+                           {{-- <p>Status &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->status }}</p> --}}
+                           <p>Semester &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->semester_id }}</p>
+                     </div>
+                  </div>
                </div>
 
                <div class="col-md-12">
-                  {{-- <h3>KAEDAH</h3> --}}
-                  <table class="table table-bordered">
+                  <h3>KAEDAH</h3>
+                  <table>
                      <thead>
                         <tr class="line">
                            <td style="width: 10px;"><strong>#</strong></td>
                            <td class="text-center; width: 50px;"><strong>KAEDAH BAYARAN</strong></td>
                            <td class="text-center; width: 50px;"><strong>BANK</strong></td>
                            <td class="text-center; width: 50px;"><strong>NO. DOKUMEN</strong></td>
+                           <td class="text-center; width: 50px;"><strong></strong></td>
                            <td class="text-center; width: 50px;"><strong>AMAUN</strong></td>
                         </tr>
                      </thead>
@@ -218,6 +153,7 @@
                            @else
                            <td >{{ $dtl->no_document }}</td>
                            @endif
+                           <td></td>
                            <td>RM{{ number_format($dtl->amount, 2, '.', ',') }}</td>
                            @php
                            $sum += $dtl->amount;
@@ -225,8 +161,8 @@
                         </tr>
                         @endforeach
                         <tr>
-                           <td colspan="3"></td>
-                           <td class="text-center; width: 50px;"><strong>JUMLAH BAYARAN</strong></td>
+                           <td colspan="4">
+                           </td><td class="text-center; width: 50px;"><strong>Jumlah :</strong></td>
                            <td class="text-center; width: 50px;"><strong>RM{{ number_format($sum, 2, '.', ',') }}</strong></td>
                         </tr>
                      </tbody>
@@ -234,8 +170,8 @@
                </div>
 
                <div class="col-md-12">
-                  {{-- <h3>BAYARAN</h3> --}}
-                  <table class="table table-bordered">
+                  <h3>BAYARAN</h3>
+                  <table>
                      <thead>
                         <tr class="line">
                            <td style="width: 10px;"><strong>#</strong></td>
@@ -257,7 +193,7 @@
                         @endforeach
                         <tr>
                            <td colspan="2">
-                           </td><td class="text-center; width: 50px;"><strong>JUMLAH KESELURUHAN</strong></td>
+                           </td><td class="text-center; width: 50px;"><strong>Jumlah Keseluruhan :</strong></td>
                            <td class="text-center; width: 50px;"><strong>RM{{ number_format($data['total'], 2, '.', ',') }}</strong></td>
                         </tr>
                      </tbody>
@@ -266,7 +202,7 @@
             </div>
             <div class="row">
                <div class="col-md-12 text-right identity">
-                  <p>Diterima Oleh :<br><strong>{{ $data['staff']->name ?? '' }}</strong></p>
+                  <p>Received By :<br><strong>{{ $data['staff']->name ?? '' }}</strong></p>
                </div>
             </div>
          </div>
