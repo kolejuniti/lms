@@ -26,7 +26,6 @@
   <style>
       @page {
          size: A4 potrait; 
-         margin: 1cm; /* reduce margin */
       }
       @media print {
          .container {
@@ -45,7 +44,7 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 10px; /* reduce font-size */
+         font-size: 12px; /* reduce font-size */
          table-layout: fixed;
       }
       h2,h3,p {
