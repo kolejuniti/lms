@@ -85,13 +85,13 @@
             <div class="invoice-title">
                <div class="row mb-2">
                   <div class="col-12 d-flex">
-                     <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="50">
+                     <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="80">
                      <address>
-                        <strong>KOLEJ UNITI</strong><br>
-                        PERSIARAN UNITI VILLAGE, TANJUNG AGAS<br>
-                        71250, PORT DICKSON, NEGERI SEMBILAN.<br>
-                        <abbr title="Phone">Tel:</abbr> 06-649 0350 | <abbr title="Phone">Fax:</abbr> 06-661 0509<br>
-                        http://www.uniti.edu.my | <abbr title="Email">Email:</abbr> info@uniti.edu.my
+                        <p><strong>KOLEJ UNITI</strong></p>
+                        <p>PERSIARAN UNITI VILLAGE, TANJUNG AGAS</p>
+                        <p>71250, PORT DICKSON, NEGERI SEMBILAN</p>
+                        <p>Tel: 06-649 0350 | Fax: 06-661 0509</p>
+                        <p>https://uniti.edu.my | Email: info@uniti.edu.my</p>
                      </address>
                   </div>
                </div>
@@ -104,39 +104,58 @@
             </div>
             <hr>
             <div class="row">
-               <div class="col-md-12 d-flex p-2">
-                  <div class="col-md-6" style="margin-right: 10px">
-                     <div class="form-group">
-                           <p>Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->name }}</p>
-                           <p>No. Resit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->ref_no }}</p>
-                           <p>No. KP / No. Passport &thinsp;&thinsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->ic }}</p>
-                           <p>No. TIN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->tin_number }}</p>
-                           <p>Sesi Kemasukan &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->intake }}</p>
-                           <p>Sesi Semasa &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->session }}</p>
-                           <p>No. Matriks &thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->no_matric }}</p>
-                           <p>Program &thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->program }}</p>
-                     </div>
-                  </div>
-                  <div class="col-md-4">
-                     <div class="form-group">
-                           <p>Tarikh &thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['date'] }}</p>
-                           {{-- <p>Status &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->status }}</p> --}}
-                           <p>Semester &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->semester_id }}</p>
-                     </div>
-                  </div>
+               <div class="col-md-12 p-2">
+                  <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+                     <!-- Row 5: Tarikh and No. Resit -->
+                     <tr>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>TARIKH</strong></td>
+                        <td style="width: 25%; padding: 2px 5px;">{{ $data['date'] }}</td>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NO. RESIT</strong></td>
+                        <td style="width: 25%; padding: 2px 5px;">{{ $data['payment']->ref_no }}</td>
+                     </tr>
+                     <!-- Row 1: Name -->
+                     <tr>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NAMA</strong></td>
+                        <td colspan="3" style="width: 75%; padding: 2px 5px;">{{ $data['student']->name }}</td>
+                     </tr>
+                     <!-- Row 2: No. KP / No. Passport and No. TIN -->
+                     <tr>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NO. KP / NO. PASSPORT</strong></td>
+                        <td style="width: 25%; padding: 2px 5px;">{{ $data['student']->ic }}</td>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NO. TIN</strong></td>
+                        <td style="width: 25%; padding: 2px 5px;">{{ $data['student']->tin_number }}</td>
+                     </tr>
+                     <!-- Row 3: Program and Sesi Kemasukan -->
+                     <tr>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>PROGRAM</strong></td>
+                        <td colspan="3" style="width: 75%; padding: 2px 5px;">{{ $data['payment']->program }}</td>
+                     </tr>
+                     <tr>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>SESI KEMASUKAN</strong></td>
+                        <td style="width: 25%; padding: 2px 5px;">{{ $data['student']->intake }}</td>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>NO. MATRIKS</strong></td>
+                        <td style="width: 25%; padding: 2px 5px;">{{ $data['student']->no_matric }}</td>
+                     </tr>
+                     <!-- Row 4: Sesi Semasa and Semester -->
+                     <tr>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>SESI SEMASA</strong></td>
+                        <td style="width: 25%; padding: 2px 5px;">{{ $data['payment']->session }}</td>
+                        <td style="width: 25%; padding: 2px 5px; text-align: left;"><strong>SEMESTER</strong></td>
+                        <td style="width: 25%; padding: 2px 5px;">{{ $data['payment']->semester_id }}</td>
+                     </tr>
+                  </table>
                </div>
 
                <div class="col-md-12">
-                  <h3>KAEDAH</h3>
-                  <table>
+                  {{-- <h3>KAEDAH</h3> --}}
+                  <table class="table table-bordered">
                      <thead>
                         <tr class="line">
-                           <td style="width: 10px;"><strong>#</strong></td>
-                           <td class="text-center; width: 50px;"><strong>KAEDAH BAYARAN</strong></td>
-                           <td class="text-center; width: 50px;"><strong>BANK</strong></td>
-                           <td class="text-center; width: 50px;"><strong>NO. DOKUMEN</strong></td>
-                           <td class="text-center; width: 50px;"><strong></strong></td>
-                           <td class="text-center; width: 50px;"><strong>AMAUN</strong></td>
+                           <td style="width: 5%; padding: 4px 4px;" class="text-center"><strong>#</strong></td>
+                           <td style="width: 20%; padding: 4px 4px; text-align: left;" class="text-center"><strong>KAEDAH BAYARAN</strong></td>
+                           <td style="width: 20%; padding: 4px 4px; text-align: left;" class="text-center"><strong>BANK</strong></td>
+                           <td style="width: 40%; padding: 4px 4px; text-align: left;" class="text-center"><strong>NO. DOKUMEN</strong></td>
+                           <td style="width: 15%; padding: 4px 4px; text-align: right;" class="text-center"><strong>AMAUN</strong></td>
                         </tr>
                      </thead>
                      <tbody>
@@ -145,56 +164,55 @@
                         @endphp
                         @foreach ($data['method'] as $key => $dtl)
                         <tr>
-                           <td style="width: 10px;">{{ $key+1 }}</td>
-                           <td>{{ $dtl->method }}</td>
-                           <td>{{ $dtl->bank }}</td>
+                           <td style="width: 10%; padding: 3px 4px;" class="text-center">{{ $key+1 }}</td>
+                           <td style="width: 20%; padding: 3px 4px;" class="text-center">{{ $dtl->method }}</td>
+                           <td style="width: 20%; padding: 3px 4px;" class="text-center">{{ $dtl->bank }}</td>
                            @if ($dtl->no_document == null)
-                           <td>TIADA</td>
+                           <td style="width: 35%; padding: 3px 4px;" class="text-center">TIADA</td>
                            @else
-                           <td >{{ $dtl->no_document }}</td>
+                           <td style="width: 35%; padding: 3px 4px;" class="text-center">{{ $dtl->no_document }}</td>
                            @endif
-                           <td></td>
-                           <td>RM{{ number_format($dtl->amount, 2, '.', ',') }}</td>
+                           <td style="width: 15%; padding: 3px 4px; text-align: right;" class="text-center">RM{{ number_format($dtl->amount, 2, '.', ',') }}</td>
                            @php
                            $sum += $dtl->amount;
                            @endphp
                         </tr>
                         @endforeach
                         <tr>
-                           <td colspan="4">
-                           </td><td class="text-center; width: 50px;"><strong>Jumlah :</strong></td>
-                           <td class="text-center; width: 50px;"><strong>RM{{ number_format($sum, 2, '.', ',') }}</strong></td>
+                           <td colspan="3" style="padding: 3px 4px;"></td>
+                           <td style="width: 35%; padding: 3px 4px; text-align: center;"><strong>JUMLAH BAYARAN</strong></td>
+                           <td style="width: 15%; padding: 3px 4px; text-align: right;" class="text-center"><strong>RM{{ number_format($sum, 2, '.', ',') }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
                </div>
 
                <div class="col-md-12">
-                  <h3>BAYARAN</h3>
-                  <table>
+                  {{-- <h3>BAYARAN</h3> --}}
+                  <table class="table table-bordered">
                      <thead>
                         <tr class="line">
-                           <td style="width: 10px;"><strong>#</strong></td>
-                           <td class="text-center; width: 50px;"><strong>MAKLUMAT BAYARAN</strong></td>
-                           <td class="text-center; width: 50px;"><strong>SEMESTER</strong></td>
-                           <td class="text-center; width: 50px;"><strong>AMAUN</strong></td>
+                           <td style="width: 5%; padding: 4px 4px;" class="text-center"><strong>#</strong></td>
+                           <td style="width: 60%; padding: 4px 4px; text-align: center;"><strong>MAKLUMAT BAYARAN</strong></td>
+                           <td style="width: 20%; padding: 4px 4px; text-align: center;"><strong>SEMESTER</strong></td>
+                           <td style="width: 15%; padding: 4px 4px; text-align: center;"><strong>AMAUN</strong></td>
                         </tr>
                      </thead>
                      <tbody>
                         @foreach ($data['detail'] as $keys => $dtl)
                         @if ($dtl->total_amount != 0)
                         <tr>
-                           <td>{{ $keys+1 }}</td>
-                           <td>{{ $dtl->name }}</td>
-                           <td>{{ $data['payment']->semester_id }}</td>
-                           <td>RM{{ number_format($dtl->total_amount, 2, '.', ',') }}</td>
+                           <td style="width: 10%; padding: 3px 4px;" class="text-center">{{ $keys+1 }}</td>
+                           <td style="width: 50%; padding: 3px 4px;" class="text-center">{{ $dtl->name }}</td>
+                           <td style="width: 20%; padding: 3px 4px;" class="text-center">{{ $data['payment']->semester_id }}</td>
+                           <td style="width: 20%; padding: 3px 4px; text-align: right;" class="text-center">RM{{ number_format($dtl->total_amount, 2, '.', ',') }}</td>
                         </tr>
                         @endif
                         @endforeach
                         <tr>
-                           <td colspan="2">
-                           </td><td class="text-center; width: 50px;"><strong>Jumlah Keseluruhan :</strong></td>
-                           <td class="text-center; width: 50px;"><strong>RM{{ number_format($data['total'], 2, '.', ',') }}</strong></td>
+                           <td colspan="2" style="padding: 3px 4px;"></td>
+                           <td style="width: 20%; padding: 3px 4px; text-align: center;"><strong>JUMLAH KESELURUHAN</strong></td>
+                           <td style="width: 20%; padding: 3px 4px; text-align: center;"><strong>RM{{ number_format($data['total'], 2, '.', ',') }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
@@ -202,7 +220,7 @@
             </div>
             <div class="row">
                <div class="col-md-12 text-right identity">
-                  <p>Received By :<br><strong>{{ $data['staff']->name ?? '' }}</strong></p>
+                  <p>DITERIMA OLEH :<br><strong>{{ $data['staff']->name ?? '' }}</strong></p>
                </div>
             </div>
          </div>
