@@ -26,7 +26,7 @@
   <style>
       @page {
          size: 21cm 14cm landscape;
-         margin: 0.2cm;
+         margin: 0.5in 0.2cm 0.2cm 0.2cm;
       }
       @media print {
          body {
