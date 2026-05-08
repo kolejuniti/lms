@@ -25,12 +25,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <style>
       @page {
-         size: A4 potrait; 
+         size: 21cm 14cm landscape;
+         margin: 0.2cm;
       }
       @media print {
+         body {
+            margin: 0;
+            padding: 0;
+         }
          .container {
-            transform: scale(1.0);
-            transform-origin: top left;
+            transform: none;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
          }
          hr {
             border-top: 1px solid #000; /* make sure the color is dark enough */
@@ -57,7 +65,11 @@
          font-size: 10px; /* reduce font-size */
       }
       .container {
-         transform: scale(0.1); /* scale down everything */
+         transform: none;
+         width: 100%;
+         max-width: 100%;
+         margin: 0;
+         padding: 0;
       }
       table {
          width: 100%; /* or a fixed width */
