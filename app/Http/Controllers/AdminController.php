@@ -2311,7 +2311,7 @@ class AdminController extends Controller
             ->get();
 
         $sessions = DB::table('sessions')
-            ->whereIn('Year', [2026, 2025, 2024])
+            ->whereIn('Year', [2026, 2025, 2024, 2023, 2022, 2021])
             ->orderBy('SessionID', 'DESC')
             ->get();
 
