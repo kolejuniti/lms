@@ -2306,7 +2306,7 @@ class AdminController extends Controller
             ->join('tblprogramme as p', 'ss.program_id', 'p.id')
             ->select('p.id', 'p.progcode', 'p.progname')
             ->distinct()
-            ->where('p.id', '!=', 26) // Exclude program with ID 26
+            // ->where('p.id', '!=', 26) // Exclude program with ID 26
             ->orderBy('p.progcode', 'asc')
             ->orderBy('p.progname', 'asc')
             ->get();
