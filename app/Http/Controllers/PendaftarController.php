@@ -435,6 +435,8 @@ class PendaftarController extends Controller
                     'tblprogramme.mqa_code',
                     'tblprogramme.ifms_code',
                     'a.SessionName AS intake',
+                    DB::raw("DATE_FORMAT(students.date_add, '%m') AS month"),
+                    DB::raw("DATE_FORMAT(students.date_add, '%Y') AS year"),
                     'b.SessionName AS session',
                     'tblstudent_status.name AS status',
                     'tblstudent_personal.date_birth',
@@ -517,6 +519,9 @@ class PendaftarController extends Controller
                 'Negeri',
                 'Negara',
                 'Intake',
+                'Bulan',
+                'Tahun',
+                'Intake',
                 'Session',
                 'Semester',
                 'Status',
@@ -579,6 +584,8 @@ class PendaftarController extends Controller
                     $student->address_state ?? '', // Negeri
                     $student->country_name ?? '', // Negara
                     $student->intake ?? '', // Intake
+                    $student->month ?? '', // Bulan
+                    $student->year ?? '', // Tahun
                     $student->session ?? '', // Session
                     $student->semester ?? '', // Semester
                     $student->status ?? '', // Status
@@ -704,6 +711,8 @@ class PendaftarController extends Controller
             ->select(
                 'students.*',
                 'tblprogramme.progname',
+                DB::raw("MONTH(students.date_add) AS month"),
+                DB::raw("YEAR(students.date_add) AS year"),
                 'a.SessionName AS intake',
                 'b.SessionName AS session',
                 'tblstudent_status.name AS status',
