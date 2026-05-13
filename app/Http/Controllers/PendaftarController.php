@@ -711,8 +711,8 @@ class PendaftarController extends Controller
             ->select(
                 'students.*',
                 'tblprogramme.progname',
-                DB::raw("MONTH(students.date_add) AS month"),
-                DB::raw("YEAR(students.date_add) AS year"),
+                DB::raw("MONTH(students.date) AS month"),
+                DB::raw("YEAR(students.date) AS year"),
                 'a.SessionName AS intake',
                 'b.SessionName AS session',
                 'tblstudent_status.name AS status',
