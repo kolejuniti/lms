@@ -10862,7 +10862,7 @@ class FinanceController extends Controller
     {
 
         $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
-        $data['status'] = DB::table('tblstudent_status')->whereIn('id', [3, 4, 7, 8])->get();
+        $data['status'] = DB::table('tblstudent_status')->whereIn('id', [3, 4, 7, 8, 14])->get();
 
         return view('finance.debt.monthly_payment_report.monthlyReport', compact('data'));
     }
@@ -10908,7 +10908,7 @@ class FinanceController extends Controller
         //A
 
         // Determine status filter
-        $statusFilter = [3, 4, 7, 8]; // Default to all allowed statuses
+        $statusFilter = [3, 4, 7, 8, 14]; // Default to all allowed statuses
         if ($request->status && $request->status != '-') {
             $statusFilter = [$request->status];
         }
