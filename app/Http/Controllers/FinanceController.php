@@ -754,15 +754,15 @@ class FinanceController extends Controller
                 ->join('users', 'students.user_id', 'users.id')
                 ->value('users.ic');
 
-            // Normalize ICs by removing dashes and trimming spaces
-            $normalizedIc1 = $advisorIcFromDb1 ? trim(str_replace('-', '', $advisorIcFromDb1)) : null;
-            $normalizedIc2 = $advisorIcFromDb2 ? trim(str_replace('-', '', $advisorIcFromDb2)) : null;
+            // Normalize ICs (keep digits only) to avoid formatting mismatches
+            $normalizedIc1 = $advisorIcFromDb1 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb1)) : null;
+            $normalizedIc2 = $advisorIcFromDb2 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb2)) : null;
 
             // Prepare the base update data
             $updateData = [
                 'location_id' => 1,
-                'status_id' => ($normalizedIc1 == $normalizedIc2) ? 19 : 11,
-                'reason' => ($normalizedIc1 == $normalizedIc2) ? 'R - KUPD' : null
+                'status_id' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 19 : 11,
+                'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R - KUPD' : null
             ];
 
             // Perform the update
@@ -1638,17 +1638,17 @@ class FinanceController extends Controller
                         ->join('users', 'students.user_id', 'users.id')
                         ->value('users.ic');
 
-                    // Normalize ICs by removing dashes and trimming spaces
-                    $normalizedIc1 = $advisorIcFromDb1 ? trim(str_replace('-', '', $advisorIcFromDb1)) : null;
-                    $normalizedIc2 = $advisorIcFromDb2 ? trim(str_replace('-', '', $advisorIcFromDb2)) : null;
+                    // Normalize ICs (keep digits only) to avoid formatting mismatches
+                    $normalizedIc1 = $advisorIcFromDb1 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb1)) : null;
+                    $normalizedIc2 = $advisorIcFromDb2 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb2)) : null;
 
                     // Prepare the base update data
                     $updateData = [
                         'location_id' => 1,
                         'register_at' => now(),
-                        'status_id' => ($normalizedIc1 == $normalizedIc2) ? 20 : 22,
-                        'commission' => ($normalizedIc1 == $normalizedIc2) ? 500 : 0,
-                        'reason' => ($normalizedIc1 == $normalizedIc2) ? 'R2 - KUPD' : null
+                        'status_id' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 20 : 22,
+                        'commission' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 500 : 0,
+                        'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R2 - KUPD' : null
                     ];
 
                     // Perform the update
