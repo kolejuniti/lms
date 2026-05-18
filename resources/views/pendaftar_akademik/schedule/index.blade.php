@@ -6,7 +6,8 @@
         'AO' => 'layouts.ketua_program',
         'OTR' => 'layouts.other_user',
         'ADM' => 'layouts.admin',
-        'HEA' => 'layouts.hea'
+        'HEA' => 'layouts.hea',
+        'DN' => 'layouts.dekan',
     ];
     
     $layout = 'layouts.student';
