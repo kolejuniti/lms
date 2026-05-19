@@ -12906,10 +12906,10 @@ class FinanceController extends Controller
                                         Program
                                     </th>
                                     <th>
-                                        Session
+                                        Intake
                                     </th>
                                     <th>
-                                        Intake
+                                        Session
                                     </th>
                                     <th>
                                         Semester
@@ -12967,10 +12967,10 @@ class FinanceController extends Controller
                         ' . $std->progcode . '
                         </td>
                         <td>
-                        ' . $std->session . '
+                        ' . $std->intake . '
                         </td>
                         <td>
-                        ' . $std->intake . '
+                        ' . $std->session . '
                         </td>
                         <td>
                         ' . $std->semester . '
