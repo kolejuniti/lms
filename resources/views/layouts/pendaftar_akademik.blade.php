@@ -417,6 +417,7 @@ li a {
 						{{-- <li><a href="/AR/schedule2" class="{{ (route('pendaftar_akademik.schedule2') == Request::url()) ? 'active' : ''}}">Create</a></li> --}}
 						<li><a href="/AR/schedule/scheduleReport" class="{{ (route('pendaftar_akademik.schedule.report') == Request::url()) ? 'active' : ''}}">Timetable Report</a></li>
 						<li><a href="/AR/schedule/scheduleReport2" class="{{ (route('pendaftar_akademik.schedule.report2') == Request::url()) ? 'active' : ''}}">Timetable Report 2</a></li>
+						<li><a href="/AR/schedule/log/latest/lecturer" class="{{ (route('pendaftar_akademik.schedule.log.latestLecturer') == Request::url()) ? 'active' : ''}}">List Of Lecturers Timetable</a></li>
 						{{-- <li><a href="/AR/schedule/index" class="{{ (route('pendaftar_akademik.schedule.old') == Request::url()) ? 'active' : ''}}">Upload</a></li> --}}
 					</ul>
 				</li>

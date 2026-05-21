@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
+use PDF;
 
 class AR_Controller extends Controller
 {
@@ -3827,6 +3828,226 @@ class AR_Controller extends Controller
         //dd($data['used']);
 
         return view('pendaftar_akademik.schedule.schedule3', compact('data'));
+    }
+
+    public function latestLecturerLogReport()
+    {
+        $rows = DB::table('tblevents_log')
+            ->join('users', function ($join) {
+                $join->on(
+                    DB::raw('tblevents_log.user_ic COLLATE utf8mb4_unicode_ci'),
+                    '=',
+                    DB::raw('users.ic COLLATE utf8mb4_unicode_ci')
+                );
+            })
+            ->whereIn('users.usrtype', ['LCT', 'PL', 'AO', 'DN'])
+            ->where('users.status', 'ACTIVE')
+            ->whereNotNull('tblevents_log.date')
+            ->groupBy('tblevents_log.user_ic', 'users.name', 'users.no_staf', 'users.email')
+            ->orderByRaw('MAX(tblevents_log.date) DESC')
+            ->select(
+                'tblevents_log.user_ic AS ic',
+                'users.name',
+                'users.no_staf',
+                'users.email',
+                DB::raw('MAX(tblevents_log.date) AS latest_date'),
+                DB::raw('COUNT(tblevents_log.id) AS total_events')
+            )
+            ->get();
+
+        $data = [
+            'rows' => $rows,
+        ];
+
+        return view('pendaftar_akademik.schedule.lecturer_log_latest_report', compact('data'));
+    }
+
+    public function latestLecturerLogReportPdf()
+    {
+        $rows = DB::table('tblevents_log')
+            ->join('users', function ($join) {
+                $join->on(
+                    DB::raw('tblevents_log.user_ic COLLATE utf8mb4_unicode_ci'),
+                    '=',
+                    DB::raw('users.ic COLLATE utf8mb4_unicode_ci')
+                );
+            })
+            ->whereIn('users.usrtype', ['LCT', 'PL', 'AO', 'DN'])
+            ->where('users.status', 'ACTIVE')
+            ->whereNotNull('tblevents_log.date')
+            ->groupBy('tblevents_log.user_ic', 'users.name', 'users.no_staf', 'users.email')
+            ->orderByRaw('MAX(tblevents_log.date) DESC')
+            ->select(
+                'tblevents_log.user_ic AS ic',
+                'users.name',
+                'users.no_staf',
+                'users.email',
+                DB::raw('MAX(tblevents_log.date) AS latest_date')
+            )
+            ->get();
+
+        $lecturers = [];
+
+        foreach ($rows as $row) {
+            $events = $this->getLecturerLoggedEvents($row->ic, $row->latest_date);
+            $lecturers[] = [
+                'ic' => $row->ic,
+                'name' => $row->name,
+                'no_staf' => $row->no_staf,
+                'email' => $row->email,
+                'latest_date' => $row->latest_date,
+                'grid' => $this->buildLecturerTimetableGrid($events),
+            ];
+        }
+
+        $data = [
+            'lecturers' => $lecturers,
+            'generated_at' => now(),
+        ];
+
+        $pdf = PDF::loadView('pendaftar_akademik.schedule.lecturer_log_latest_report_pdf', compact('data'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('latest_lecturer_log_timetable.pdf');
+    }
+
+    private function getLecturerLoggedEvents($lecturerIc, $date)
+    {
+        if (empty($lecturerIc) || empty($date)) {
+            return [];
+        }
+
+        $events = DB::table('tblevents_log')
+            ->join('user_subjek', 'tblevents_log.group_id', '=', 'user_subjek.id')
+            ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
+            ->join('tbllecture_room', 'tblevents_log.lecture_id', '=', 'tbllecture_room.id')
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+            ->where('tblevents_log.user_ic', $lecturerIc)
+            ->where('tblevents_log.date', $date)
+            ->groupBy('subjek.sub_id', 'tblevents_log.id')
+            ->orderBy('tblevents_log.start', 'asc')
+            ->select(
+                'tblevents_log.*',
+                'subjek.course_code AS code',
+                'subjek.course_name AS subject',
+                'tbllecture_room.name AS room',
+                'sessions.SessionName AS session'
+            )
+            ->get();
+
+        $rows = [];
+        foreach ($events as $event) {
+            $count = DB::table('student_subjek')
+                ->where('group_id', $event->group_id)
+                ->where('group_name', $event->group_name)
+                ->count('student_ic');
+
+            $program = DB::table('student_subjek')
+                ->join('students', 'student_subjek.student_ic', '=', 'students.ic')
+                ->join('tblprogramme', 'students.program', '=', 'tblprogramme.id')
+                ->where('student_subjek.group_id', $event->group_id)
+                ->where('student_subjek.group_name', $event->group_name)
+                ->groupBy('tblprogramme.id', 'tblprogramme.progcode')
+                ->pluck('tblprogramme.progcode')
+                ->toArray();
+
+            $programInfo = implode(', ', $program);
+
+            $start = Carbon::parse($event->start);
+            $end = Carbon::parse($event->end);
+
+            $rows[] = [
+                'day' => $start->format('l'),
+                'day_iso' => (int) $start->dayOfWeekIso, // 1 (Mon) .. 7 (Sun)
+                'start' => $start->format('H:i'),
+                'end' => $end->format('H:i'),
+                'title' => ($event->code ?? '') . ' - ' . ($event->subject ?? '') . ' (' . ($event->group_name ?? '') . ')',
+                'session' => $event->session,
+                'room' => strtoupper($event->room ?? ''),
+                'total_student' => $count,
+                'programs' => $programInfo,
+            ];
+        }
+
+        return $rows;
+    }
+
+    private function buildLecturerTimetableGrid($events)
+    {
+        $startTime = Carbon::createFromTime(8, 30, 0);
+        $endTime = Carbon::createFromTime(18, 0, 0);
+        $slotMinutes = 30;
+
+        $times = [];
+        $cursor = $startTime->copy();
+        while ($cursor < $endTime) {
+            $times[] = $cursor->format('H:i');
+            $cursor->addMinutes($slotMinutes);
+        }
+        $slotCount = count($times);
+
+        $dayCols = [
+            1 => 'Monday',
+            2 => 'Tuesday',
+            3 => 'Wednesday',
+            4 => 'Thursday',
+            5 => 'Friday',
+        ];
+
+        $cells = [];
+        for ($i = 0; $i < $slotCount; $i++) {
+            foreach (array_keys($dayCols) as $dayIso) {
+                $cells[$i][$dayIso] = ['skip' => false, 'rowspan' => 1, 'event' => null];
+            }
+        }
+
+        foreach (($events ?? []) as $event) {
+            $dayIso = (int) ($event['day_iso'] ?? 0);
+            if ($dayIso < 1 || $dayIso > 5) {
+                continue;
+            }
+
+            $evStart = Carbon::createFromTimeString($event['start'] ?? '00:00');
+            $evEnd = Carbon::createFromTimeString($event['end'] ?? '00:00');
+
+            $startDiff = $startTime->diffInMinutes($evStart, false);
+            $endDiff = $startTime->diffInMinutes($evEnd, false);
+
+            $startSlot = (int) floor($startDiff / $slotMinutes);
+            $endSlot = (int) ceil($endDiff / $slotMinutes);
+
+            if ($endSlot <= 0 || $startSlot >= $slotCount) {
+                continue;
+            }
+
+            $startSlot = max(0, $startSlot);
+            $endSlot = min($slotCount, $endSlot);
+
+            $rowspan = max(1, $endSlot - $startSlot);
+
+            if (!empty($cells[$startSlot][$dayIso]['event']) || !empty($cells[$startSlot][$dayIso]['skip'])) {
+                continue;
+            }
+
+            $cells[$startSlot][$dayIso] = [
+                'skip' => false,
+                'rowspan' => $rowspan,
+                'event' => $event,
+            ];
+
+            for ($j = $startSlot + 1; $j < $startSlot + $rowspan; $j++) {
+                if ($j >= $slotCount) {
+                    break;
+                }
+                $cells[$j][$dayIso]['skip'] = true;
+            }
+        }
+
+        return [
+            'days' => $dayCols,
+            'times' => $times,
+            'cells' => $cells,
+        ];
     }
 
     public function fetchLogEvent(Request $request)
