@@ -19,7 +19,7 @@
         .header { position: fixed; top: 0; left: 0; right: 0; height: 8mm; font-size: 9px; color: #444; width: 100%; }
         .header table { width: 100%; border-collapse: collapse; }
         .header td { padding: 0; }
-        .header .left { text-align: left; }
+        .header .right { text-align: right; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 9px; color: #444; width: 100%; }
         .footer table { width: 100%; border-collapse: collapse; }
         .footer td { padding: 0; }
