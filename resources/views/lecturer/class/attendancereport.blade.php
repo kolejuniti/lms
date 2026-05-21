@@ -152,6 +152,12 @@
 
                                               XLSX.writeFile(wb, "exported-data.xlsx");
                                             }
+                                          },
+                                          {
+                                            text: 'PDF',
+                                            action: function () {
+                                              window.open("{{ route('lecturer.attendance.report.pdf') }}", "_blank");
+                                            }
                                           }
                                         ],
                                     });

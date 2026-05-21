@@ -259,6 +259,8 @@ Route::get('/AR/schedule/log/{id}/getLoggedSchedule', [App\Http\Controllers\AR_C
 Route::post('/AR/schedule/log/{id}/delete', [App\Http\Controllers\AR_Controller::class, 'deleteLogEvent']);
 Route::get('/AR/schedule/log/{id}/view', [App\Http\Controllers\AR_Controller::class, 'viewLogEvent']);
 Route::get('/AR/schedule/log/{id}/fetch', [App\Http\Controllers\AR_Controller::class, 'fetchLogEvent']);
+Route::get('/AR/schedule/log/latest/lecturer', [App\Http\Controllers\AR_Controller::class, 'latestLecturerLogReport'])->name('pendaftar_akademik.schedule.log.latestLecturer');
+Route::get('/AR/schedule/log/latest/lecturer/export/pdf', [App\Http\Controllers\AR_Controller::class, 'latestLecturerLogReportPdf'])->name('pendaftar_akademik.schedule.log.latestLecturer.pdf');
 Route::put('/AR/schedule/update/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent']);
 Route::put('/AR/schedule/update2/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent2']);
 Route::delete('/AR/schedule/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'deleteEvent']);
@@ -375,6 +377,7 @@ Route::post('/lecturer/class/attendance/store', [App\Http\Controllers\LecturerCo
 Route::get('/lecturer/class/attendance/edit', [App\Http\Controllers\LecturerController::class, 'classAttendanceEdit'])->name('lecturer.class.attendance.edit');
 Route::post('/lecturer/class/attendance/edit/update', [App\Http\Controllers\LecturerController::class, 'updateAttendance'])->name('lecturer.attendance.update');
 Route::get('/lecturer/class/attendance/report', [App\Http\Controllers\LecturerController::class, 'reportAttendance'])->name('lecturer.attendance.report');
+Route::get('/lecturer/class/attendance/report/pdf', [App\Http\Controllers\LecturerController::class, 'exportAttendanceReportPdf'])->name('lecturer.attendance.report.pdf');
 Route::get('/lecturer/class/attendance/print', [App\Http\Controllers\LecturerController::class, 'printAttendance'])->name('lecturer.attendance.print');
 Route::get('/lecturer/class/examination/print', [App\Http\Controllers\LecturerController::class, 'printExamination'])->name('lecturer.examination.print');
 //Route::get('/lecturer/class/attendance/report', [App\Http\Controllers\LecturerController::class, 'listAttendance'])->name('lecturer.attendance.report');

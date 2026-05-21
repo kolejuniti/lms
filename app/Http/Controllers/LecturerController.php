@@ -4851,6 +4851,113 @@ class LecturerController extends Controller
         return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status'));
     }
 
+    public function exportAttendanceReportPdf()
+    {
+        $user = Auth::user();
+
+        $courseid = Session::get('CourseID');
+        $sessionid = Session::get('SessionID');
+
+        $students = [];
+        $list = [];
+        $status = [];
+
+        $groups = DB::table('user_subjek')
+            ->join('users', 'user_subjek.user_ic', 'users.ic')
+            ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'users.name', 'subjek.course_name', 'subjek.course_code')
+            ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', $sessionid],
+                ['subjek.id', $courseid],
+            ])
+            ->groupBy('student_subjek.group_name')
+            ->get();
+
+        foreach ($groups as $ky => $grp) {
+            $students[] = DB::table('user_subjek')
+                ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'students.*')
+                ->where([
+                    ['user_subjek.user_ic', $user->ic],
+                    ['user_subjek.session_id', $sessionid],
+                    ['subjek.id', $courseid],
+                ])
+                ->whereNotIn('students.status', [4, 5, 6, 7, 16])
+                ->where('student_subjek.group_name', $grp->group_name)
+                ->orderBy('students.name')
+                ->get();
+
+            $list[] = DB::table('tblclassattendance')
+                ->join('user_subjek', 'tblclassattendance.groupid', 'user_subjek.id')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->where([
+                    ['subjek.id', $courseid],
+                    ['user_subjek.session_id', $sessionid],
+                    ['user_subjek.user_ic', $user->ic],
+                    ['tblclassattendance.groupname', $grp->group_name],
+                ])
+                ->groupBy('tblclassattendance.classdate')
+                ->orderBy('tblclassattendance.classdate', 'ASC')
+                ->select('tblclassattendance.*')
+                ->get();
+
+            foreach ($students[$ky] as $key => $std) {
+                foreach ($list[$ky] as $keys => $ls) {
+                    $atten = DB::table('tblclassattendance')
+                        ->where([
+                            ['tblclassattendance.groupid', $ls->groupid],
+                            ['tblclassattendance.groupname', $grp->group_name],
+                            ['tblclassattendance.student_ic', $std->ic],
+                            ['tblclassattendance.classdate', $ls->classdate],
+                        ])
+                        ->select('tblclassattendance.*');
+
+                    $attendance = $atten->first();
+
+                    if ($atten->exists()) {
+                        if ($attendance->excuse == null && $attendance->mc == null && $attendance->lc == null) {
+                            $status[$ky][$key][$keys] = 'Present';
+                        } elseif ($attendance->excuse != null) {
+                            $status[$ky][$key][$keys] = 'THB';
+                        } elseif ($attendance->mc != null) {
+                            $status[$ky][$key][$keys] = 'MC';
+                        } elseif ($attendance->lc != null) {
+                            $status[$ky][$key][$keys] = 'NC/LC';
+                        }
+                    } else {
+                        $status[$ky][$key][$keys] = 'Absent';
+                    }
+                }
+            }
+        }
+
+        $course = DB::table('subjek')->where('id', $courseid)->first();
+        $session = DB::table('sessions')->where('SessionID', $sessionid)->first();
+
+        $pdf = PDF::loadView('lecturer.class.attendancereport_pdf', compact(
+            'groups',
+            'students',
+            'list',
+            'status',
+            'course',
+            'session',
+            'user'
+        ));
+
+        $pdf->setPaper('a4', 'landscape');
+
+        $filename = 'Attendance_Report';
+        if (!empty($course?->course_code)) {
+            $filename .= '_' . preg_replace('/[^A-Za-z0-9_-]+/', '-', $course->course_code);
+        }
+
+        return $pdf->stream($filename . '.pdf');
+    }
+
 
     public function listAttendance()
     {
