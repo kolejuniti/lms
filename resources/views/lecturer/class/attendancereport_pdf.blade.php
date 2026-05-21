@@ -16,7 +16,9 @@
         table.report th { background: #f2f2f2; text-align: center; font-weight: 700; }
         .center { text-align: center; }
         .page-break { page-break-after: always; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 9px; color: #444; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 9px; color: #444; width: 100%; }
+        .footer table { width: 100%; border-collapse: collapse; }
+        .footer td { padding: 0; }
         .footer .right { text-align: right; }
     </style>
 </head>
@@ -119,7 +121,12 @@
     @endif
 
     <div class="footer">
-        <div class="right">Generated: {{ now()->format('d/m/Y H:i') }}</div>
+        <table>
+            <tr>
+                <td>UCMS - BPK.UNITI.BKD.03/01</td>
+                <td class="right">Generated: {{ now()->format('d/m/Y H:i') }}</td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>
