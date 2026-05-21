@@ -16,7 +16,7 @@
         table.report th { background: #f2f2f2; text-align: center; font-weight: 700; }
         .center { text-align: center; }
         .page-break { page-break-after: always; }
-        .header { position: fixed; top: 0; left: 0; right: 0; font-size: 9px; color: #444; width: 100%; }
+        .header { position: fixed; top: 0; left: 0; right: 0; bottom: 5mm; font-size: 9px; color: #444; width: 100%; }
         .header table { width: 100%; border-collapse: collapse; }
         .header td { padding: 0; }
         .header .left { text-align: left; }
@@ -27,7 +27,7 @@
     </style>
 </head>
 <body>
-    <div class="header mb-2">
+    <div class="header">
         <table>
             <tr>
                 <td>UCMS - BPK.UNITI.BKD.03/01</td>
