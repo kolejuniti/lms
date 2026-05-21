@@ -3864,7 +3864,38 @@ class AR_Controller extends Controller
 
     public function latestLecturerLogReportPdf()
     {
-        $rows = DB::table('tblevents_log')
+        $latestPerLecturer = DB::table('tblevents_log')
+            ->select(
+                DB::raw('tblevents_log.user_ic AS ic'),
+                DB::raw('MAX(tblevents_log.date) AS latest_date')
+            )
+            ->whereNotNull('tblevents_log.date')
+            ->groupBy('tblevents_log.user_ic');
+
+        $rows = DB::query()
+            ->fromSub($latestPerLecturer, 'latest')
+            ->join('users', function ($join) {
+                $join->on(
+                    DB::raw('latest.ic COLLATE utf8mb4_unicode_ci'),
+                    '=',
+                    DB::raw('users.ic COLLATE utf8mb4_unicode_ci')
+                );
+            })
+            ->whereIn('users.usrtype', ['LCT', 'PL', 'AO', 'DN'])
+            ->where('users.status', 'ACTIVE')
+            ->select('latest.ic', 'users.name', 'users.no_staf', 'users.email', 'latest.latest_date')
+            ->orderBy('users.name', 'asc')
+            ->get();
+
+        // Fetch all latest-date events in one go (avoid N+1 query explosion)
+        $events = DB::table('tblevents_log')
+            ->joinSub($latestPerLecturer, 'latest', function ($join) {
+                $join->on(
+                    DB::raw('tblevents_log.user_ic COLLATE utf8mb4_unicode_ci'),
+                    '=',
+                    DB::raw('latest.ic COLLATE utf8mb4_unicode_ci')
+                )->on('tblevents_log.date', '=', 'latest.latest_date');
+            })
             ->join('users', function ($join) {
                 $join->on(
                     DB::raw('tblevents_log.user_ic COLLATE utf8mb4_unicode_ci'),
@@ -3872,31 +3903,98 @@ class AR_Controller extends Controller
                     DB::raw('users.ic COLLATE utf8mb4_unicode_ci')
                 );
             })
+            ->join('user_subjek', 'tblevents_log.group_id', '=', 'user_subjek.id')
+            ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
+            ->join('tbllecture_room', 'tblevents_log.lecture_id', '=', 'tbllecture_room.id')
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
             ->whereIn('users.usrtype', ['LCT', 'PL', 'AO', 'DN'])
             ->where('users.status', 'ACTIVE')
-            ->whereNotNull('tblevents_log.date')
-            ->groupBy('tblevents_log.user_ic', 'users.name', 'users.no_staf', 'users.email')
-            ->orderByRaw('MAX(tblevents_log.date) DESC')
             ->select(
                 'tblevents_log.user_ic AS ic',
-                'users.name',
-                'users.no_staf',
-                'users.email',
-                DB::raw('MAX(tblevents_log.date) AS latest_date')
+                'tblevents_log.date',
+                'tblevents_log.start',
+                'tblevents_log.end',
+                'tblevents_log.group_id',
+                'tblevents_log.group_name',
+                'subjek.course_code AS code',
+                'subjek.course_name AS subject',
+                'tbllecture_room.name AS room',
+                'sessions.SessionName AS session'
             )
+            ->orderBy('tblevents_log.user_ic', 'asc')
+            ->orderBy('tblevents_log.start', 'asc')
             ->get();
 
-        $lecturers = [];
+        $groupIds = $events
+            ->pluck('group_id')
+            ->filter(fn ($v) => !empty($v))
+            ->unique()
+            ->values()
+            ->all();
 
+        // Total students per group_id
+        $totalStudentsMap = [];
+        if (!empty($groupIds)) {
+            $totalStudents = DB::table('student_subjek')
+                ->select('group_id', DB::raw('COUNT(student_ic) AS total_student'))
+                ->whereIn('group_id', $groupIds)
+                ->groupBy('group_id')
+                ->get();
+
+            foreach ($totalStudents as $r) {
+                $totalStudentsMap[(string) ($r->group_id ?? '')] = (int) ($r->total_student ?? 0);
+            }
+        }
+
+        // Programs list per group_id
+        $programsMap = [];
+        if (!empty($groupIds)) {
+            $programs = DB::table('student_subjek')
+                ->join('students', 'student_subjek.student_ic', '=', 'students.ic')
+                ->join('tblprogramme', 'students.program', '=', 'tblprogramme.id')
+                ->select(
+                    'student_subjek.group_id',
+                    DB::raw("GROUP_CONCAT(DISTINCT tblprogramme.progcode ORDER BY tblprogramme.progcode SEPARATOR ', ') AS programs")
+                )
+                ->whereIn('student_subjek.group_id', $groupIds)
+                ->groupBy('student_subjek.group_id')
+                ->get();
+
+            foreach ($programs as $r) {
+                $programsMap[(string) ($r->group_id ?? '')] = (string) ($r->programs ?? '');
+            }
+        }
+
+        // Assemble per-lecturer grids
+        $eventsByLecturer = [];
+        foreach ($events as $event) {
+            $groupIdKey = (string) ($event->group_id ?? '');
+            $start = Carbon::parse($event->start);
+            $end = Carbon::parse($event->end);
+
+            $eventsByLecturer[$event->ic][] = [
+                'day' => $start->format('l'),
+                'day_iso' => (int) $start->dayOfWeekIso,
+                'start' => $start->format('H:i'),
+                'end' => $end->format('H:i'),
+                'title' => ($event->code ?? '') . ' - ' . ($event->subject ?? '') . ' (' . ($event->group_name ?? '') . ')',
+                'session' => $event->session,
+                'room' => strtoupper($event->room ?? ''),
+                'total_student' => $totalStudentsMap[$groupIdKey] ?? 0,
+                'programs' => $programsMap[$groupIdKey] ?? '',
+            ];
+        }
+
+        $lecturers = [];
         foreach ($rows as $row) {
-            $events = $this->getLecturerLoggedEvents($row->ic, $row->latest_date);
+            $lctEvents = $eventsByLecturer[$row->ic] ?? [];
             $lecturers[] = [
                 'ic' => $row->ic,
                 'name' => $row->name,
                 'no_staf' => $row->no_staf,
                 'email' => $row->email,
                 'latest_date' => $row->latest_date,
-                'grid' => $this->buildLecturerTimetableGrid($events),
+                'grid' => $this->buildLecturerTimetableGrid($lctEvents),
             ];
         }
 
