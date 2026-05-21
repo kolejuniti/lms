@@ -3830,9 +3830,11 @@ class AR_Controller extends Controller
         return view('pendaftar_akademik.schedule.schedule3', compact('data'));
     }
 
-    public function latestLecturerLogReport()
+    public function latestLecturerLogReport(Request $request)
     {
-        $rows = DB::table('tblevents_log')
+        $faculty = $request->query('faculty');
+
+        $rowsQuery = DB::table('tblevents_log')
             ->join('users', function ($join) {
                 $join->on(
                     DB::raw('tblevents_log.user_ic COLLATE utf8mb4_unicode_ci'),
@@ -3852,11 +3854,19 @@ class AR_Controller extends Controller
                 'users.email',
                 DB::raw('MAX(tblevents_log.date) AS latest_date'),
                 DB::raw('COUNT(tblevents_log.id) AS total_events')
-            )
-            ->get();
+            );
+
+        if (!empty($faculty) && $faculty !== 'all') {
+            $rowsQuery->where('users.faculty', $faculty);
+        }
+
+        $rows = $rowsQuery->get();
+        $faculties = DB::table('tblfaculty')->whereIn('id', [1, 2, 3])->orderBy('facultyname', 'asc')->get();
 
         $data = [
             'rows' => $rows,
+            'faculties' => $faculties,
+            'selected_faculty' => $faculty ?? 'all',
         ];
 
         return view('pendaftar_akademik.schedule.lecturer_log_latest_report', compact('data'));
@@ -3877,6 +3887,8 @@ class AR_Controller extends Controller
         }
 
         try {
+            $faculty = $request->query('faculty');
+
             $latestPerLecturer = DB::table('tblevents_log')
                 ->select(
                     DB::raw('tblevents_log.user_ic AS ic'),
@@ -3885,7 +3897,7 @@ class AR_Controller extends Controller
                 ->whereNotNull('tblevents_log.date')
                 ->groupBy('tblevents_log.user_ic');
 
-            $rows = DB::query()
+            $rowsQuery = DB::query()
                 ->fromSub($latestPerLecturer, 'latest')
                 ->join('users', function ($join) {
                     $join->on(
@@ -3897,11 +3909,16 @@ class AR_Controller extends Controller
                 ->whereIn('users.usrtype', ['LCT', 'PL', 'AO', 'DN'])
                 ->where('users.status', 'ACTIVE')
                 ->select('latest.ic', 'users.name', 'users.no_staf', 'users.email', 'latest.latest_date')
-                ->orderBy('users.name', 'asc')
-                ->get();
+                ->orderBy('users.name', 'asc');
+
+            if (!empty($faculty) && $faculty !== 'all') {
+                $rowsQuery->where('users.faculty', $faculty);
+            }
+
+            $rows = $rowsQuery->get();
 
             // Fetch all latest-date events in one go (avoid N+1 query explosion)
-            $events = DB::table('tblevents_log')
+            $eventsQuery = DB::table('tblevents_log')
                 ->joinSub($latestPerLecturer, 'latest', function ($join) {
                     $join->on(
                         DB::raw('tblevents_log.user_ic COLLATE utf8mb4_unicode_ci'),
@@ -3935,8 +3952,13 @@ class AR_Controller extends Controller
                     'sessions.SessionName AS session'
                 )
                 ->orderBy('tblevents_log.user_ic', 'asc')
-                ->orderBy('tblevents_log.start', 'asc')
-                ->get();
+                ->orderBy('tblevents_log.start', 'asc');
+
+            if (!empty($faculty) && $faculty !== 'all') {
+                $eventsQuery->where('users.faculty', $faculty);
+            }
+
+            $events = $eventsQuery->get();
 
             $groupIds = $events
                 ->pluck('group_id')
@@ -4018,6 +4040,7 @@ class AR_Controller extends Controller
 
             if ($request->query('profile') === '1') {
                 return response()->json([
+                    'faculty' => $faculty ?? 'all',
                     'lecturers' => count($lecturers),
                     'events' => $events->count(),
                     'group_ids' => count($groupIds),

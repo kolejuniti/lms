@@ -46,9 +46,19 @@
                 <div class="col-12">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-10">
                         <h4 class="mb-0 fw-500">Latest Timetable</h4>
-                        <a class="btn btn-sm btn-danger" href="{{ route('pendaftar_akademik.schedule.log.latestLecturer.pdf') }}" target="_blank">
-                            Export PDF
-                        </a>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <form method="GET" action="{{ route('pendaftar_akademik.schedule.log.latestLecturer') }}" class="m-0">
+                                <select name="faculty" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="all" @selected(($data['selected_faculty'] ?? 'all') === 'all')>All Faculties</option>
+                                    @foreach(($data['faculties'] ?? []) as $fcl)
+                                        <option value="{{ $fcl->id }}" @selected((string)($data['selected_faculty'] ?? 'all') === (string)$fcl->id)>{{ $fcl->facultyname }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                            <a class="btn btn-sm btn-danger" href="{{ route('pendaftar_akademik.schedule.log.latestLecturer.pdf', ['faculty' => ($data['selected_faculty'] ?? 'all')]) }}" target="_blank">
+                                Export PDF
+                            </a>
+                        </div>
                     </div>
 
                     @php($rowsSorted = collect($data['rows'] ?? [])->sortBy(fn ($r) => mb_strtolower($r->name ?? ''))->values())
