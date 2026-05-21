@@ -4034,7 +4034,7 @@ class AR_Controller extends Controller
                     'isRemoteEnabled' => false,
                 ]);
 
-            return $pdf->download('latest_lecturer_log_timetable.pdf');
+            return $pdf->stream('latest_lecturer_log_timetable.pdf');
         } catch (\Throwable $e) {
             Log::error('latestLecturerLogReportPdf failed', [
                 'message' => $e->getMessage(),
