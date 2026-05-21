@@ -5,7 +5,7 @@
     <title>Attendance Report</title>
     <style>
         @page { margin: 14mm; }
-        body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 10px; color: #111; }
+        body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 10px; color: #111; margin: 0; padding-top: 10mm; padding-bottom: 10mm; }
         h1 { font-size: 14px; margin: 0 0 6px 0; }
         .meta { margin-bottom: 10px; }
         .meta table { width: 100%; border-collapse: collapse; }
@@ -16,7 +16,7 @@
         table.report th { background: #f2f2f2; text-align: center; font-weight: 700; }
         .center { text-align: center; }
         .page-break { page-break-after: always; }
-        .header { position: fixed; top: 0; left: 0; right: 0; bottom: 5mm; font-size: 9px; color: #444; width: 100%; }
+        .header { position: fixed; top: 0; left: 0; right: 0; height: 8mm; font-size: 9px; color: #444; width: 100%; }
         .header table { width: 100%; border-collapse: collapse; }
         .header td { padding: 0; }
         .header .left { text-align: left; }
