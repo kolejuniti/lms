@@ -27,7 +27,7 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="header mb-2">
         <table>
             <tr>
                 <td>UCMS - BPK.UNITI.BKD.03/01</td>
