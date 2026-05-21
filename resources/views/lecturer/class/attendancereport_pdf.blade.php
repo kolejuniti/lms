@@ -134,7 +134,7 @@
     <div class="footer">
         <table>
             <tr>
-                <td>UCMS - BPK.UNITI.BKD.03/01</td>
+                <td>&nbsp;</td>
                 <td class="right">Generated: {{ now()->format('d/m/Y H:i') }}</td>
             </tr>
         </table>
