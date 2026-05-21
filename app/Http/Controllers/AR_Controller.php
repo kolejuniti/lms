@@ -3877,6 +3877,7 @@ class AR_Controller extends Controller
             ->whereNotNull('tblevents_log.date')
             ->groupBy('tblevents_log.user_ic', 'users.name', 'users.no_staf', 'users.email')
             ->orderByRaw('MAX(tblevents_log.date) DESC')
+            ->limit(10) // Limit to top 10 lecturers for the PDF report
             ->select(
                 'tblevents_log.user_ic AS ic',
                 'users.name',
