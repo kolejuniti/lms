@@ -3867,10 +3867,10 @@ class AR_Controller extends Controller
         $t0 = microtime(true);
 
         // Live servers often have lower PHP/web timeouts; give this action more headroom.
-        @set_time_limit(300);
-        @ini_set('max_execution_time', '300');
-        @ini_set('pcre.backtrack_limit', '10000000');
-        @ini_set('pcre.recursion_limit', '10000000');
+        @\set_time_limit(300);
+        @\ini_set('max_execution_time', '300');
+        @\ini_set('pcre.backtrack_limit', '10000000');
+        @\ini_set('pcre.recursion_limit', '10000000');
 
         try {
             $latestPerLecturer = DB::table('tblevents_log')
