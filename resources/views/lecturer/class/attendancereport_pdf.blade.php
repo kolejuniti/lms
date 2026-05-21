@@ -86,7 +86,14 @@
                                 @if(!empty($list[$ky]))
                                     @foreach($list[$ky] as $k => $ls)
                                         <td class="center">
-                                            {{ $status[$ky][$idx][$k] ?? '-' }}
+                                            @php($st = $status[$ky][$idx][$k] ?? null)
+                                            @if($st === 'Present')
+                                                ✓
+                                            @elseif($st === 'Absent')
+                                                ✗
+                                            @else
+                                                {{ $st ?? '-' }}
+                                            @endif
                                         </td>
                                     @endforeach
                                 @endif
