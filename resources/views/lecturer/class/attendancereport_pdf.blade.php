@@ -16,6 +16,10 @@
         table.report th { background: #f2f2f2; text-align: center; font-weight: 700; }
         .center { text-align: center; }
         .page-break { page-break-after: always; }
+        .header { position: fixed; top: 0; left: 0; right: 0; font-size: 9px; color: #444; width: 100%; }
+        .header table { width: 100%; border-collapse: collapse; }
+        .header td { padding: 0; }
+        .header .left { text-align: left; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 9px; color: #444; width: 100%; }
         .footer table { width: 100%; border-collapse: collapse; }
         .footer td { padding: 0; }
