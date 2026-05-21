@@ -17,7 +17,7 @@
         .center { text-align: center; }
         .page-break { page-break-after: always; }
         .header { position: fixed; top: 0; left: 0; right: 0; height: 8mm; font-size: 9px; color: #444; width: 100%; }
-        .header table { width: 100%; border-collapse: collapse; }
+        .header table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         .header td { padding: 0; }
         .header .right { text-align: right; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 9px; color: #444; width: 100%; }
@@ -30,7 +30,8 @@
     <div class="header">
         <table>
             <tr>
-                <td>UCMS - BPK.UNITI.BKD.03/01</td>
+                <td style="width: 50%;">&nbsp;</td>
+                <td class="right" style="width: 50%;">UCMS - BPK.UNITI.BKD.03/01</td>
             </tr>
         </table>
     </div>
