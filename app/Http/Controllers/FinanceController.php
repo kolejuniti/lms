@@ -1933,7 +1933,7 @@ class FinanceController extends Controller
                             </td>
                             <td>
                                 <div class="col-md-6" hidden>
-                                     <input type="number" class="form-control" name="sum" id="sum" value="' . $sum . '">
+                                     <input type="text" class="form-control" name="sum" id="sum" value="' . $sum . '">
                                 </div> 
                             </td>
                         </tr>
@@ -2448,7 +2448,7 @@ class FinanceController extends Controller
                             </td>
                             <td>
                                 <div class="col-md-6" hidden>
-                                     <input type="number" class="form-control" name="sum" id="sum" value="' . $sum . '">
+                                     <input type="text" class="form-control" name="sum" id="sum" value="' . $sum . '">
                                 </div> 
                             </td>
                         </tr>
@@ -2947,7 +2947,7 @@ class FinanceController extends Controller
                             </td>
                             <td>
                                 <div class="col-md-6" hidden>
-                                     <input type="number" class="form-control" name="sum" id="sum" value="' . $sum . '">
+                                     <input type="text" class="form-control" name="sum" id="sum" value="' . $sum . '">
                                 </div> 
                             </td>
                         </tr>
@@ -4069,7 +4069,7 @@ class FinanceController extends Controller
                             </td>
                             <td>
                                 <div class="col-md-6" hidden>
-                                     <input type="number" class="form-control" name="sum" id="sum" value="' . $sum . '">
+                                     <input type="text" class="form-control" name="sum" id="sum" value="' . $sum . '">
                                 </div> 
                             </td>
                         </tr>
@@ -4619,7 +4619,7 @@ class FinanceController extends Controller
                             </td>
                             <td>
                                 <div class="col-md-6" hidden>
-                                     <input type="number" class="form-control" name="sum" id="sum" value="' . $sum . '">
+                                     <input type="text" class="form-control" name="sum" id="sum" value="' . $sum . '">
                                 </div> 
                             </td>
                         </tr>
