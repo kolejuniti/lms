@@ -46,7 +46,7 @@
                 <div class="col-md-6" id="payment-card">
                     <div class="form-group">
                         <label class="form-label" for="ptotal">Total Payment</label>
-                        <input type="number" class="form-control" name="ptotal" id="ptotal">
+                        <input type="text" class="form-control" name="ptotal" id="ptotal">
                     </div>
                 </div> 
             </div>
@@ -105,7 +105,7 @@
                                         <div class="col-md-12" id="payment-card">
                                             <div class="form-group">
                                                 <input type="text" class="form-control" name="phyid[]" id="phyid[]" value="{{ $tsy->id }}" hidden>
-                                                <input type="number" class="form-control" name="payment[]" id="payment[]" step='0.01' max="{{ $data['amount'][$key] }}">
+                                                <input type="text" class="form-control" name="payment[]" id="payment[]" step='0.01' max="{{ $data['amount'][$key] }}">
                                             </div>
                                         </div> 
                                     </td>
