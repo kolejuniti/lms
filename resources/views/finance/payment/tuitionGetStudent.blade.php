@@ -115,7 +115,7 @@
                 <div class="col-md-2" id="amount-card">
                     <div class="form-group">
                         <label class="form-label" for="amount">Amount (RM)</label>
-                        <input type="number" class="form-control" name="amount" id="amount">
+                        <input type="text" class="form-control" name="amount" id="amount">
                     </div>
                 </div> 
             </div>
