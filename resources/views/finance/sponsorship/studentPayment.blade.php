@@ -322,7 +322,7 @@ function confirm()
               try{
                   if(res.message == "Success"){
                       alert("Success! Payment Details has been added!");
-                      window.open('/finance/sponsorship/payment/getReceipt2?id=' + res.id, '_blank');
+                      // window.open('/finance/sponsorship/payment/getReceipt2?id=' + res.id, '_blank');
                       window.location.reload();
                   }else{
                       $('.error-field').html('');
