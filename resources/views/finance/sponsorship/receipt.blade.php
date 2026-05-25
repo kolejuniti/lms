@@ -211,7 +211,7 @@
                      <tr>
                         <td>{{ $count+1 }}</td>
                         <td>{{ $dtl->name }}</td>
-                        <td>{{ $dtl->notes ?? 'N/A' }}</td>
+                        <td>{{ $dtl->notes ?? '' }}</td>
                         <!-- <td>{{ $dtl->groupid }}</td> -->
                         <td>{{ number_format($dtl->total_amount, 2, '.', ',') }}</td>
                      </tr>
