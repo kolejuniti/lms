@@ -1089,21 +1089,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
 
-                if (dayOfWeek === 3) {
-                    // Tuesday => 14:00 to 18:00 default entrepreneurship program
-                    rehatEvents.push({
-                        title: 'PROGRAM KEUSAHAWANAN',
-                        start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0, 0),
-                        end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 18, 0, 0),
-                        allDay: false,
-                        color: '#1d4ed8',
-                        textColor: '#ffffff',
-                        borderColor: '#1d4ed8',
-                        extendedProps: {
-                            programInfo: 'PROGRAM KEUSAHAWANAN'
-                        }
-                    });
-                }
+                // Tuesday => 14:00 to 18:00 default entrepreneurship program
+                // if (dayOfWeek === 3) {
+                    
+                //     rehatEvents.push({
+                //         title: 'PROGRAM KEUSAHAWANAN',
+                //         start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0, 0),
+                //         end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 18, 0, 0),
+                //         allDay: false,
+                //         color: '#1d4ed8',
+                //         textColor: '#ffffff',
+                //         borderColor: '#1d4ed8',
+                //         extendedProps: {
+                //             programInfo: 'PROGRAM KEUSAHAWANAN'
+                //         }
+                //     });
+                // }
 
                 if (dayOfWeek === 5) {
                     // Friday => 12:30 to 14:30

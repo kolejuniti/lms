@@ -797,21 +797,21 @@
                 }
 
                 // Add program info directly in the content instead of appending later
-                if (arg.event.title !== 'REHAT' && arg.event.title !== 'PROGRAM KEUSAHAWANAN' && arg.event.extendedProps) {
-                    // Program info
-                    if (arg.event.extendedProps.programInfo) {
-                        var programDiv = document.createElement('div');
-                        programDiv.classList.add('event-program');
-                        programDiv.style.fontSize = '0.7rem';
-                        programDiv.style.padding = '2px 4px';
-                        programDiv.style.marginTop = 'auto';
-                        programDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-                        programDiv.style.borderRadius = '3px';
-                        programDiv.style.fontWeight = 'bold';
-                        programDiv.textContent = 'Program: ' + arg.event.extendedProps.programInfo;
-                        container.appendChild(programDiv);
-                    }
-                }
+                // if (arg.event.title !== 'REHAT' && arg.event.title !== 'PROGRAM KEUSAHAWANAN' && arg.event.extendedProps) {
+                //     // Program info
+                //     if (arg.event.extendedProps.programInfo) {
+                //         var programDiv = document.createElement('div');
+                //         programDiv.classList.add('event-program');
+                //         programDiv.style.fontSize = '0.7rem';
+                //         programDiv.style.padding = '2px 4px';
+                //         programDiv.style.marginTop = 'auto';
+                //         programDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+                //         programDiv.style.borderRadius = '3px';
+                //         programDiv.style.fontWeight = 'bold';
+                //         programDiv.textContent = 'Program: ' + arg.event.extendedProps.programInfo;
+                //         container.appendChild(programDiv);
+                //     }
+                // }
 
                 return {
                     domNodes: [container]
@@ -839,22 +839,22 @@
     /**
      * Show event details in a modal or tooltip
      */
-    function showEventDetails(event) {
-        // Create custom tooltip or use SweetAlert for a nice modal
-        Swal.fire({
-            title: event.title,
-            html: `
-                <div class="event-details">
-                    <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
-                    ${event.extendedProps.description ? `<p><strong>Description:</strong><br>${event.extendedProps.description}</p>` : ''}
-                    ${event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: 'Close',
-            confirmButtonColor: '#4361ee'
-        });
-    }
+    // function showEventDetails(event) {
+    //     // Create custom tooltip or use SweetAlert for a nice modal
+    //     Swal.fire({
+    //         title: event.title,
+    //         html: `
+    //             <div class="event-details">
+    //                 <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
+    //                 ${event.extendedProps.description ? `<p><strong>Description:</strong><br>${event.extendedProps.description}</p>` : ''}
+    //                 ${event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
+    //             </div>
+    //         `,
+    //         icon: 'info',
+    //         confirmButtonText: 'Close',
+    //         confirmButtonColor: '#4361ee'
+    //     });
+    // }
 
     /**
      * Generate HTML for schedule

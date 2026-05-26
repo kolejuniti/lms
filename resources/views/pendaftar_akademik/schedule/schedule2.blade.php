@@ -1023,18 +1023,18 @@ function setupCalendar() {
                 }
                 
                 // Lecturer info
-                if (arg.event.title !== 'PROGRAM KEUSAHAWANAN' && arg.event.extendedProps.lectInfo) {
-                    var lectDiv = document.createElement('div');
-                    lectDiv.classList.add('event-lecturer');
-                    lectDiv.style.fontSize = '0.7rem';
-                    lectDiv.style.padding = '2px 4px';
-                    lectDiv.style.marginTop = '2px';
-                    lectDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
-                    lectDiv.style.borderRadius = '3px';
-                    lectDiv.style.fontWeight = 'bold';
-                    lectDiv.textContent = 'Lecturer: ' + arg.event.extendedProps.lectInfo;
-                    container.appendChild(lectDiv);
-                }
+                // if (arg.event.title !== 'PROGRAM KEUSAHAWANAN' && arg.event.extendedProps.lectInfo) {
+                //     var lectDiv = document.createElement('div');
+                //     lectDiv.classList.add('event-lecturer');
+                //     lectDiv.style.fontSize = '0.7rem';
+                //     lectDiv.style.padding = '2px 4px';
+                //     lectDiv.style.marginTop = '2px';
+                //     lectDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
+                //     lectDiv.style.borderRadius = '3px';
+                //     lectDiv.style.fontWeight = 'bold';
+                //     lectDiv.textContent = 'Lecturer: ' + arg.event.extendedProps.lectInfo;
+                //     container.appendChild(lectDiv);
+                // }
             }
             
             return { domNodes: [container] };
@@ -1244,23 +1244,23 @@ function setupCalendar() {
    /**
  * Show event details in a modal or tooltip
  */
-function showEventDetails(event) {
-    // Create custom tooltip or use SweetAlert for a nice modal
-    Swal.fire({
-        title: event.title,
-        html: `
-            <div class="event-details">
-                <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
-                ${event.extendedProps.description ? `<p><strong>Description:</strong> ${event.extendedProps.description}</p>` : ''}
-                ${event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
-                ${event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps.lectInfo ? `<p><strong>Lecturer:</strong> ${event.extendedProps.lectInfo}</p>` : ''}
-            </div>
-        `,
-        icon: 'info',
-        confirmButtonText: 'Close',
-        confirmButtonColor: '#4361ee'
-    });
-}
+// function showEventDetails(event) {
+//     // Create custom tooltip or use SweetAlert for a nice modal
+//     Swal.fire({
+//         title: event.title,
+//         html: `
+//             <div class="event-details">
+//                 <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
+//                 ${event.extendedProps.description ? `<p><strong>Description:</strong> ${event.extendedProps.description}</p>` : ''}
+//                 ${event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
+//                 ${event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps.lectInfo ? `<p><strong>Lecturer:</strong> ${event.extendedProps.lectInfo}</p>` : ''}
+//             </div>
+//         `,
+//         icon: 'info',
+//         confirmButtonText: 'Close',
+//         confirmButtonColor: '#4361ee'
+//     });
+// }
 
 /**
  * Modal handling for edit events
@@ -1986,9 +1986,9 @@ function printScheduleTable(name, ic, staffNo, email) {
                             }
                             
                             // Add lecturer info if available (was missing before)
-                            if (event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps && event.extendedProps.lectInfo) {
-                                html += `<div class="event-description lecturer-info">Lecturer: ${event.extendedProps.lectInfo}</div>`;
-                            }
+                            // if (event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps && event.extendedProps.lectInfo) {
+                            //     html += `<div class="event-description lecturer-info">Lecturer: ${event.extendedProps.lectInfo}</div>`;
+                            // }
                         });
                         
                         // Close multi-event container if needed
