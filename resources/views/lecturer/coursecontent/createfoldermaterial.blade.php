@@ -238,7 +238,7 @@
                                         <div class="col-md-1">
                                             <div class="form-group">
                                                 <label class="form-label" for="chapter">Chapter No.</label>
-                                                <input type="number" class="form-control" id="chapter" placeholder="Enter chapter no i.e : 1" name="chapter" value="{{ old('chapter') }}" min="1">
+                                                <input type="text" class="form-control" id="chapter" placeholder="Enter chapter no i.e : 1" name="chapter" value="{{ old('chapter') }}" min="1">
                                                 <span class="text-danger">@error('chapter'){{ $message }}@enderror</span>
                                             </div>
                                         </div>
