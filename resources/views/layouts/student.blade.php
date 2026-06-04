@@ -328,7 +328,7 @@
                   <span>Takwim Uniti (September)</span>
                 </a>
               </li> -->
-              <li>
+              {{-- <li>
                 <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan November) - Edaran Pelajar.pdf') }}" target="_blank">
                   <span>Takwim Uniti (November)</span>
                 </a>
@@ -338,10 +338,24 @@
                   <span>Takwim UiTM</span>
                 </a>
               </li>
-
               <li>
                 <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester II Sesi 20252026 (Kemasukan Mac) - Edaran Pelajar.pdf') }}" target="_blank">
                   <span>Takwim UNITI (Mac)</span>
+                </a>
+              </li> --}}
+              <li>
+                <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20262027 (Kemasukan Jun) - Edaran Pelajar.pdf') }}" target="_blank">
+                  <span>Takwim UNITI (Jun)</span>
+                </a>
+              </li>
+              <li>
+                <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20262027 (Kemasukan Ogos) - Edaran Pelajar.pdf') }}" target="_blank">
+                  <span>Takwim UNITI (Ogos)</span>
+                </a>
+              </li>
+              <li>
+                <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20262027 (Kemasukan Oktober) - Edaran Pelajar.pdf') }}" target="_blank">
+                  <span>Takwim UNITI (Oktober)</span>
                 </a>
               </li>
             </ul>
