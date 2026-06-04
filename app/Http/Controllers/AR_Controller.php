@@ -2884,58 +2884,58 @@ class AR_Controller extends Controller
 
             $usingPublishedSchedule = true;
 
-            if ($usingPublishedSchedule) {
-                $studentLecturerIcs = DB::table('student_subjek')
-                    ->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
-                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                    ->where('student_subjek.student_ic', request()->id)
-                    ->where('sessions.Status', 'ACTIVE')
-                    ->distinct()
-                    ->pluck('user_subjek.user_ic');
+            // if ($usingPublishedSchedule) {
+            //     $studentLecturerIcs = DB::table('student_subjek')
+            //         ->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
+            //         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+            //         ->where('student_subjek.student_ic', request()->id)
+            //         ->where('sessions.Status', 'ACTIVE')
+            //         ->distinct()
+            //         ->pluck('user_subjek.user_ic');
 
-                if ($studentLecturerIcs->isNotEmpty()) {
-                    $programEvents = DB::table('tblevents_second')
-                        ->join('sessions', 'tblevents_second.session_id', 'sessions.SessionID')
-                        ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
-                        ->leftJoin('users', 'tblevents_second.user_ic', 'users.ic')
-                        ->where('sessions.Status', 'ACTIVE')
-                        ->where('tblevents_second.group_id', 0)
-                        ->whereIn('tblevents_second.user_ic', $studentLecturerIcs)
-                        ->select(
-                            'tblevents_second.id',
-                            'tblevents_second.start',
-                            'tblevents_second.end',
-                            'tblevents_second.group_id',
-                            'tblevents_second.group_name',
-                            'tblevents_second.title',
-                            'users.name AS lecturer',
-                            DB::raw("'PROGRAM KEUSAHAWANAN' AS code"),
-                            DB::raw("'PROGRAM KEUSAHAWANAN' AS subject"),
-                            'tbllecture_room.name AS room',
-                            'sessions.SessionName AS session'
-                        )
-                        ->get();
+            //     if ($studentLecturerIcs->isNotEmpty()) {
+            //         $programEvents = DB::table('tblevents_second')
+            //             ->join('sessions', 'tblevents_second.session_id', 'sessions.SessionID')
+            //             ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
+            //             ->leftJoin('users', 'tblevents_second.user_ic', 'users.ic')
+            //             ->where('sessions.Status', 'ACTIVE')
+            //             ->where('tblevents_second.group_id', 0)
+            //             ->whereIn('tblevents_second.user_ic', $studentLecturerIcs)
+            //             ->select(
+            //                 'tblevents_second.id',
+            //                 'tblevents_second.start',
+            //                 'tblevents_second.end',
+            //                 'tblevents_second.group_id',
+            //                 'tblevents_second.group_name',
+            //                 'tblevents_second.title',
+            //                 'users.name AS lecturer',
+            //                 DB::raw("'PROGRAM KEUSAHAWANAN' AS code"),
+            //                 DB::raw("'PROGRAM KEUSAHAWANAN' AS subject"),
+            //                 'tbllecture_room.name AS room',
+            //                 'sessions.SessionName AS session'
+            //             )
+            //             ->get();
 
-                    // Multiple lecturers can publish identical PROGRAM KEUSAHAWANAN slots.
-                    // Keep only one program event per same time range for student display.
-                    $programEvents = $programEvents->unique(function ($event) {
-                        return strtoupper((string) ($event->title ?? 'PROGRAM KEUSAHAWANAN')) . '|' . $event->start . '|' . $event->end;
-                    })->values();
+            //         // Multiple lecturers can publish identical PROGRAM KEUSAHAWANAN slots.
+            //         // Keep only one program event per same time range for student display.
+            //         $programEvents = $programEvents->unique(function ($event) {
+            //             return strtoupper((string) ($event->title ?? 'PROGRAM KEUSAHAWANAN')) . '|' . $event->start . '|' . $event->end;
+            //         })->values();
 
-                    $events = $events
-                        ->concat($programEvents)
-                        ->unique(function ($event) {
-                            $isProgramKeusahawanan = (int) $event->group_id === 0 || strtoupper((string) ($event->title ?? '')) === 'PROGRAM KEUSAHAWANAN';
+            //         $events = $events
+            //             ->concat($programEvents)
+            //             ->unique(function ($event) {
+            //                 $isProgramKeusahawanan = (int) $event->group_id === 0 || strtoupper((string) ($event->title ?? '')) === 'PROGRAM KEUSAHAWANAN';
 
-                            if ($isProgramKeusahawanan) {
-                                return 'PROGRAM|' . $event->start . '|' . $event->end;
-                            }
+            //                 if ($isProgramKeusahawanan) {
+            //                     return 'PROGRAM|' . $event->start . '|' . $event->end;
+            //                 }
 
-                            return 'EVENT|' . $event->id;
-                        })
-                        ->values();
-                }
-            }
+            //                 return 'EVENT|' . $event->id;
+            //             })
+            //             ->values();
+            //     }
+            // }
 
             if ($events->isEmpty()) {
                 return response()->json([]);
