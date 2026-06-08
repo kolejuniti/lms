@@ -762,7 +762,7 @@ class FinanceController extends Controller
             $updateData = [
                 'location_id' => 1,
                 'status_id' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 19 : 11,
-                'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R - KUPD' : null
+                'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R - KUPD' : 'R - KUPD (Other EA)',
             ];
 
             // Perform the update
@@ -1648,7 +1648,7 @@ class FinanceController extends Controller
                         'register_at' => now(),
                         'status_id' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 20 : 22,
                         'commission' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 500 : 0,
-                        'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R2 - KUPD' : null
+                        'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R2 - KUPD' : 'R2 - KUPD (Other EA)'
                     ];
 
                     // Perform the update
