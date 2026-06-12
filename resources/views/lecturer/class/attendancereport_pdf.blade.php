@@ -100,7 +100,9 @@
                                 @if(!empty($list[$ky]))
                                     @foreach($list[$ky] as $k => $ls)
                                         <td class="center">
-                                            @php($st = $status[$ky][$idx][$k] ?? null)
+                                            @php
+                                                $st = $status[$ky][$idx][$k] ?? null;
+                                            @endphp
                                             @if($st === 'Present')
                                                 ✓
                                             @elseif($st === 'Absent')
@@ -122,6 +124,40 @@
                         </tr>
                     @endif
                 </tbody>
+                @php
+                    $classHours = [];
+                    $totalHours = 0;
+
+                    if (!empty($list[$ky])) {
+                        foreach ($list[$ky] as $ls) {
+                            $diffInHours = 0;
+
+                            if (!empty($ls->classdate) && !empty($ls->classend)) {
+                                $start = \Carbon\Carbon::parse($ls->classdate);
+                                $end = \Carbon\Carbon::parse($ls->classend);
+                                $diffInHours = $end->diffInHours($start);
+                            }
+
+                            $classHours[] = $diffInHours;
+                            $totalHours += $diffInHours;
+                        }
+                    }
+                @endphp
+                @if(count($classHours) > 0)
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" style="text-align: right;">Total Hours:</th>
+                            @foreach($classHours as $classHour)
+                                <th class="center">{{ $classHour }} hrs</th>
+                            @endforeach
+                            <th>&nbsp;</th>
+                        </tr>
+                        <tr>
+                            <th colspan="3" style="text-align: right;">Overall Total Hours:</th>
+                            <th colspan="{{ count($list[$ky]) + 1 }}" class="center">{{ $totalHours }} hrs</th>
+                        </tr>
+                    </tfoot>
+                @endif
             </table>
 
             @if($ky < count($groups) - 1)
