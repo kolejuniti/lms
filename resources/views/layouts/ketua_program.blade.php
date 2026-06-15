@@ -419,7 +419,7 @@ $theme = DB::table('user_setting')->where('user_ic', Auth::user()->ic)->first();
 						</ul>
 						</li>
 						<li>
-							<a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20252026 (Kemasukan November).pdf') }}" target="_blank">
+							<a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester II Sesi 20252026 (Kemasukan Mac).pdf') }}" target="_blank">
 								<i data-feather="file-text"></i><span>Final Exam Schedule (UNITI)</span>
 							</a>
 						</li>
