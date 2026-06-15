@@ -1658,7 +1658,7 @@ class FinanceController extends Controller
                         ->update($updateData);
                 }
 
-                DB::table('students')->where('ic', $student->ic)->update([
+                DB::connection('mysql')->table('students')->where('ic', $student->ic)->update([
                     'date' => date('Y-m-d')
                 ]);
 
