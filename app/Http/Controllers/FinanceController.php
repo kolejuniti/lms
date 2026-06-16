@@ -1626,8 +1626,9 @@ class FinanceController extends Controller
                 if (DB::connection('mysql2')->table('students')->where('ic', $student->ic)->exists()) {
 
                     // Get the advisor's IC from the first database
-                    $advisorIcFromDb1 = DB::table('tblstudent_personal')
-                        ->where('student_ic', $student->ic)
+                    $advisorIcFromDb1 = DB::connection('mysql')
+                        ->table('tblstudent_personal')
+                        ->where('tblstudent_personal.student_ic', $student->ic)
                         ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                         ->value('tbledu_advisor.ic');
 
