@@ -347,6 +347,17 @@ $theme = DB::table('user_setting')->where('user_ic', Auth::user()->ic)->first();
 							<li><a href="{{ route('all.student.announcements') }}" class="{{ (route('all.student.announcements') == Request::url()) ? 'active' : ''}}">Annoucement</a></li>
 						</ul>
 						</li>
+						
+						<li class="treeview">
+							<a href="#"><i data-feather="dollar-sign"></i><span>Payment</span>
+								<span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+							</a>
+							<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+								<li><a href="{{ route('finance.payment') }}" class="{{ (route('finance.payment') == Request::url()) ? 'active' : ''}}">Pre-Registration</a></li>
+							</ul>
+						</li>
 
 						<li class="treeview">
 							<a href="#"><i data-feather="monitor"></i><span>Statistic Report</span>
