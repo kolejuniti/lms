@@ -739,33 +739,83 @@ class FinanceController extends Controller
             return ['message' => 'Please add payment charge details first!'];
         }
 
+        // if (DB::connection('mysql2')->table('students')->where('ic', $student->ic)->exists()) {
+
+        //     // Get the advisor's IC from the first database
+        //     $advisorIcFromDb1 = DB::table('tblstudent_personal')
+        //         ->where('student_ic', $student->ic)
+        //         ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+        //         ->value('tbledu_advisor.ic');
+
+        //     // Get the advisor's IC from the second database
+        //     $advisorIcFromDb2 = DB::connection('mysql2')
+        //         ->table('students')
+        //         ->where('students.ic', $student->ic)
+        //         ->join('users', 'students.user_id', 'users.id')
+        //         ->value('users.ic');
+
+        //     // Normalize ICs (keep digits only) to avoid formatting mismatches
+        //     $normalizedIc1 = $advisorIcFromDb1 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb1)) : null;
+        //     $normalizedIc2 = $advisorIcFromDb2 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb2)) : null;
+
+        //     // Prepare the base update data
+        //     $updateData = [
+        //         'location_id' => 1,
+        //         'status_id' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 19 : 11,
+        //         'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R - KUPD' : 'R - KUPD (Other EA)',
+        //     ];
+
+        //     // Perform the update
+        //     DB::connection('mysql2')
+        //         ->table('students')
+        //         ->where('ic', $student->ic)
+        //         ->update($updateData);
+        // }
+
         if (DB::connection('mysql2')->table('students')->where('ic', $student->ic)->exists()) {
 
-            // Get the advisor's IC from the first database
             $advisorIcFromDb1 = DB::table('tblstudent_personal')
                 ->where('student_ic', $student->ic)
                 ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                 ->value('tbledu_advisor.ic');
 
-            // Get the advisor's IC from the second database
             $advisorIcFromDb2 = DB::connection('mysql2')
                 ->table('students')
                 ->where('students.ic', $student->ic)
                 ->join('users', 'students.user_id', 'users.id')
                 ->value('users.ic');
 
-            // Normalize ICs (keep digits only) to avoid formatting mismatches
-            $normalizedIc1 = $advisorIcFromDb1 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb1)) : null;
-            $normalizedIc2 = $advisorIcFromDb2 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb2)) : null;
+            $normalizedIc1 = !empty($advisorIcFromDb1)
+                ? preg_replace('/\D+/', '', trim($advisorIcFromDb1))
+                : '';
 
-            // Prepare the base update data
-            $updateData = [
-                'location_id' => 1,
-                'status_id' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 19 : 11,
-                'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R - KUPD' : 'R - KUPD (Other EA)',
-            ];
+            $normalizedIc2 = !empty($advisorIcFromDb2)
+                ? preg_replace('/\D+/', '', trim($advisorIcFromDb2))
+                : '';
 
-            // Perform the update
+            logger()->info('IC Compare', [
+                'student_ic' => $student->ic,
+                'advisorIcFromDb1' => $advisorIcFromDb1,
+                'advisorIcFromDb2' => $advisorIcFromDb2,
+                'normalizedIc1' => $normalizedIc1,
+                'normalizedIc2' => $normalizedIc2,
+                'match' => ($normalizedIc1 == $normalizedIc2),
+            ]);
+
+            if ($normalizedIc1 == $normalizedIc2 && $normalizedIc1 != '') {
+                $updateData = [
+                    'location_id' => 1,
+                    'status_id' => 19,
+                    'reason' => 'R - KUPD',
+                ];
+            } else {
+                $updateData = [
+                    'location_id' => 1,
+                    'status_id' => 11,
+                    'reason' => 'R - KUPD (Other EA)',
+                ];
+            }
+
             DB::connection('mysql2')
                 ->table('students')
                 ->where('ic', $student->ic)
@@ -1623,36 +1673,90 @@ class FinanceController extends Controller
                 }
             } else {
 
+                // if (DB::connection('mysql2')->table('students')->where('ic', $student->ic)->exists()) {
+
+                //     // Get the advisor's IC from the first database
+                //     $advisorIcFromDb1 = DB::connection('mysql')
+                //         ->table('tblstudent_personal')
+                //         ->where('tblstudent_personal.student_ic', $student->ic)
+                //         ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                //         ->value('tbledu_advisor.ic');
+
+                //     // Get the advisor's IC from the second database
+                //     $advisorIcFromDb2 = DB::connection('mysql2')
+                //         ->table('students')
+                //         ->where('students.ic', $student->ic)
+                //         ->join('users', 'students.user_id', 'users.id')
+                //         ->value('users.ic');
+
+                //     // Normalize ICs (keep digits only) to avoid formatting mismatches
+                //     $normalizedIc1 = $advisorIcFromDb1 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb1)) : null;
+                //     $normalizedIc2 = $advisorIcFromDb2 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb2)) : null;
+
+                //     // Prepare the base update data
+                //     $updateData = [
+                //         'location_id' => 1,
+                //         'register_at' => now(),
+                //         'status_id' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 20 : 22,
+                //         'commission' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 500 : 0,
+                //         'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R2 - KUPD' : 'R2 - KUPD (Other EA)'
+                //     ];
+
+                //     // Perform the update
+                //     DB::connection('mysql2')
+                //         ->table('students')
+                //         ->where('ic', $student->ic)
+                //         ->update($updateData);
+                // }
+
                 if (DB::connection('mysql2')->table('students')->where('ic', $student->ic)->exists()) {
 
-                    // Get the advisor's IC from the first database
-                    $advisorIcFromDb1 = DB::connection('mysql')
-                        ->table('tblstudent_personal')
-                        ->where('tblstudent_personal.student_ic', $student->ic)
+                    $advisorIcFromDb1 = DB::table('tblstudent_personal')
+                        ->where('student_ic', $student->ic)
                         ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                         ->value('tbledu_advisor.ic');
 
-                    // Get the advisor's IC from the second database
                     $advisorIcFromDb2 = DB::connection('mysql2')
                         ->table('students')
                         ->where('students.ic', $student->ic)
                         ->join('users', 'students.user_id', 'users.id')
                         ->value('users.ic');
 
-                    // Normalize ICs (keep digits only) to avoid formatting mismatches
-                    $normalizedIc1 = $advisorIcFromDb1 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb1)) : null;
-                    $normalizedIc2 = $advisorIcFromDb2 ? preg_replace('/\\D+/', '', trim($advisorIcFromDb2)) : null;
+                    $normalizedIc1 = !empty($advisorIcFromDb1)
+                        ? preg_replace('/\D+/', '', trim($advisorIcFromDb1))
+                        : '';
 
-                    // Prepare the base update data
-                    $updateData = [
-                        'location_id' => 1,
-                        'register_at' => now(),
-                        'status_id' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 20 : 22,
-                        'commission' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 500 : 0,
-                        'reason' => ($normalizedIc1 !== null && $normalizedIc1 === $normalizedIc2) ? 'R2 - KUPD' : 'R2 - KUPD (Other EA)'
-                    ];
+                    $normalizedIc2 = !empty($advisorIcFromDb2)
+                        ? preg_replace('/\D+/', '', trim($advisorIcFromDb2))
+                        : '';
 
-                    // Perform the update
+                    logger()->info('IC Compare', [
+                        'student_ic' => $student->ic,
+                        'advisorIcFromDb1' => $advisorIcFromDb1,
+                        'advisorIcFromDb2' => $advisorIcFromDb2,
+                        'normalizedIc1' => $normalizedIc1,
+                        'normalizedIc2' => $normalizedIc2,
+                        'match' => ($normalizedIc1 == $normalizedIc2),
+                    ]);
+
+                    if ($normalizedIc1 == $normalizedIc2 && $normalizedIc1 != '') {
+                        $updateData = [
+                            'location_id' => 1,
+                            'register_at' => now(),
+                            'status_id' => 20,
+                            'reason' => 'R2 - KUPD',
+                            'commission' => 500,
+                        ];
+                    } else {
+                        $updateData = [
+                            'location_id' => 1,
+                            'register_at' => now(),
+                            'status_id' => 22,
+                            'reason' => 'R2 - KUPD (Other EA)',
+                            'commission' => 0,
+                        ];
+                    }
+
                     DB::connection('mysql2')
                         ->table('students')
                         ->where('ic', $student->ic)
