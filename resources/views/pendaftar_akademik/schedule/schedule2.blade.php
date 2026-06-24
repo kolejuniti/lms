@@ -1023,18 +1023,18 @@ function setupCalendar() {
                 }
                 
                 // Lecturer info
-                // if (arg.event.title !== 'PROGRAM KEUSAHAWANAN' && arg.event.extendedProps.lectInfo) {
-                //     var lectDiv = document.createElement('div');
-                //     lectDiv.classList.add('event-lecturer');
-                //     lectDiv.style.fontSize = '0.7rem';
-                //     lectDiv.style.padding = '2px 4px';
-                //     lectDiv.style.marginTop = '2px';
-                //     lectDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
-                //     lectDiv.style.borderRadius = '3px';
-                //     lectDiv.style.fontWeight = 'bold';
-                //     lectDiv.textContent = 'Lecturer: ' + arg.event.extendedProps.lectInfo;
-                //     container.appendChild(lectDiv);
-                // }
+                if (arg.event.extendedProps.lectInfo) {
+                    var lectDiv = document.createElement('div');
+                    lectDiv.classList.add('event-lecturer');
+                    lectDiv.style.fontSize = '0.7rem';
+                    lectDiv.style.padding = '2px 4px';
+                    lectDiv.style.marginTop = '2px';
+                    lectDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
+                    lectDiv.style.borderRadius = '3px';
+                    lectDiv.style.fontWeight = 'bold';
+                    lectDiv.textContent = 'Lecturer: ' + arg.event.extendedProps.lectInfo;
+                    container.appendChild(lectDiv);
+                }
             }
             
             return { domNodes: [container] };
@@ -1985,10 +1985,10 @@ function printScheduleTable(name, ic, staffNo, email) {
                                 html += `<div class="event-description program-info">Program: ${event.extendedProps.programInfo}</div>`;
                             }
                             
-                            // Add lecturer info if available (was missing before)
-                            // if (event.title !== 'PROGRAM KEUSAHAWANAN' && event.extendedProps && event.extendedProps.lectInfo) {
-                            //     html += `<div class="event-description lecturer-info">Lecturer: ${event.extendedProps.lectInfo}</div>`;
-                            // }
+                            // Add lecturer info if available
+                            if (event.extendedProps && event.extendedProps.lectInfo) {
+                                html += `<div class="event-description lecturer-info">Lecturer: ${event.extendedProps.lectInfo}</div>`;
+                            }
                         });
                         
                         // Close multi-event container if needed
