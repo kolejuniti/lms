@@ -429,6 +429,8 @@
                               <option value="Degree">Degree</option>
                               <option value="Master">Master</option>
                               <option value="CV">CV</option>
+                              <option value="Transkrip Degree">Transkrip Degree</option>
+                              <option value="Transkrip Master">Transkrip Master</option>
                             </select>
                           </div>
                         </div>

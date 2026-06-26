@@ -353,6 +353,8 @@ class AdminController extends Controller
             'Degree' => 'staff_documents/degree/',
             'Master' => 'staff_documents/master/',
             'CV' => 'staff_documents/cv/',
+            'Transkrip Degree' => 'staff_documents/transkrip_degree/',
+            'Transkrip Master' => 'staff_documents/transkrip_master/',
         ];
     }
 
