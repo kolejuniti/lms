@@ -140,7 +140,9 @@ class AdminController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        return view('admin.edit' , compact('id', 'faculty', 'academic', 'academics', 'experiences'));
+        $staffDocuments = $this->getStaffDocuments($id->ic);
+
+        return view('admin.edit' , compact('id', 'faculty', 'academic', 'academics', 'experiences', 'staffDocuments'));
     }
 
     //a function with (Modal $variable) is to make sql query *example = select * from User where id = $id
@@ -153,6 +155,13 @@ class AdminController extends Controller
             'email' => 'required',
             'no_tel' => 'required',
             'teaching_permit' => 'nullable|string|max:255',
+        ]);
+
+        request()->validate([
+            'document_type' => 'nullable|array',
+            'document_type.*' => 'nullable|in:' . implode(',', array_keys($this->staffDocumentFolders())),
+            'document_file' => 'nullable|array',
+            'document_file.*' => 'nullable|file',
         ]);
 
         $data2 = [
@@ -192,6 +201,41 @@ class AdminController extends Controller
 
             //store path in image parameter and store in $imageArray variable
             $imageArray = ['image' => $imagePath];
+        }
+
+        $hasUploadedDocument = false;
+
+        $documentTypes = request()->input('document_type', []);
+        $documentFiles = request()->file('document_file', []);
+
+        foreach ($documentFiles as $key => $document)
+        {
+            if (!$document) {
+                continue;
+            }
+
+            $documentType = $documentTypes[$key] ?? null;
+
+            if (!array_key_exists($documentType, $this->staffDocumentFolders())) {
+                return redirect()
+                    ->back()
+                    ->withErrors(['document_type' => 'Please select a valid document type for each uploaded file.'])
+                    ->withInput();
+            }
+
+            $documentName = request()->ic . '.' . $document->getClientOriginalExtension();
+            $documentPath = $this->staffDocumentFolders()[$documentType];
+
+            $this->deleteStaffDocumentsByType(request()->ic, $documentType);
+
+            Storage::disk('linode')->putFileAs(
+                $documentPath,
+                $document,
+                $documentName,
+                'public'
+            );
+
+            $hasUploadedDocument = true;
         }
 
         //array_merge is a function to merge two variable together
@@ -238,7 +282,78 @@ class AdminController extends Controller
             }
         }
 
+        if ($hasUploadedDocument) {
+            return redirect()->route('admin.edit', $id->id);
+        }
+
         return redirect("/admin");
+    }
+
+    public function deleteStaffDocument(User $id, Request $request)
+    {
+        $data = $request->validate([
+            'document_type' => ['required', 'in:' . implode(',', array_keys($this->staffDocumentFolders()))],
+        ]);
+
+        $this->deleteStaffDocumentsByType($id->ic, $data['document_type']);
+
+        return redirect()->route('admin.edit', $id->id);
+    }
+
+    private function getStaffDocuments(string $ic): array
+    {
+        $documents = [];
+
+        foreach ($this->staffDocumentFolders() as $type => $folder) {
+            $files = collect(Storage::disk('linode')->files($folder))
+                ->filter(function ($file) use ($ic) {
+                    return pathinfo($file, PATHINFO_FILENAME) === $ic;
+                })
+                ->values();
+
+            foreach ($files as $file) {
+                $documents[] = [
+                    'type' => $type,
+                    'name' => basename($file),
+                    'path' => $file,
+                    'url' => Storage::disk('linode')->url($file),
+                ];
+            }
+        }
+
+        return $documents;
+    }
+
+    private function deleteStaffDocumentsByType(string $ic, string $documentType): void
+    {
+        $folders = $this->staffDocumentFolders();
+
+        if (!array_key_exists($documentType, $folders)) {
+            return;
+        }
+
+        $files = collect(Storage::disk('linode')->files($folders[$documentType]))
+            ->filter(function ($file) use ($ic) {
+                return pathinfo($file, PATHINFO_FILENAME) === $ic;
+            })
+            ->values()
+            ->all();
+
+        if (count($files) > 0) {
+            Storage::disk('linode')->delete($files);
+        }
+    }
+
+    private function staffDocumentFolders(): array
+    {
+        return [
+            'IC' => 'staff_documents/ic/',
+            'Teaching Permit' => 'staff_documents/teaching_permit/',
+            'Diploma' => 'staff_documents/diploma/',
+            'Degree' => 'staff_documents/degree/',
+            'Master' => 'staff_documents/master/',
+            'CV' => 'staff_documents/cv/',
+        ];
     }
 
     public function getProgramoptions(Request $request)

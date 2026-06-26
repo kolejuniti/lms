@@ -41,7 +41,7 @@
                     <i class="fa fa-user-circle me-2"></i>
                     Profile Overview
                   </h3>
-                  <p class="mb-0 mt-2 opacity-75">Update lecturer information and profile settings</p>
+                  <p class="mb-0 mt-2 opacity-75">Update staff / lecturer information and profile settings</p>
                 </div>
                 <div class="card-body">
                   <div class="row align-items-center">
@@ -404,9 +404,92 @@
                   </div>
                 </div>
 
-                <!-- Action Buttons -->
+                <!-- Documentations Section -->
                 <div class="col-12">
                   <div class="card box-animated" style="animation-delay: 0.6s;">
+                    <div class="card-header">
+                      <h5 class="card-title mb-0">
+                        <i class="fa fa-file-upload text-primary me-2"></i>
+                        Documentations
+                      </h5>
+                    </div>
+                    <div class="card-body">
+                      <div id="documentUploadRows">
+                        <div class="row g-4 document-upload-row">
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label class="form-label">
+                              <i class="fa fa-file-alt me-2 text-primary"></i>Document Type
+                            </label>
+                            <select class="form-select form-select-lg" name="document_type[]">
+                              <option value="" selected disabled>Select document type</option>
+                              <option value="IC">IC</option>
+                              <option value="Teaching Permit">Teaching Permit</option>
+                              <option value="Diploma">Diploma</option>
+                              <option value="Degree">Degree</option>
+                              <option value="Master">Master</option>
+                              <option value="CV">CV</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-8">
+                          <div class="form-group">
+                            <label class="form-label">
+                              <i class="fa fa-upload me-2 text-primary"></i>Upload Document
+                            </label>
+                            <div class="input-group">
+                              <input type="file" class="form-control form-control-lg" name="document_file[]">
+                              <button type="button" class="btn btn-danger remove-document-row" style="display: none;">
+                                <i class="fa fa-times"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                      </div>
+
+                      <button type="button" class="btn btn-outline-primary mt-2" id="addDocumentRow">
+                        <i class="fa fa-plus me-1"></i>Add Document
+                      </button>
+
+                      <div class="table-responsive mt-4">
+                        <table class="table table-bordered table-hover mb-0">
+                          <thead>
+                            <tr>
+                              <th>Document Type</th>
+                              <th>File Name</th>
+                              <th class="text-end">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @forelse ($staffDocuments as $document)
+                            <tr>
+                              <td>{{ $document['type'] }}</td>
+                              <td>{{ $document['name'] }}</td>
+                              <td class="text-end">
+                                <a href="{{ $document['url'] }}" target="_blank" class="btn btn-info btn-sm me-2">
+                                  <i class="fa fa-eye me-1"></i>View
+                                </a>
+                                <button type="submit" class="btn btn-danger btn-sm" form="deleteDocumentForm{{ $loop->index }}">
+                                  <i class="fa fa-trash me-1"></i>Delete
+                                </button>
+                              </td>
+                            </tr>
+                            @empty
+                            <tr>
+                              <td colspan="3" class="text-center text-muted">No documents uploaded yet.</td>
+                            </tr>
+                            @endforelse
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="col-12">
+                  <div class="card box-animated" style="animation-delay: 0.7s;">
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-center">
                         <div class="action-info">
@@ -432,6 +515,14 @@
             </div>
           </div>
         </form>
+
+        @foreach ($staffDocuments as $document)
+        <form action="{{ route('admin.document.delete', $id->id) }}" method="POST" id="deleteDocumentForm{{ $loop->index }}">
+          @csrf
+          @method('DELETE')
+          <input type="hidden" name="document_type" value="{{ $document['type'] }}">
+        </form>
+        @endforeach
       </div>
     </section>
   </div>
@@ -874,6 +965,33 @@ $(document).ready(function() {
     }
   });
 
+  function refreshDocumentRowButtons() {
+    var rows = $('.document-upload-row');
+    rows.find('.remove-document-row').toggle(rows.length > 1);
+  }
+
+  $('#addDocumentRow').on('click', function() {
+    var newRow = $('.document-upload-row:first').clone();
+
+    newRow.find('select').val('').prop('required', false);
+    newRow.find('input[type="file"]').val('');
+    $('#documentUploadRows').append(newRow);
+    refreshDocumentRowButtons();
+  });
+
+  $(document).on('click', '.remove-document-row', function() {
+    if ($('.document-upload-row').length > 1) {
+      $(this).closest('.document-upload-row').remove();
+      refreshDocumentRowButtons();
+    }
+  });
+
+  $(document).on('change', 'input[name="document_file[]"]', function() {
+    $(this).closest('.document-upload-row').find('select[name="document_type[]"]').prop('required', this.files.length > 0);
+  });
+
+  refreshDocumentRowButtons();
+
   // User type change handler
   $('#usrtype').change(function() {
     usertype = $(this).val();
@@ -946,6 +1064,39 @@ $(document).ready(function() {
 
   // Form submission
   $('#editLecturerForm').submit(function(e) {
+    $('.document-upload-row').each(function() {
+      var fileInput = $(this).find('input[name="document_file[]"]')[0];
+
+      if (!fileInput.files.length) {
+        $(this).remove();
+      }
+    });
+
+    var missingDocumentType = false;
+    $('.document-upload-row').each(function() {
+      var fileInput = $(this).find('input[name="document_file[]"]')[0];
+      var documentType = $(this).find('select[name="document_type[]"]').val();
+
+      if (fileInput.files.length && !documentType) {
+        missingDocumentType = true;
+      }
+    });
+
+    if (missingDocumentType) {
+      e.preventDefault();
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Validation Error',
+          text: 'Please select a document type for each uploaded file.',
+          confirmButtonColor: '#4361ee'
+        });
+      } else {
+        alert('Please select a document type for each uploaded file.');
+      }
+      return false;
+    }
+
     // Check if CKEditor is required and validate its content
     if ($('#comment-card').is(':visible') && commentsEditor) {
       const editorContent = commentsEditor.getData().trim();

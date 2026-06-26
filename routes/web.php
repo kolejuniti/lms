@@ -55,6 +55,7 @@ Route::get('/admin_dashboard', [App\Http\Controllers\AdminController::class, 'da
 Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin');
 Route::get('/admin/{id}/edit', [App\Http\Controllers\AdminController::class, 'edit'])->name('admin.edit');
 Route::patch('/admin/{id}', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.update');
+Route::delete('/admin/{id}/document/delete', [App\Http\Controllers\AdminController::class, 'deleteStaffDocument'])->name('admin.document.delete');
 Route::get('/admin/create', [App\Http\Controllers\AdminController::class, 'create'])->name('admin.create');
 Route::post('/admin/store', [App\Http\Controllers\AdminController::class, 'store'])->name('admin.store');
 Route::delete('/admin/delete', [App\Http\Controllers\AdminController::class, 'delete'])->name('admin.delete');
