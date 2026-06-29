@@ -77,6 +77,8 @@
     @php
 
     $sub_id = DB::table('subjek')->where('id', $id)->value('sub_id');
+    $lecturerIc = $groups->first()->user_ic ?? Auth::user()->ic;
+    $lecturerName = DB::table('users')->where('ic', $lecturerIc)->value('name') ?? Auth::user()->name;
 
     @endphp
 
@@ -89,7 +91,7 @@
               <div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
                 <div class="row">
                   <div class="col-12 col-xl-12">
-                    <h1 class="mb-0 fw-600">{{ Auth::user()->name }}</h1>
+                    <h1 class="mb-0 fw-600">{{ $lecturerName }}</h1>
                     <p class="my-10 fs-16"><strong>Subject : {{ $data['lectInfo']->course_name }}</strong> </p>
                     <p class="my-10 fs-16"><strong>Code : {{ $data['lectInfo']->course_code }}</strong> </p>
                     <p class="my-10 fs-16"><strong>Session : {{ $data['lectInfo']->session }}</strong> </p>
