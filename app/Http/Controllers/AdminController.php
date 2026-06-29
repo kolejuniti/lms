@@ -1998,7 +1998,7 @@ class AdminController extends Controller
                         $finalcollection = collect($overallfinal[$ky]);
                     }
 
-                    $overallalls[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+                    $overallalls[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overalltest2[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
 
                     $overallall2[$ky][$keys] = round($overallalls[$ky][$keys], 1);
 
