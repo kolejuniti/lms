@@ -4853,7 +4853,11 @@ class LecturerController extends Controller
 
     public function exportAttendanceReportPdf()
     {
-        $user = Auth::user();
+        $authUser = Auth::user();
+        $lecturerIc = in_array($authUser->usrtype, ['ADM', 'PL', 'AO', 'DN', 'RGS']) && Session::has('LectIC')
+            ? Session::get('LectIC')
+            : $authUser->ic;
+        $user = User::where('ic', $lecturerIc)->first() ?? $authUser;
 
         $courseid = Session::get('CourseID');
         $sessionid = Session::get('SessionID');
@@ -4868,7 +4872,7 @@ class LecturerController extends Controller
             ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
             ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'users.name', 'subjek.course_name', 'subjek.course_code')
             ->where([
-                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.user_ic', $lecturerIc],
                 ['user_subjek.session_id', $sessionid],
                 ['subjek.id', $courseid],
             ])
@@ -4882,7 +4886,7 @@ class LecturerController extends Controller
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                 ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'students.*')
                 ->where([
-                    ['user_subjek.user_ic', $user->ic],
+                    ['user_subjek.user_ic', $lecturerIc],
                     ['user_subjek.session_id', $sessionid],
                     ['subjek.id', $courseid],
                 ])
@@ -4897,7 +4901,7 @@ class LecturerController extends Controller
                 ->where([
                     ['subjek.id', $courseid],
                     ['user_subjek.session_id', $sessionid],
-                    ['user_subjek.user_ic', $user->ic],
+                    ['user_subjek.user_ic', $lecturerIc],
                     ['tblclassattendance.groupname', $grp->group_name],
                 ])
                 ->groupBy('tblclassattendance.classdate')
