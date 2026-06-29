@@ -325,13 +325,13 @@
                         <div class="col-lg-2 col-md-6">
                           <div class="form-group">
                             <label class="form-label" for="exp_year_start">Year Start</label>
-                            <input type="number" class="form-control" id="exp_year_start" min="1900" max="2100" placeholder="YYYY" />
+                            <input type="text" class="form-control" id="exp_year_start" placeholder="MM-YYYY" maxlength="7" pattern="(0[1-9]|1[0-2])-[0-9]{4}" />
                           </div>
                         </div>
                         <div class="col-lg-2 col-md-6">
                           <div class="form-group">
                             <label class="form-label" for="exp_year_end">Year End</label>
-                            <input type="number" class="form-control" id="exp_year_end" min="1900" max="2100" placeholder="YYYY" />
+                            <input type="text" class="form-control" id="exp_year_end" placeholder="MM-YYYY" maxlength="7" pattern="(0[1-9]|1[0-2])-[0-9]{4}" />
                           </div>
                         </div>
                         <div class="col-lg-1 col-md-12">
@@ -560,13 +560,13 @@
           <div class="col-md-6">
             <div class="form-group">
               <label class="form-label" for="edit_exp_year_start">Year Start</label>
-              <input type="number" class="form-control" id="edit_exp_year_start" min="1900" max="2100" />
+              <input type="text" class="form-control" id="edit_exp_year_start" placeholder="MM-YYYY" maxlength="7" pattern="(0[1-9]|1[0-2])-[0-9]{4}" />
             </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <label class="form-label" for="edit_exp_year_end">Year End</label>
-              <input type="number" class="form-control" id="edit_exp_year_end" min="1900" max="2100" />
+              <input type="text" class="form-control" id="edit_exp_year_end" placeholder="MM-YYYY" maxlength="7" pattern="(0[1-9]|1[0-2])-[0-9]{4}" />
             </div>
           </div>
         </div>

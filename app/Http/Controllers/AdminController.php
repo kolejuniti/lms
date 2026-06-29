@@ -136,7 +136,7 @@ class AdminController extends Controller
 
         $experiences = DB::table('tbluser_experiences')
             ->where('user_ic', $id->ic)
-            ->orderBy('year_start', 'desc')
+            ->orderByRaw($this->monthYearOrderExpression() . ' DESC')
             ->orderBy('id', 'desc')
             ->get();
 
@@ -462,8 +462,8 @@ class AdminController extends Controller
             'user_ic' => ['required', 'string', 'max:12'],
             'position' => ['required', 'string', 'max:255'],
             'employer' => ['required', 'string', 'max:255'],
-            'year_start' => ['required', 'integer', 'min:1900', 'max:2100'],
-            'year_end' => ['nullable', 'integer', 'min:1900', 'max:2100'],
+            'year_start' => ['required', 'regex:/^(0[1-9]|1[0-2])-[0-9]{4}$/'],
+            'year_end' => ['nullable', 'regex:/^(0[1-9]|1[0-2])-[0-9]{4}$/'],
         ]);
 
         $userExists = User::where('ic', $data['user_ic'])->exists();
@@ -471,7 +471,7 @@ class AdminController extends Controller
             abort(404);
         }
 
-        if (!empty($data['year_end']) && (int)$data['year_end'] < (int)$data['year_start']) {
+        if (!empty($data['year_end']) && $this->monthYearValue($data['year_end']) < $this->monthYearValue($data['year_start'])) {
             return response()->json([
                 'ok' => false,
                 'message' => 'Year End must be greater than or equal to Year Start.',
@@ -489,7 +489,7 @@ class AdminController extends Controller
 
         $experiences = DB::table('tbluser_experiences')
             ->where('user_ic', $data['user_ic'])
-            ->orderBy('year_start', 'desc')
+            ->orderByRaw($this->monthYearOrderExpression() . ' DESC')
             ->orderBy('id', 'desc')
             ->get();
 
@@ -508,8 +508,8 @@ class AdminController extends Controller
             'user_ic' => ['required', 'string', 'max:12'],
             'position' => ['required', 'string', 'max:255'],
             'employer' => ['required', 'string', 'max:255'],
-            'year_start' => ['required', 'integer', 'min:1900', 'max:2100'],
-            'year_end' => ['nullable', 'integer', 'min:1900', 'max:2100'],
+            'year_start' => ['required', 'regex:/^(0[1-9]|1[0-2])-[0-9]{4}$/'],
+            'year_end' => ['nullable', 'regex:/^(0[1-9]|1[0-2])-[0-9]{4}$/'],
         ]);
 
         $userExists = User::where('ic', $data['user_ic'])->exists();
@@ -517,7 +517,7 @@ class AdminController extends Controller
             abort(404);
         }
 
-        if (!empty($data['year_end']) && (int)$data['year_end'] < (int)$data['year_start']) {
+        if (!empty($data['year_end']) && $this->monthYearValue($data['year_end']) < $this->monthYearValue($data['year_start'])) {
             return response()->json([
                 'ok' => false,
                 'message' => 'Year End must be greater than or equal to Year Start.',
@@ -545,7 +545,7 @@ class AdminController extends Controller
 
         $experiences = DB::table('tbluser_experiences')
             ->where('user_ic', $data['user_ic'])
-            ->orderBy('year_start', 'desc')
+            ->orderByRaw($this->monthYearOrderExpression() . ' DESC')
             ->orderBy('id', 'desc')
             ->get();
 
@@ -585,7 +585,7 @@ class AdminController extends Controller
 
         $experiences = DB::table('tbluser_experiences')
             ->where('user_ic', $data['user_ic'])
-            ->orderBy('year_start', 'desc')
+            ->orderByRaw($this->monthYearOrderExpression() . ' DESC')
             ->orderBy('id', 'desc')
             ->get();
 
@@ -595,6 +595,18 @@ class AdminController extends Controller
             'ok' => true,
             'html' => $html,
         ]);
+    }
+
+    private function monthYearValue(string $monthYear): int
+    {
+        [$month, $year] = explode('-', $monthYear);
+
+        return ((int) $year * 12) + (int) $month;
+    }
+
+    private function monthYearOrderExpression(): string
+    {
+        return "COALESCE(STR_TO_DATE(year_start, '%m-%Y'), STR_TO_DATE(CONCAT('01-', year_start), '%m-%Y'))";
     }
 
     
@@ -2590,7 +2602,7 @@ class AdminController extends Controller
 
         $experiences = DB::table('tbluser_experiences')
             ->whereIn('user_ic', $staffIcs)
-            ->orderBy('year_start', 'desc')
+            ->orderByRaw($this->monthYearOrderExpression() . ' DESC')
             ->orderBy('id', 'desc')
             ->get()
             ->groupBy('user_ic');
