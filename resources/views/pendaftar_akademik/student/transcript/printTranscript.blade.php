@@ -274,7 +274,7 @@
             <div style="clear: right; text-align: right; line-height: 1.2; position: relative; z-index: 1;">
                 <b style="position: relative; top: -25px;">......................................<br>
                 AZHAR BIN ZUNAIDAK<br>
-                PENOLONG PENDAFTAR<br>
+                PENDAFTAR AKADEMIK<br>
                 HAL EHWAL AKADEMIK<br>
                 BP: KETUA EKSEKUTIF</b>
             </div>
