@@ -5305,7 +5305,8 @@ class FinanceController extends Controller
             ->where([
                 ['tblpayment.student_ic', $request->student],
                 ['tblpayment.process_status_id', 2],
-                ['tblstudentclaim.groupid', 5],
+                ['tblstudentclaim.groupid', 'IN', [4,5]],
+                ['tblstudentclaim.id', 'IN', [34,35,50, 25, 26, 27, 28, 29, 30, 31, 33, 41, 43, 46, 47, 58, 59, 79]],
                 ['tblpaymentdtl.amount', '!=', 0]
             ])
             ->select('tblpayment.ref_no', 'tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblpaymentdtl' as source_table"));
@@ -5317,7 +5318,8 @@ class FinanceController extends Controller
             ->where([
                 ['tblclaim.student_ic', $request->student],
                 ['tblclaim.process_status_id', 2],
-                ['tblstudentclaim.groupid', 5],
+                ['tblstudentclaim.groupid', 'IN', [4,5]],
+                ['tblstudentclaim.id', 'IN', [34,35,50, 25, 26, 27, 28, 29, 30, 31, 33, 41, 43, 46, 47, 58, 59, 79]],
                 ['tblclaimdtl.amount', '!=', 0]
             ])
             ->unionALL($record3)
