@@ -5254,6 +5254,7 @@ class FinanceController extends Controller
                 ['tblstudentclaim.groupid', 4],
                 ['tblpaymentdtl.amount', '!=', 0]
             ])
+            ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
             ->select('tblpayment.ref_no', 'tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program');
 
         $data['record2'] = DB::table('tblclaimdtl')
@@ -5266,6 +5267,7 @@ class FinanceController extends Controller
                 ['tblstudentclaim.groupid', 4],
                 ['tblclaimdtl.amount', '!=', 0]
             ])
+            ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
             ->unionALL($record2)
             ->select('tblclaim.ref_no', 'tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program')
             ->orderBy('date')
@@ -5305,9 +5307,10 @@ class FinanceController extends Controller
             ->where([
                 ['tblpayment.student_ic', $request->student],
                 ['tblpayment.process_status_id', 2],
-                ['tblstudentclaim.groupid', 5],
                 ['tblpaymentdtl.amount', '!=', 0]
             ])
+            ->whereIn('tblstudentclaim.groupid', [4, 5])
+            ->whereIn('tblstudentclaim.id', [34, 35, 50, 25, 26, 27, 28, 29, 30, 33, 41, 43, 46, 47, 58, 59, 79])
             ->select('tblpayment.ref_no', 'tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblpaymentdtl' as source_table"));
 
         $data['record3'] = DB::table('tblclaimdtl')
@@ -5317,9 +5320,10 @@ class FinanceController extends Controller
             ->where([
                 ['tblclaim.student_ic', $request->student],
                 ['tblclaim.process_status_id', 2],
-                ['tblstudentclaim.groupid', 5],
                 ['tblclaimdtl.amount', '!=', 0]
             ])
+            ->whereIn('tblstudentclaim.groupid', [4, 5])
+            ->whereIn('tblstudentclaim.id', [34, 35, 50, 25, 26, 27, 28, 29, 30, 33, 41, 43, 46, 47, 58, 59, 79])
             ->unionALL($record3)
             ->select('tblclaim.ref_no', 'tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblclaimdtl' as source_table"))
             ->orderBy('date')
