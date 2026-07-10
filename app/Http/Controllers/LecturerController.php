@@ -2963,7 +2963,7 @@ class LecturerController extends Controller
                     ['tblclassquiz_group.groupname', $grp->group_name],
                     ['tblclassquiz.status', '!=', 3],
                     ['tblclassquiz.addby', $user->ic]
-                ]);
+                ])->orderBy('tblclassquiz.title', 'ASC');
 
             $quiz[] = $quizs->get();
 
@@ -2996,7 +2996,7 @@ class LecturerController extends Controller
                     ['tblclasstest_group.groupname', $grp->group_name],
                     ['tblclasstest.status', '!=', 3],
                     ['tblclasstest.addby', $user->ic]
-                ]);
+                ])->orderBy('tblclasstest.title', 'ASC');
 
             $test[] = $tests->get();
 
@@ -3028,7 +3028,7 @@ class LecturerController extends Controller
                     ['tblclasstest2_group.groupname', $grp->group_name],
                     ['tblclasstest2.status', '!=', 3],
                     ['tblclasstest2.addby', $user->ic]
-                ]);
+                ])->orderBy('tblclasstest2.title', 'ASC');
 
             $test2[] = $tests2->get();
 
@@ -3060,7 +3060,7 @@ class LecturerController extends Controller
                     ['tblclassassign_group.groupname', $grp->group_name],
                     ['tblclassassign.status', '!=', 3],
                     ['tblclassassign.addby', $user->ic]
-                ]);
+                ])->orderBy('tblclassassign.title', 'ASC');
 
             $assign[] = $assigns->get();
 
@@ -3092,7 +3092,7 @@ class LecturerController extends Controller
                     ['tblclassextra_group.groupname', $grp->group_name],
                     ['tblclassextra.status', '!=', 3],
                     ['tblclassextra.addby', $user->ic]
-                ]);
+                ])->orderBy('tblclassextra.title', 'ASC');
 
             $extra[] = $extras->get();
 
@@ -3124,7 +3124,7 @@ class LecturerController extends Controller
                     ['tblclasspractical_group.groupname', $grp->group_name],
                     ['tblclasspractical.status', '!=', 3],
                     ['tblclasspractical.addby', $user->ic]
-                ]);
+                ])->orderBy('tblclasspractical.title', 'ASC');
 
             $practical[] = $practicals->get();
 
@@ -3156,7 +3156,7 @@ class LecturerController extends Controller
                     ['tblclassother_group.groupname', $grp->group_name],
                     ['tblclassother.status', '!=', 3],
                     ['tblclassother.addby', $user->ic]
-                ]);
+                ])->orderBy('tblclassother.title', 'ASC');
 
             $other[] = $others->get();
 
@@ -3188,7 +3188,7 @@ class LecturerController extends Controller
                     ['tblclassmidterm_group.groupname', $grp->group_name],
                     ['tblclassmidterm.status', '!=', 3],
                     ['tblclassmidterm.addby', $user->ic]
-                ]);
+                ])->orderBy('tblclassmidterm.title', 'ASC');
 
             $midterm[] = $midterms->get();
 
@@ -3220,7 +3220,7 @@ class LecturerController extends Controller
                     ['tblclassfinal_group.groupname', $grp->group_name],
                     ['tblclassfinal.status', '!=', 3],
                     ['tblclassfinal.addby', $user->ic]
-                ]);
+                ])->orderBy('tblclassfinal.title', 'ASC');
 
             $final[] = $finals->get();
 
@@ -3995,7 +3995,7 @@ class LecturerController extends Controller
                 ['tblclassquiz_group.groupname', $groupName],
                 ['tblclassquiz.status', '!=', 3],
                 ['tblclassquiz.addby', $user->ic]
-            ]);
+            ])->orderBy('tblclassquiz.title', 'ASC');
         $quiz = $quizs->get();
         $quizid = $quizs->pluck('tblclassquiz.id');
         $totalquiz = $quizs->sum('tblclassquiz.total_mark');
@@ -4009,7 +4009,7 @@ class LecturerController extends Controller
                 ['tblclasstest_group.groupname', $groupName],
                 ['tblclasstest.status', '!=', 3],
                 ['tblclasstest.addby', $user->ic]
-            ]);
+            ])->orderBy('tblclasstest.title', 'ASC');
         $test = $tests->get();
         $testid = $tests->pluck('tblclasstest.id');
         $totaltest = $tests->sum('tblclasstest.total_mark');
@@ -4023,7 +4023,7 @@ class LecturerController extends Controller
                 ['tblclasstest2_group.groupname', $groupName],
                 ['tblclasstest2.status', '!=', 3],
                 ['tblclasstest2.addby', $user->ic]
-            ]);
+            ])->orderBy('tblclasstest2.title', 'ASC');
         $test2 = $tests2->get();
         $test2id = $tests2->pluck('tblclasstest2.id');
         $totaltest2 = $tests2->sum('tblclasstest2.total_mark');
@@ -4037,7 +4037,7 @@ class LecturerController extends Controller
                 ['tblclassassign_group.groupname', $groupName],
                 ['tblclassassign.status', '!=', 3],
                 ['tblclassassign.addby', $user->ic]
-            ]);
+            ])->orderBy('tblclassassign.title', 'ASC');
         $assign = $assigns->get();
         $assignid = $assigns->pluck('tblclassassign.id');
         $totalassign = $assigns->sum('tblclassassign.total_mark');
@@ -4051,7 +4051,7 @@ class LecturerController extends Controller
                 ['tblclassextra_group.groupname', $groupName],
                 ['tblclassextra.status', '!=', 3],
                 ['tblclassextra.addby', $user->ic]
-            ]);
+            ])->orderBy('tblclassextra.title', 'ASC');
         $extra = $extras->get();
         $extraid = $extras->pluck('tblclassextra.id');
         $totalextra = $extras->sum('tblclassextra.total_mark');
@@ -4065,7 +4065,7 @@ class LecturerController extends Controller
                 ['tblclasspractical_group.groupname', $groupName],
                 ['tblclasspractical.status', '!=', 3],
                 ['tblclasspractical.addby', $user->ic]
-            ]);
+            ])->orderBy('tblclasspractical.title', 'ASC');
         $practical = $practicals->get();
         $practicalid = $practicals->pluck('tblclasspractical.id');
         $totalpractical = $practicals->sum('tblclasspractical.total_mark');
@@ -4080,7 +4080,7 @@ class LecturerController extends Controller
                 ['tblclassother_group.groupname', $groupName],
                 ['tblclassother.status', '!=', 3],
                 ['tblclassother.addby', $user->ic]
-            ]);
+            ])->orderBy('tblclassother.title', 'ASC');
         $other = $others->get();
         $othername = $others->pluck('tblextra_title.name');
         $otherid = $others->pluck('tblclassother.id');
@@ -4095,7 +4095,7 @@ class LecturerController extends Controller
                 ['tblclassmidterm_group.groupname', $groupName],
                 ['tblclassmidterm.status', '!=', 3],
                 ['tblclassmidterm.addby', $user->ic]
-            ]);
+            ])->orderBy('tblclassmidterm.title', 'ASC');
         $midterm = $midterms->get();
         $midtermid = $midterms->pluck('tblclassmidterm.id');
         $totalmidterm = $midterms->sum('tblclassmidterm.total_mark');
@@ -4109,7 +4109,7 @@ class LecturerController extends Controller
                 ['tblclassfinal_group.groupname', $groupName],
                 ['tblclassfinal.status', '!=', 3],
                 ['tblclassfinal.addby', $user->ic]
-            ]);
+            ])->orderBy('tblclassfinal.title', 'ASC');
         $final = $finals->get();
         $finalid = $finals->pluck('tblclassfinal.id');
         $totalfinal = $finals->sum('tblclassfinal.total_mark');
