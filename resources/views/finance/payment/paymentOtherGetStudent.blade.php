@@ -108,6 +108,13 @@
                         <input type="text" class="form-control" name="amount" id="amount">
                     </div>
                 </div> 
+                <div class="col-md-3" id="sticker-card" hidden>
+                    <div class="form-group">
+                        <label class="form-label" for="sticker_number">No. Pelekat</label>
+                        <input type="text" class="form-control" name="sticker_number" id="sticker_number">
+                        <span class="text-danger error-field" id="sticker_number_error"></span>
+                    </div>
+                </div>
             </div>
             <div class="col-md-6" hidden>
                 <input type="text" class="form-control" name="idpayment" id="idpayment">

@@ -166,6 +166,8 @@ function getStudInfo(student)
                 });
                 //$('#student').selectpicker('refresh');
 
+                toggleStickerField();
+
                 "use strict";
                 ClassicEditor
                 .create( document.querySelector( '#commenttxt' ),{ height: '25em' } )
@@ -233,13 +235,29 @@ function save(ic)
 // Remove the global document event listener and replace with specific field handlers
 $(document).ready(function() {
     // Add Enter key handler for payment form fields only
-    $('#type, #method, #bank, #nodoc, #amount').keydown(function(event) {
+    $(document).on('keydown', '#type, #method, #bank, #nodoc, #amount, #sticker_number', function(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
             add(); // Call add() function only for payment fields
         }
     });
+
+    $(document).on('change', '#type', function() {
+        toggleStickerField();
+    });
 });
+
+function toggleStickerField()
+{
+  if($('#type').val() == '59')
+  {
+    $('#sticker-card').prop('hidden', false);
+  }else{
+    $('#sticker-card').prop('hidden', true);
+    $('#sticker_number').val('');
+    $('#sticker_number_error').html('');
+  }
+}
 
 function add(ic)
 {
@@ -256,6 +274,8 @@ function add(ic)
       bank: $('#bank').val(),
       nodoc: $('#nodoc').val(),
       amount: $('#amount').val(),
+      ic: ic,
+      sticker_number: $('#sticker_number').val(),
     };
 
     formData.append('paymentDetail', JSON.stringify(forminput));
