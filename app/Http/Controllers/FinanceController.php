@@ -5753,7 +5753,7 @@ class FinanceController extends Controller
             ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
             ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
             ->join('students', 'tblpayment.student_ic', 'students.ic')
-            ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date', 'tblstudentclaim.groupid')
+            ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date', DB::raw('GROUP_CONCAT(DISTINCT tblstudentclaim.groupid) as group_ids'))
             ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
             ->where('tblpayment.process_status_id', 2)
             ->whereNotNull('tblpayment.ref_no')
@@ -5925,7 +5925,7 @@ class FinanceController extends Controller
                     }
                 }
             } elseif ((($status->id == 2 || $status->id == 5 || $status->id == 6) && $pym->sponsor_id == null && $pym->semester == 1)
-                || ($status->id == 4 && $pym->sponsor_id == null && $pym->semester == 1 && $pym->groupid == 5)
+                || ($status->id == 4 && $pym->sponsor_id == null && $pym->semester == 1 && in_array(5, array_map('intval', explode(',', $pym->group_ids))))
             ) {
 
                 //newstudent
@@ -6207,7 +6207,7 @@ class FinanceController extends Controller
                     }
                 }
             } elseif ((($status->id == 2 || $status->id == 5 || $status->id == 6) && $pym->sponsor_id == null && $pym->semester != 1)
-                || ($status->id == 4 && $pym->sponsor_id == null && $pym->semester != 1 && $pym->groupid == 5)
+                || ($status->id == 4 && $pym->sponsor_id == null && $pym->semester != 1 && in_array(5, array_map('intval', explode(',', $pym->group_ids))))
             ) {
 
                 if ($pym->process_type_id == 1) {
@@ -6490,7 +6490,7 @@ class FinanceController extends Controller
                         $data['oldtabungkhasTotals'][$key] = +array_sum($data['oldtabungkhasTotal'][$key]);
                     }
                 }
-            } elseif ($status->id == 4 && $pym->sponsor_id == null && $pym->groupid == 1) {
+            } elseif ($status->id == 4 && $pym->sponsor_id == null && in_array(1, array_map('intval', explode(',', $pym->group_ids)))) {
 
                 //withdraw
 
