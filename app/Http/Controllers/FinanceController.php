@@ -478,6 +478,7 @@ class FinanceController extends Controller
                                 'mod_staffID' => Auth::user()->ic,
                                 'mod_date' => date('Y-m-d')
                             ]);
+
                         }
                     }
 
@@ -6498,7 +6499,7 @@ class FinanceController extends Controller
                 $data['withdrawStudDetail'][] = DB::table('tblpaymentdtl')
                     ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                     ->where('tblpaymentdtl.payment_id', $pym->id)
-                    ->whereIn('tblstudentclaim.groupid', [1, 5])
+                    ->whereIn('tblstudentclaim.groupid', [1])
                     ->where('tblpaymentdtl.amount', '!=', 0)
                     ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
                     ->get();
@@ -7441,6 +7442,10 @@ class FinanceController extends Controller
                 $payment = json_decode($paymentDetail);
 
                 if ($payment->method != null && $payment->amount != null) {
+                    if ($payment->type == 59 && (!isset($payment->sticker_number) || trim($payment->sticker_number) == '')) {
+                        return ["message" => "Field Error", "error" => ["sticker_number" => ["No. Pelekat is required!"]]];
+                    }
+
                     $total = $payment->amount;
 
                     $main = DB::table('tblpayment')->where('id', $payment->id)->first();
@@ -7485,6 +7490,15 @@ class FinanceController extends Controller
                                 'mod_staffID' => Auth::user()->ic,
                                 'mod_date' => date('Y-m-d')
                             ]);
+
+                            if ($payment->type == 59) {
+                                DB::table('tblvehicle_sticker')->insert([
+                                    'ic' => $main->student_ic,
+                                    'sticker_number' => trim($payment->sticker_number),
+                                    'created_at' => now(),
+                                    'updated_at' => now()
+                                ]);
+                            }
                         }
                     }
 
