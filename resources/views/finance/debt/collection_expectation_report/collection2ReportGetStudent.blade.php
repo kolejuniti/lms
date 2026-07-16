@@ -17,6 +17,9 @@
                                 IC / Passport No.
                             </th>
                             <th>
+                                Matric No.
+                            </th>
+                            <th>
                                 Last Date payment
                             </th>
                             <th>
@@ -57,6 +60,9 @@
                                     </td>
                                     <td>
                                         {{ $std->ic }}
+                                    </td>
+                                    <td>
+                                        {{ $std->no_matric }}
                                     </td>
                                     <td>
                                         @if(!empty($data['payments'][$key]))
