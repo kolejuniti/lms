@@ -47,6 +47,23 @@ class StudentController extends Controller
         return view('student.dashboard', compact('data'));
     }
 
+    public function idCard()
+    {
+        $student = Session::get('StudInfo');
+
+        if (!$student) {
+            $student = Auth::guard('student')->user();
+        }
+
+        $studentInfo = DB::table('students')
+                   ->leftJoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                   ->select('students.*', 'tblprogramme.progcode', 'tblprogramme.facultyid')
+                   ->where('students.ic', $student->ic)
+                   ->first();
+
+        return view('student.id_card', compact('studentInfo'));
+    }
+
     public function printStudentSlip($student)
     {
         // Get student information

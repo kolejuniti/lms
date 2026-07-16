@@ -215,6 +215,11 @@
                 </a>
               </li>
               <li>
+                <a href="{{ route('student.id_card') }}" class="{{ (route('student.id_card') == Request::url()) ? 'active' : ''}}">
+                  <i data-feather="user"></i><span>Student ID</span>
+                </a>
+              </li>
+              <li>
                 <a href="{{ route('student') }}" class="{{ (route('student') == Request::url()) ? 'active' : ''}}">
                   <i data-feather="bookmark"></i><span>Course</span>
                 </a>

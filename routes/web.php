@@ -642,6 +642,7 @@ Route::get('/studentDashboard', [App\Http\Controllers\StudentController::class, 
     ->middleware('auth:student')
     ->name('studentDashboard');
 Route::get('/student', [App\Http\Controllers\StudentController::class, 'index'])->name('student');
+Route::get('/student/id-card', [App\Http\Controllers\StudentController::class, 'idCard'])->name('student.id_card');
 Route::get('/student/setting', [App\Http\Controllers\StudentController::class, 'setting'])->name('student.setting');
 Route::post('/student/update', [App\Http\Controllers\StudentController::class, 'updateSetting']);
 Route::post('/student/course/filter', [App\Http\Controllers\StudentController::class, 'getCourseList']);
