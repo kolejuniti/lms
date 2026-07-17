@@ -722,6 +722,7 @@ class AllController extends Controller
                     ->where('md2.status', 'NEW')
                     ->where('md2.user_type', 'STUDENT');
             })
+            ->orderBy('tblmessage.id', 'desc') // Order by message ID descending to get the latest conversations first
             ->distinct()
             ->get();
 
