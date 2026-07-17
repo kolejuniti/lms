@@ -738,7 +738,7 @@ class AllController extends Controller
         }
 
         // Sort by last message datetime descending
-        $students = collect($students)->sortByDesc('last_message_datetime')->values();
+        $students = collect($students)->values();
 
         $content = "";
         $content .= '<thead>
