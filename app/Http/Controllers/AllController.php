@@ -722,23 +722,9 @@ class AllController extends Controller
                     ->where('md2.status', 'NEW')
                     ->where('md2.user_type', 'STUDENT');
             })
-            ->orderBy('tblmessage.id', 'desc') // Order by message ID descending to get the latest conversations first
+            ->orderBy('tblmessage.id', 'desc')
             ->distinct()
             ->get();
-
-        // Get last message datetime for each student conversation
-        foreach ($students as $student) {
-            $lastMessage = DB::table('tblmessage_dtl')
-                ->where('message_id', $student->message_id)
-                ->whereIn('status', ['NEW', 'READ']) // Exclude DELETED
-                ->orderBy('datetime', 'desc')
-                ->first();
-
-            $student->last_message_datetime = $lastMessage ? $lastMessage->datetime : null;
-        }
-
-        // Sort by last message datetime descending
-        $students = collect($students)->values();
 
         $content = "";
         $content .= '<thead>
