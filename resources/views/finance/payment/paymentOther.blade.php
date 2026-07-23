@@ -251,12 +251,70 @@ function toggleStickerField()
 {
   if($('#type').val() == '59')
   {
-    $('#sticker-card').prop('hidden', false);
+    loadVehicleStickers();
   }else{
-    $('#sticker-card').prop('hidden', true);
     $('#sticker_number').val('');
+    $('#sticker_id').val('');
     $('#sticker_number_error').html('');
+    $('#sticker-list-card').hide();
+    $('#sticker-list-body').html('');
   }
+}
+
+function loadVehicleStickers()
+{
+  var ic = $('#student').val();
+
+  if (!ic || ic === '-' || ic === '0') return;
+
+  $.ajax({
+    url: '{{ url("/finance/payment/other/getVehicleStickers") }}',
+    type: 'GET',
+    data: { ic: ic },
+    success: function(data) {
+      $('#sticker-list-body').html('');
+      $('#sticker_number').val('');
+      $('#sticker_id').val('');
+
+      if (data.length === 0) {
+        $('#sticker-list-body').html('<tr><td colspan="5" class="text-center text-muted">No vehicle sticker records found for this student.</td></tr>');
+      } else {
+        $.each(data, function(index, sticker) {
+          var isSah = sticker.status.toUpperCase() === 'SAH';
+          var badgeClass = isSah ? 'badge bg-success' : 'badge bg-warning text-dark';
+          var inputAttrs = 'type="text" class="form-control form-control-sm sticker-input" '
+            + 'data-id="' + sticker.id + '" '
+            + 'placeholder="Enter sticker no." '
+            + 'oninput="syncStickerNumber(this)" ';
+          if (!isSah) {
+            inputAttrs += 'disabled title="Status must be SAH to enter sticker number"';
+          }
+          var inputHtml = '<input ' + inputAttrs + '>';
+
+          var row = '<tr>'
+            + '<td>' + (index + 1) + '</td>'
+            + '<td><strong>' + sticker.plate_number + '</strong></td>'
+            + '<td>' + sticker.type + '</td>'
+            + '<td><span class="' + badgeClass + '">' + sticker.status + '</span></td>'
+            + '<td>' + inputHtml + '</td>'
+            + '</tr>';
+
+          $('#sticker-list-body').append(row);
+        });
+      }
+
+      $('#sticker-list-card').show();
+    },
+    error: function(err) {
+      console.log('Error fetching sticker list:', err);
+      alert('Failed to load vehicle sticker records. Please check the console.');
+    }
+  });
+}
+
+function syncStickerNumber(input)
+{
+  // No longer needed, collecting all inputs in add()
 }
 
 function add(ic)
@@ -264,7 +322,17 @@ function add(ic)
   if($('#idpayment').val() != '')
   {
 
-    var forminput = [];
+    var stickerData = [];
+    if ($('#type').val() == '59') {
+      $('.sticker-input').each(function() {
+         var val = $(this).val();
+         var id = $(this).data('id');
+         if (val && val.trim() !== '') {
+            stickerData.push({ id: id, sticker_number: val });
+         }
+      });
+    }
+
     var formData = new FormData();
 
     forminput = {
@@ -275,7 +343,8 @@ function add(ic)
       nodoc: $('#nodoc').val(),
       amount: $('#amount').val(),
       ic: ic,
-      sticker_number: $('#sticker_number').val(),
+      stickers: stickerData,
+      stickers: stickerData,
     };
 
     formData.append('paymentDetail', JSON.stringify(forminput));

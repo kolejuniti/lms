@@ -108,12 +108,28 @@
                         <input type="text" class="form-control" name="amount" id="amount">
                     </div>
                 </div> 
-                <div class="col-md-3" id="sticker-card" hidden>
-                    <div class="form-group">
-                        <label class="form-label" for="sticker_number">No. Pelekat</label>
-                        <input type="text" class="form-control" name="sticker_number" id="sticker_number">
-                        <span class="text-danger error-field" id="sticker_number_error"></span>
-                    </div>
+                <div id="sticker-card" hidden>
+                    <input type="hidden" name="sticker_number" id="sticker_number">
+                    <input type="hidden" name="sticker_id" id="sticker_id">
+                    <span class="text-danger error-field" id="sticker_number_error"></span>
+                </div>
+            </div>
+            <div class="row mt-3" id="sticker-list-card" style="display:none;">
+                <div class="col-md-12">
+                    <label class="form-label"><b>Vehicle Sticker Records</b></label>
+                    <table class="table table-bordered table-sm" id="sticker-list-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Plate Number</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Sticker No. Input</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sticker-list-body">
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="col-md-6" hidden>
