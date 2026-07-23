@@ -105,7 +105,7 @@ use Carbon\Carbon;
         <br>
         <br>
         <br>
-        <p>Ruj. Kami : KUSB/UPTP/TAMATPENGAJIAN/2025/{{ $data['student']->no_matric }}</p>
+        <p>Ruj. Kami : KUSB/UPTP/TAMATPENGAJIAN/2026/{{ $data['student']->no_matric }}</p>
         <p>Tarikh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ $data['originalDate'] }}</p>
         <div class="col-12 mb-1 mt-1">  
             <div style="border: 1px solid white; padding: 10px;">
@@ -148,7 +148,7 @@ use Carbon\Carbon;
             </table>
         </div>
         <p class="mt-2">4. &nbsp;&nbsp;&nbsp;&nbsp;Jika terdapat sebarang pertanyaan, masalah atau perlukan sebarang rayuan ansuran, tuan/puan boleh menghubungi Puan Emi Marlida Binti Jabar (Unit Penstrukturan Tunggakan Pelajar) di talian 06-6490350.</p>
-        <p class="mt-2">5. &nbsp;&nbsp;&nbsp;&nbsp;Bersama ini disertakan penyata kewangan dan salinan pakej kewangan untuk rujukan pihak tuan/puan. Pelajar juga boleh membuat semakan tunggakan di <b>Portal Pelajar Kolej Uniti</b> dan membuat bayaran menerusi pindahan bank ke akaun kolej (<b>KOLEJ UNITI SDN BHD : Bank Muamalat - 1402 0000 9187 15</b>). Bukti bayaran perlu di whatsapp ke nombor <b>016-9631663</b>. Sila lampirkan nama, nombor matrik dan nombor kad pengenalan pelajar sebagai rujukan pihak kolej.</p>
+        <p class="mt-2">5. &nbsp;&nbsp;&nbsp;&nbsp;Bersama ini disertakan penyata kewangan dan salinan pakej kewangan untuk rujukan pihak tuan/puan. Pelajar juga boleh membuat semakan tunggakan di <b>UNITI COLLEGE MANAGEMENT SYSTEM (UCMS)</b> dan membuat bayaran menerusi pindahan bank ke akaun kolej (<b>KOLEJ UNITI SDN BHD : Bank Muamalat - 1402 0000 9187 15</b>). Bukti bayaran perlu di emel ke <b>kutipan@uniti.edu.my</b>. <b>Sila lampirkan dalam resit bayaran nama dan nombor matrik pelajar sebagai rujukan pihak kolej</b>.</p>
         <p class="mt-3">Sila sahkan penerimaan notis dan persetujuan ansuran ini. Kegagalan mengesahkan menerima notis ini akan menyebabkan pihak kami tiada pilihan selain menggunakan saluran yang dibenarkan perundangan.</p>
         <p class="mt-3">Segala kerjasama daripada pihak tuan/puan mengesahkan baki tersebut amatlah dihargai</p>
         <p class="mt-1 mb-1">Sekian, terima kasih.</p>
