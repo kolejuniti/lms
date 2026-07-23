@@ -55,7 +55,7 @@ Route::get('/admin_dashboard', [App\Http\Controllers\AdminController::class, 'da
 Route::get('/hep_dashboard', [App\Http\Controllers\HEPController::class, 'dashboard'])->name('hep.dashboard')->middleware('auth');
 
 Route::group(['prefix' => 'hep', 'middleware' => 'auth'], function () {
-    Route::get('/vehicle-sticker', [App\Http\Controllers\HEPController::class, 'vehicleStickerIndex'])->name('hep.vehicle_sticker.index');
+    Route::get('/vehicle-sticker-records', [App\Http\Controllers\HEPController::class, 'vehicleStickerIndex'])->name('hep.vehicle_sticker.index');
     Route::match(['get', 'post'], '/vehicle-sticker/search', [App\Http\Controllers\HEPController::class, 'vehicleStickerSearch'])->name('hep.vehicle_sticker.search');
     Route::post('/vehicle-sticker/update', [App\Http\Controllers\HEPController::class, 'vehicleStickerUpdate'])->name('hep.vehicle_sticker.update');
 });
@@ -657,6 +657,7 @@ Route::post('/student/update', [App\Http\Controllers\StudentController::class, '
 Route::post('/student/course/filter', [App\Http\Controllers\StudentController::class, 'getCourseList']);
 Route::get('/student/printStudentSlip/{student}', [App\Http\Controllers\StudentController::class, 'printStudentSlip'])->name('student.printSlip');
 Route::get('/student/vehicle_sticker', [App\Http\Controllers\StudentController::class, 'vehicleSticker'])->name('student.vehicle_sticker');
+Route::get('/student/vehicle_sticker/print/{id}', [App\Http\Controllers\StudentController::class, 'printVehicleSticker'])->name('student.vehicle_sticker.print');
 Route::post('/student/vehicle_sticker/store', [App\Http\Controllers\StudentController::class, 'storeVehicleSticker'])->name('student.vehicle_sticker.store');
 Route::get('/student/{id}', [App\Http\Controllers\StudentController::class, 'courseSummary'])->name('student.summary');
 Route::get('/student/content/{id}', [App\Http\Controllers\StudentController::class, 'courseContent'])->name('student.content');
