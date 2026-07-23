@@ -287,8 +287,6 @@
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ route('kp.vehicle_sticker') }}" class="{{ (route('kp.vehicle_sticker') == Request::url()) ? 'active' : ''}}">Vehicle Sticker Application</a></li>
-					</ul>
-					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ route('hep.vehicle_sticker.index') }}" class="{{ (route('hep.vehicle_sticker.index') == Request::url()) ? 'active' : ''}}">Vehicle Sticker Records</a></li>
 					</ul>
 				</li>
