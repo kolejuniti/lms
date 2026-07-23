@@ -170,7 +170,7 @@ use Carbon\Carbon;
                 </table>
             </div> 
         </div>
-        <p>Tarikh tuntutan adalah pada <b>5/10/2025</b> dan bertempat di <b>Bilik Pemulangan Jubah - Bangi Avenue Convention Centre (BACC)</b></p>
+        <p>Tarikh tuntutan adalah pada <b>11/10/2026</b> dan bertempat di <b>Bilik Pemulangan Jubah - Bangi Avenue Convention Centre (BACC)</b></p>
         <br>
         {{-- <p style="text-align: center;"><b>[THIS IS A COMPUTER GENERATED AND DOES NOT REQUIRE SIGNATURE]</b></p> --}}
         <p>Dikeluarkan oleh:</p>
