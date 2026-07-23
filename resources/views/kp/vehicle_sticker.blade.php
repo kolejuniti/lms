@@ -1,4 +1,4 @@
-﻿@extends('layouts.ketua_program')
+﻿@extends(Auth::check() && Auth::user()->usrtype === 'ADM' ? 'layouts.admin' : (Auth::user()->usrtype === 'RGS' ? 'layouts.pendaftar' : (Auth::user()->usrtype === 'AR' ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype === 'FN' ? 'layouts.finance' : (Auth::user()->usrtype === 'OTR' ? 'layouts.other_user' : (Auth::user()->usrtype === 'COOP' ? 'layouts.coop' : (Auth::user()->usrtype === 'HEP' ? 'layouts.hep' : 'layouts.ketua_program')))))))
 
 @section('main')
 
