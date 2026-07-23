@@ -7362,6 +7362,18 @@ class FinanceController extends Controller
         return  view('finance.payment.paymentOtherGetStudent', compact('data'));
     }
 
+    public function getVehicleStickersByIc(Request $request)
+    {
+        $ic = $request->input('ic');
+
+        $stickers = DB::table('tblvehicle_sticker')
+            ->where('ic', $ic)
+            ->select('id', 'plate_number', 'type', 'status')
+            ->get();
+
+        return response()->json($stickers);
+    }
+
     public function storeOtherPayment(Request $request)
     {
 
@@ -7442,8 +7454,8 @@ class FinanceController extends Controller
                 $payment = json_decode($paymentDetail);
 
                 if ($payment->method != null && $payment->amount != null) {
-                    if ($payment->type == 59 && (!isset($payment->sticker_number) || trim($payment->sticker_number) == '')) {
-                        return ["message" => "Field Error", "error" => ["sticker_number" => ["No. Pelekat is required!"]]];
+                    if ($payment->type == 59 && (!isset($payment->stickers) || !is_array($payment->stickers) || count($payment->stickers) == 0)) {
+                        return ["message" => "Field Error", "error" => ["sticker_number" => ["At least one No. Pelekat is required!"]]];
                     }
 
                     $total = $payment->amount;
@@ -7492,12 +7504,16 @@ class FinanceController extends Controller
                             ]);
 
                             if ($payment->type == 59) {
-                                DB::table('tblvehicle_sticker')->insert([
-                                    'ic' => $main->student_ic,
-                                    'sticker_number' => trim($payment->sticker_number),
-                                    'created_at' => now(),
-                                    'updated_at' => now()
-                                ]);
+                                if (isset($payment->stickers) && is_array($payment->stickers)) {
+                                    foreach ($payment->stickers as $sticker) {
+                                        DB::table('tblvehicle_sticker')
+                                            ->where('id', $sticker->id)
+                                            ->update([
+                                                'sticker_number' => trim($sticker->sticker_number),
+                                                'updated_at' => now()
+                                            ]);
+                                    }
+                                }
                             }
                         }
                     }

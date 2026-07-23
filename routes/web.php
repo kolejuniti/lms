@@ -935,6 +935,7 @@ Route::post('/finance/payment/other/storePayment', [App\Http\Controllers\Finance
 Route::post('/finance/payment/other/storePaymentDtl', [App\Http\Controllers\FinanceController::class, 'storeOtherPaymentDtl']);
 Route::post('/finance/payment/other/deletePayment', [App\Http\Controllers\FinanceController::class, 'deleteOtherPayment']);
 Route::post('/finance/payment/other/confirmPayment', [App\Http\Controllers\FinanceController::class, 'confirmOtherPayment']);
+Route::get('/finance/payment/other/getVehicleStickers', [App\Http\Controllers\FinanceController::class, 'getVehicleStickersByIc']);
 Route::get('/finance/payment/cancel', [App\Http\Controllers\FinanceController::class, 'cancelTransaction'])->name('finance.payment.cancel');
 Route::post('/finance/payment/cancel/confirm', [App\Http\Controllers\FinanceController::class, 'cancelTransactionConfirm']);
 Route::post('/finance/fpx/bulk-cancel', [App\Http\Controllers\FinanceController::class, 'bulkCancelFpxPayments'])->name('finance.fpx.bulk.cancel');
