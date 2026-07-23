@@ -184,7 +184,8 @@
                           <option value="FN" {{ ($id->usrtype == "FN") ? 'selected' : '' }}>Finance</option>
                           <option value="TS" {{ ($id->usrtype == "TS") ? 'selected' : '' }}>Treasurer</option>
                           <option value="OTR" {{ ($id->usrtype == "OTR") ? 'selected' : '' }}>Others</option>
-                          <option value="COOP" {{ ($id->usrtype == "COOP") ? 'selected' : '' }}>Cooperation</option>
+                          <option value="COOP" {{ ($id->usrtype == "COOP") ? 'selected' : '' }}>Koperasi</option>
+                          <option value="HEP" {{ ($id->usrtype == "HEP") ? 'selected' : '' }}>Hal Ehwal Pelajar</option>
                         </select>
                       </div>
 
