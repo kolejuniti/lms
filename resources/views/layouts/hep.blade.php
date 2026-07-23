@@ -21,17 +21,9 @@
 	{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.3/css/css-skeletons.min.css"/> --}}
 	<link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js"></script>
-
-	<!-- For Collaps -->
-
-
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-
+	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
   </head>
 
@@ -102,11 +94,6 @@
 		min-height: 20em;
 	}
 
-	.modal-backdrop
-	{
-		opacity:0.5 !important;
-	}
-
 	.multinav-scroll {
 		height: 97%; /* or whatever height you prefer */
 		overflow-y: auto; /* Enables vertical scrolling */
@@ -133,7 +120,7 @@
   <header class="main-header">
 	<div class="d-flex align-items-center logo-box justify-content-start">	
 		<!-- Logo -->
-		<a href="{{ url('KP') }}" class="logo">
+		<a href="{{ route('hep.dashboard') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
 			  <span class="light-logo"><img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="logo" class="unity"></span>
@@ -184,7 +171,7 @@
 				</label>
 			  </a>				
             </li>
-			<!--<li class="dropdown notifications-menu btn-group">
+			<li class="dropdown notifications-menu btn-group">
 				<a href="#" class="waves-effect waves-light btn-primary-light svg-bt-icon bg-transparent" data-bs-toggle="dropdown" title="Notifications">
 					<i data-feather="bell"></i>
 					<div class="pulse-wave"></div>
@@ -203,6 +190,7 @@
 					</div>
 				  </li>
 				  <li>
+					<!-- inner menu: contains the actual data -->
 					<ul class="menu sm-scrol">
 					  <li>
 						<a href="#">
@@ -225,7 +213,7 @@
 					  <a href="#">View all</a>
 				  </li>
 				</ul>
-			</li>-->
+			</li>
 			
 			
 			<!-- User Account-->
@@ -251,44 +239,57 @@
     <section class="sidebar position-relative"> 
 	  	<div class="multinav">
 		  <div class="multinav-scroll" style="height: 97%;">	
-			  <!-- sidebar menu-->
-			  <ul class="sidebar-menu" data-widget="tree">
+			<ul class="sidebar-menu" data-widget="tree">
 				<li>
-					<a href="{{ route('others.dashboard') }}" class="{{ (route('others.dashboard') == Request::url()) ? 'active' : ''}}"><i data-feather="home"></i><span>Dashboard</span></a>
+					<a href="{{ route('hep.dashboard') }}"><i data-feather="home"></i><span>Dashboard</span></a>
 				</li>
 				<li class="treeview">
-					<a href="#"><i data-feather="shopping-bag"></i><span>Voucher</span>
+					<a href="#"><i data-feather="users"></i><span>Student</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">	
+						<li>
+							<a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Information</a>
+						</li>
+						<li>
+							<a href="{{ route('pendaftar.student.status') }}" class="{{ (route('pendaftar.student.status') == Request::url()) ? 'active' : ''}}">Student Status</a>
+						</li>
+					</ul>
+				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="dollar-sign"></i><span>Payment</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<li><a href="{{ route('coop.voucher') }}" class="{{ (route('coop.voucher') == Request::url()) ? 'active' : ''}}">Redeem Voucher</a></li>
-						<li><a href="{{ route('coop.voucher.dailyReport') }}" class="{{ (route('coop.voucher.dailyReport') == Request::url()) ? 'active' : ''}}">Voucher Report</a></li>
+						<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
 					</ul>
-				  </li>
-				  <li class="treeview">
-						<a href="#"><i data-feather="server"></i><span>Services</span>
-							<span class="pull-right-container">
-								<i class="fa fa-angle-left pull-right"></i>
-							</span>
-						</a>
-						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-							<li><a href="{{ route('kp.vehicle_sticker') }}" class="{{ (route('kp.vehicle_sticker') == Request::url()) ? 'active' : ''}}">Vehicle Sticker Application</a></li>
-						</ul>
-					</li>
-				<li>
-					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 				</li>
-			  </ul>
-			  <div class="sidebar-widgets">
-				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
-					<div class="text-center">
-						<img src="{{ asset('assets/images/svg-icon/color-svg/custom-24.svg') }}" class="sideimg p-5" alt="">
-						<h4 class="title-bx text-primary">Best Education Platform</h4>
-					</div>
-				  </div>
-			  </div>
+				<li class="treeview">
+					<a href="#"><i data-feather="layout"></i><span>Schedule</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/AR/schedule/lecturer?type=lct" class="{{ (route('pendaftar_akademik.schedule.lecturer') == Request::url()) ? 'active' : ''}}">Lecturer Schedule</a></li>
+						<li><a href="/AR/schedule/lecture?type=lcr" class="{{ (route('pendaftar_akademik.schedule.lecture') == Request::url()) ? 'active' : ''}}">Lecture Room Schedule</a></li>
+					</ul>
+				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="server"></i><span>Services</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('hep.vehicle_sticker.index') }}" class="{{ (route('hep.vehicle_sticker.index') == Request::url()) ? 'active' : ''}}">Vehicle Sticker Records</a></li>
+					</ul>
+				</li>
+			</ul>
 		  </div>
 		</div>
     </section>
@@ -331,7 +332,7 @@
                         <h5 class="mb-0"></h5>
                         <p class="my-5 text-fade"></p>
                         <a href="mailto:">
-							<span class="icon-Mail-notification me-5 text-success"><span class="path1"></span><span class="path2">{{ Session::get('User')->email }}</span></span> 
+							<span class="icon-Mail-notification me-5 text-success"><span class="path1"></span><span class="path2"></span></span> 
 						</a>
                     </div>
                 </div>
@@ -351,15 +352,15 @@
               </div> --}}
 			  <div>
 				  <div class="col-sm-12 d-flex justify-content-center">
-					<a href="/lecturer/setting" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
-					<a href="{{ route('custom_logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
-					onclick="event.preventDefault();
-					document.getElementById('logout-form').submit();">
-					<i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
-  
-              <form id="logout-form" action="{{ route('custom_logout') }}" method="POST" class="d-none">
-              @csrf
-              </form>
+				  	  <a href="" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
+					  <a href="{{ route('logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
+					  onclick="event.preventDefault();
+					  document.getElementById('logout-form').submit();">
+					  <i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
+
+					  <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+						@csrf
+					</form>
 			  	  </div>
               </div>
               <div class="dropdown-divider my-30"></div>
@@ -481,7 +482,7 @@
 	
 	}
 	
-</script>
+	</script>
 
 @yield('content')
 
@@ -490,3 +491,4 @@
 </body>
 </html>
   
+

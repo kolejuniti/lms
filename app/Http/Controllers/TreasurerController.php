@@ -365,6 +365,10 @@ class TreasurerController extends Controller
             $items = [31];
 
             $data['type'] = DB::table('tblstudentclaim')->whereIn('id', $items)->get();
+        } elseif (Auth::user()->usrtype == "HEP") {
+            $items = [31];
+
+            $data['type'] = DB::table('tblstudentclaim')->whereIn('id', $items)->get();
         } else {
 
             $data['type'] = DB::table('tblstudentclaim')->get();

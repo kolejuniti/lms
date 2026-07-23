@@ -428,6 +428,16 @@ $theme = DB::table('user_setting')->where('user_ic', Auth::user()->ic)->first();
 								<i data-feather="file-text"></i><span>Final Exam Schedule (UiTM)</span>
 							</a>
 						</li>
+						<li class="treeview">
+							<a href="#"><i data-feather="server"></i><span>Services</span>
+								<span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+							</a>
+							<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+								<li><a href="{{ route('kp.vehicle_sticker') }}" class="{{ (route('kp.vehicle_sticker') == Request::url()) ? 'active' : ''}}">Vehicle Sticker Application</a></li>
+							</ul>
+						</li>
 						</ul>
 						<!-- <div class="sidebar-widgets">
 							<div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">

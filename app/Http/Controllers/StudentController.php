@@ -2349,5 +2349,65 @@ class StudentController extends Controller
             return response()->json(['error' => 'Search failed: ' . $e->getMessage()], 500);
         }
     }
+    public function vehicleSticker()
+    {
+        $student = Session::get('StudInfo');
+        if (!$student) {
+            $student = Auth::guard('student')->user();
+        }
+
+        if (!$student) {
+            return redirect()->route('login.student.custom')->withErrors(['message' => 'Please log in first.']);
+        }
+
+        // Ensure session variables are populated so the layout doesn't fail
+        if (!Session::get('User')) {
+            Session::put('User', $student);
+        }
+        if (!Session::get('StudInfo')) {
+            Session::put('StudInfo', $student);
+        }
+
+        $vehicles = DB::table('tblvehicle_sticker')->where('ic', $student->ic)->get();
+
+        return view('student.vehicle_sticker', compact('vehicles'));
+    }
+
+    public function storeVehicleSticker(Request $request)
+    {
+        $student = Session::get('StudInfo');
+        if (!$student) {
+            $student = Auth::guard('student')->user();
+        }
+
+        $request->validate([
+            'plate_number' => 'required|string|max:20',
+            'type' => 'required|string',
+            'color' => 'required|string|max:50',
+            'brand' => 'required|string|max:50',
+            'model' => 'required|string|max:50',
+        ]);
+
+        $vehicleCount = DB::table('tblvehicle_sticker')->where('ic', $student->ic)->count();
+
+        if ($vehicleCount >= 2) {
+            return redirect()->back()->with('alert', 'You can only register a maximum of two vehicles.');
+        }
+
+        DB::table('tblvehicle_sticker')->insert([
+            'ic' => $student->ic,
+            'plate_number' => strtoupper($request->plate_number),
+            'type' => strtoupper($request->type),
+            'color' => strtoupper($request->color),
+            'brand' => strtoupper($request->brand),
+            'model' => strtoupper($request->model),
+            'status' => 'BARU',
+            'user_type' => 'PELAJAR',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Vehicle registered successfully.');
+    }
 
 }

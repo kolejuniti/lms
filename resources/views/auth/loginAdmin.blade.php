@@ -383,7 +383,7 @@
 
 @php
   Auth::logout();
-  $usertype = ['Admin', 'Pendaftar', 'PendaftarAkademik', 'Kewangan', 'Bendahari', 'Others', 'Cooperation', 'UnitiResources'];
+  $usertype = ['Admin', 'Pendaftar', 'PendaftarAkademik', 'Kewangan', 'Bendahari', 'Others', 'Cooperation', 'UnitiResources', 'HEP'];
 @endphp
 
 <body>
@@ -430,12 +430,18 @@
           <i class="fas fa-handshake"></i>
           @elseif ($ut == 'UnitiResources')
           <i class="fas fa-building"></i>
+          @elseif ($ut == 'HEP')
+          <i class="fas fa-users-cog"></i>
           @endif
           <div class="user-type-name">
             @if ($ut == 'PendaftarAkademik')
             Pendaftar Akademik
+            @elseif ($ut == 'Cooperation')
+            Koperasi
             @elseif ($ut == 'UnitiResources')
             Uniti Resources
+            @elseif ($ut == 'HEP')
+            Hal Ehwal Pelajar (HEP)
             @else
             {{ $ut }}
             @endif

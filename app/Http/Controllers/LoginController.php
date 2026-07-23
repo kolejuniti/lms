@@ -112,6 +112,10 @@ class LoginController extends Controller
                 {
                     return redirect()->route('ur.dashboard');
                 }
+                elseif($user->usrtype == 'HEP' && $request->usertypes == 'HEP')
+                {
+                    return redirect()->route('hep.dashboard');
+                }
                 else{
                     return back()->with(["message"=>"Not Authorized to Enter!"]);
                 }

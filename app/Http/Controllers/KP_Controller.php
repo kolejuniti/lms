@@ -1857,4 +1857,51 @@ class KP_Controller extends Controller
             'message' => $message
         ]);
     }
+    public function vehicleSticker()
+    {
+        $kp = Auth::user();
+
+        // Ensure session variables are populated so the layout doesn't fail
+        if (!Session::get('User')) {
+            Session::put('User', $kp);
+        }
+
+        $vehicles = DB::table('tblvehicle_sticker')->where('ic', $kp->ic)->get();
+
+        return view('kp.vehicle_sticker', compact('vehicles'));
+    }
+
+    public function storeVehicleSticker(Request $request)
+    {
+        $kp = Auth::user();
+
+        $request->validate([
+            'plate_number' => 'required|string|max:20',
+            'type' => 'required|string',
+            'color' => 'required|string|max:50',
+            'brand' => 'required|string|max:50',
+            'model' => 'required|string|max:50',
+        ]);
+
+        $vehicleCount = DB::table('tblvehicle_sticker')->where('ic', $kp->ic)->count();
+
+        if ($vehicleCount >= 2) {
+            return redirect()->back()->with('alert', 'You can only register a maximum of two vehicles.');
+        }
+
+        DB::table('tblvehicle_sticker')->insert([
+            'ic' => $kp->ic,
+            'plate_number' => strtoupper($request->plate_number),
+            'type' => strtoupper($request->type),
+            'color' => strtoupper($request->color),
+            'brand' => strtoupper($request->brand),
+            'model' => strtoupper($request->model),
+            'status' => 'BARU',
+            'user_type' => 'STAF',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Vehicle registered successfully.');
+    }
 }

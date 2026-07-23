@@ -66,6 +66,7 @@
                     <input type="number" class="form-control" name="amount" id="amount">
                 </div>
             </div>
+            @if(Auth::user()->usrtype != 'OTR' && Auth::user()->usrtype != 'HEP')
             <div class="col-md-4" id="correction-card">
                 <div class="form-group">
                     <label class="form-label">Adakah ini pembetulan yuran?</label>
@@ -76,6 +77,7 @@
                     </select>
                 </div>
             </div>
+            @endif
             <div class="col-md-12 mt-3">
                 <div class="form-group">
                     <label class="form-label">Remark</label>

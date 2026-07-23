@@ -8,6 +8,7 @@
         'ADM' => 'layouts.admin',
         'HEA' => 'layouts.hea',
         'DN' => 'layouts.dekan',
+        'HEP' => 'layouts.hep',
     ];
     
     $layout = 'layouts.student';

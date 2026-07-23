@@ -366,6 +366,20 @@
             </ul>
             </li>
 
+            <!-- Services Dropdown -->
+            <li class="treeview">
+              <a href="#">
+                <i data-feather="briefcase"></i>
+                <span>Services</span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-right pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+                <li><a href="{{ route('student.vehicle_sticker') }}" class="{{ (route('student.vehicle_sticker') == Request::url()) ? 'active' : ''}}">Vehicle Sticker Application</a></li>
+              </ul>
+            </li>
+
             <!-- Messages Dropdown -->
             <li class="treeview">
               <a href="#">
