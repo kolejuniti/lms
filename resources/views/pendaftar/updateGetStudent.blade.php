@@ -31,7 +31,7 @@
                         <label class="form-label" for="intake">Session (Intake)</label>
                         <select 
                             class="form-select" id="intake" name="intake" 
-                            style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR' || Auth::user()->usrtype == 'OTR') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
+                            style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR' || Auth::user()->usrtype == 'HEP') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
                             <option value="-" selected disabled>-</option>
                             @foreach ($data['session'] as $ses)
                             <option value="{{ $ses->SessionID }}" {{ ($data['student']->intake == $ses->SessionID) ? 'selected' : '' }}>
@@ -45,7 +45,7 @@
                     <div class="form-group">
                         <label class="form-label" for="batch">Batch</label>
                         <select class="form-select" id="batch" name="batch"
-                        style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
+                        style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR' || Auth::user()->usrtype == 'HEP') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
                         <option value="-" selected disabled>-</option>
                         @foreach ($data['batch'] as $ses)
                         <option value="{{ $ses->BatchID }}" {{ ($data['student']->batch == $ses->BatchID) ? 'selected' : '' }}>{{ $ses->BatchName }}</option> 
@@ -57,7 +57,7 @@
                     <div class="form-group">
                         <label class="form-label" for="session">Current Session</label>
                         <select class="form-select" id="session" name="session"
-                        style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
+                        style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR' || Auth::user()->usrtype == 'HEP') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
                         <option value="-" selected disabled>-</option>
                         @foreach ($data['session'] as $ses)
                         <option value="{{ $ses->SessionID }}" {{ ($data['student']->session == $ses->SessionID) ? 'selected' : '' }}>{{ $ses->SessionName }}</option> 
@@ -69,7 +69,7 @@
                     <div class="form-group">
                         <label class="form-label" for="semester">Semester</label>
                         <select class="form-select" id="semester" name="semester"
-                        style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
+                        style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR' || Auth::user()->usrtype == 'HEP') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
                         <option value="-" selected disabled>-</option>
                         @foreach ($data['semester'] as $sem)
                         <option value="{{ $sem->id }}" {{ ($data['student']->semester == $sem->id) ? 'selected' : '' }}>{{ $sem->semester_name }}</option> 
@@ -81,7 +81,7 @@
                     <div class="form-group">
                         <label class="form-label" for="status">Student Status</label>
                         <select class="form-select" id="status" name="status"
-                        style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
+                        style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR' || Auth::user()->usrtype == 'HEP') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
                         <option value="-" selected disabled>-</option>
                         @foreach ($data['status'] as $sts)
                         <option value="{{ $sts->id }}" {{ ($data['student']->status == $sts->id) ? 'selected' : '' }}>{{ $sts->name }}</option> 
@@ -93,7 +93,7 @@
                     <div class="form-group">
                       <label class="form-label" for="kuliah">Lectures Status</label>
                       <select class="form-select" id="kuliah" name="kuliah"
-                      style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
+                      style="{{ (Auth::user()->usrtype == 'FN' || Auth::user()->usrtype == 'OTR' || Auth::user()->usrtype == 'HEP') ? 'pointer-events: none; background-color: #e9ecef;' : '' }}">
                         <option value="-" selected disabled>-</option>
                         <option value="1" {{ ($data['student']->student_status == 1) ? 'selected' : '' }}>Holding</option>
                         <option value="2" {{ ($data['student']->student_status == 2) ? 'selected' : '' }}>Kuliah</option>
@@ -122,6 +122,7 @@
         </div>
         <!-- /.card-body -->
         <div class="card-footer">
+            @if(Auth::user()->usrtype != 'OTR' && Auth::user()->usrtype != 'HEP')
             <button type="submit" class="btn btn-info pull-left mb-3 mr-2" onclick="generateMatric('{{ $data['student']->ic }}')">Generate Matric No.</button>
             &nbsp;&nbsp;
             <a class="btn btn-warning" target="_blank" href="/AR/student/getSlipExam?student={{ $data['student']->ic }}">
@@ -129,7 +130,8 @@
                 </i>
                 Slip Exam
             </a>
-            @if(Auth::user()->usrtype != 'OTR')
+            @endif
+            @if(Auth::user()->usrtype != 'OTR' && Auth::user()->usrtype != 'HEP')
             <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submitForm('{{ $data['student']->ic }}')">Submit</button>
             @endif
         </div>
