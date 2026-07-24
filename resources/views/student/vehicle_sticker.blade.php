@@ -3,7 +3,7 @@
 @section('main')
 
 <style>
-    /* Styling for the vehicle sticker application page */
+    /* Styling for the vehicle registration page */
     .vehicle-sticker-page {
         padding: 2rem 0;
         background-color: #f8fafc;
@@ -164,7 +164,7 @@
 <div class="content-wrapper vehicle-sticker-page">
     <div class="container-full">
         <div class="page-header-premium">
-            <h4><i class="mdi mdi-car"></i> Vehicle Sticker Application</h4>
+            <h4><i class="mdi mdi-car"></i> Vehicle Registration</h4>
             <p style="margin: 0; opacity: 0.9;">Register your vehicles to apply for the campus parking sticker.</p>
         </div>
 
