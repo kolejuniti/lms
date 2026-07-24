@@ -262,7 +262,7 @@
                 </div>
                 @else
                 <div class="alert alert-info mb-4" style="border-radius: 12px;">
-                    <i class="mdi mdi-information me-2"></i> You have reached the maximum limit of 2 registered vehicles.
+                    <i class="mdi mdi-information me-2"></i> You have reached the maximum limit of 1 registered vehicles.
                 </div>
                 @endif
 
@@ -311,9 +311,20 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <a href="{{ url('student/vehicle_sticker/print', $vehicle->id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                                <i class="fa fa-print"></i> Print
-                                            </a>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <a href="{{ url('student/vehicle_sticker/print', $vehicle->id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fa fa-print"></i> Print
+                                                </a>
+                                                @if(strtoupper($vehicle->status) === 'BARU')
+                                                <form action="{{ route('student.vehicle_sticker.delete', $vehicle->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this vehicle record?');" style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <i class="fa fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty

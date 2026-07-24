@@ -2448,4 +2448,33 @@ class StudentController extends Controller
         return view('student.print_vehicle_sticker', compact('vehicle', 'student'));
     }
 
+    public function deleteVehicleSticker($id)
+    {
+        $student = Session::get('StudInfo');
+        if (!$student) {
+            $student = Auth::guard('student')->user();
+        }
+
+        if (!$student) {
+            return redirect()->route('login.student.custom')->withErrors(['message' => 'Please log in first.']);
+        }
+
+        $vehicle = DB::table('tblvehicle_sticker')
+            ->where('id', $id)
+            ->where('ic', $student->ic)
+            ->first();
+
+        if (!$vehicle) {
+            return redirect()->back()->with('alert', 'Vehicle not found.');
+        }
+
+        if (strtoupper($vehicle->status) !== 'BARU') {
+            return redirect()->back()->with('alert', 'Only vehicles with status BARU can be deleted.');
+        }
+
+        DB::table('tblvehicle_sticker')->where('id', $id)->delete();
+
+        return redirect()->back()->with('success', 'Vehicle record deleted successfully.');
+    }
+
 }

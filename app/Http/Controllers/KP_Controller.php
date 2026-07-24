@@ -1934,4 +1934,27 @@ class KP_Controller extends Controller
 
         return view('kp.print_vehicle_sticker', compact('vehicle', 'student', 'kp'));
     }
+
+    public function deleteVehicleSticker($id)
+    {
+        $kp = Auth::user();
+
+        $vehicle = DB::table('tblvehicle_sticker')
+            ->where('id', $id)
+            ->where('ic', $kp->ic)
+            ->first();
+
+        if (!$vehicle) {
+            return redirect()->back()->with('alert', 'Vehicle not found.');
+        }
+
+        if (strtoupper($vehicle->status) !== 'BARU') {
+            return redirect()->back()->with('alert', 'Only vehicles with status BARU can be deleted.');
+        }
+
+        DB::table('tblvehicle_sticker')->where('id', $id)->delete();
+
+        return redirect()->back()->with('success', 'Vehicle record deleted successfully.');
+    }
 }
+
