@@ -1,6 +1,6 @@
 @extends('layouts.hep')
 
-@section('title', 'Vehicle Sticker Application')
+@section('title', 'Vehicle Registration')
 
 @section('main')
 <div class="content-wrapper">
@@ -9,7 +9,7 @@
             <div class="col-12">
                 <div class="box">
                     <div class="box-header with-border">
-                        <h4 class="box-title">Search Staff / Student for Vehicle Sticker Application</h4>
+                        <h4 class="box-title">Search Staff / Student for Vehicle Registration</h4>
                     </div>
                     <div class="box-body">
                         @if(session('error'))
@@ -67,7 +67,7 @@
                                     </div>
                                 </div>
 
-                                <h6>Vehicle Sticker Applications</h6>
+                                <h6>Vehicle Registration Applications</h6>
                                 @if(isset($applicationsByIc[$user->ic]) && $applicationsByIc[$user->ic]->count() > 0)
                                     <table class="table table-bordered">
                                         <thead>
