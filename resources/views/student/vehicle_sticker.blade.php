@@ -285,6 +285,7 @@
                                         <th>Status</th>
                                         <th>Date Registered</th>
                                         <th>Sticker Number</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -309,10 +310,15 @@
                                                 <span class="text-muted fst-italic">Pending</span>
                                             @endif
                                         </td>
+                                        <td>
+                                            <a href="{{ url('student/vehicle_sticker/print', $vehicle->id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fa fa-print"></i> Print
+                                            </a>
+                                        </td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="9" class="text-center py-4 text-muted">
+                                        <td colspan="10" class="text-center py-4 text-muted">
                                             No vehicles registered yet.
                                         </td>
                                     </tr>
