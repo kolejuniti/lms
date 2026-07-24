@@ -186,7 +186,7 @@
                     @elseif($student->facultycode == 'FTK')
                         <span style="text-decoration: line-through;">FPIH</span> &nbsp;/&nbsp; <span style="text-decoration: line-through;">FPPM</span> &nbsp;/&nbsp; <strong>FTK</strong>
                     @else
-                        {{ $student->facultycode ?? '-' }}
+                        <strong>{{ $student->facultycode ?? '-' }}</strong>
                     @endif
                 </td>
             </tr>
