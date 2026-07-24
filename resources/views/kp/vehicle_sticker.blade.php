@@ -1,9 +1,9 @@
-﻿@extends(Auth::check() && Auth::user()->usrtype === 'ADM' ? 'layouts.admin' : (Auth::user()->usrtype === 'RGS' ? 'layouts.pendaftar' : (Auth::user()->usrtype === 'AR' ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype === 'FN' ? 'layouts.finance' : (Auth::user()->usrtype === 'OTR' ? 'layouts.other_user' : (Auth::user()->usrtype === 'COOP' ? 'layouts.coop' : (Auth::user()->usrtype === 'HEP' ? 'layouts.hep' : 'layouts.ketua_program')))))))
+@extends(Auth::check() && Auth::user()->usrtype === 'ADM' ? 'layouts.admin' : (Auth::user()->usrtype === 'RGS' ? 'layouts.pendaftar' : (Auth::user()->usrtype === 'AR' ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype === 'FN' ? 'layouts.finance' : (Auth::user()->usrtype === 'OTR' ? 'layouts.other_user' : (Auth::user()->usrtype === 'COOP' ? 'layouts.coop' : (Auth::user()->usrtype === 'HEP' ? 'layouts.hep' : 'layouts.ketua_program')))))))
 
 @section('main')
 
 <style>
-    /* Styling for the vehicle sticker application page */
+    /* Styling for the vehicle registration page */
     .vehicle-sticker-page {
         padding: 2rem 0;
         background-color: #f8fafc;
@@ -164,7 +164,7 @@
 <div class="content-wrapper vehicle-sticker-page">
     <div class="container-full">
         <div class="page-header-premium">
-            <h4><i class="mdi mdi-car"></i> Vehicle Sticker Application</h4>
+            <h4><i class="mdi mdi-car"></i> Vehicle Registration</h4>
             <p style="margin: 0; opacity: 0.9;">Register your vehicles to apply for the campus parking sticker.</p>
         </div>
 
@@ -285,6 +285,7 @@
                                         <th>Status</th>
                                         <th>Date Registered</th>
                                         <th>Sticker Number</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -309,10 +310,15 @@
                                                 <span class="text-muted fst-italic">Pending</span>
                                             @endif
                                         </td>
+                                        <td>
+                                            <a href="{{ url('staff/vehicle_sticker/print', $vehicle->id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fa fa-print"></i> Print
+                                            </a>
+                                        </td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="9" class="text-center py-4 text-muted">
+                                        <td colspan="10" class="text-center py-4 text-muted">
                                             No vehicles registered yet.
                                         </td>
                                     </tr>

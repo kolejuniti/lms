@@ -103,6 +103,7 @@ Route::post('/admin/training/deleteUserTraining', [App\Http\Controllers\AdminCon
 
 Route::get('/KP', [App\Http\Controllers\KP_Controller::class, 'index'])->name('ketua_program');
 Route::get('/staff/vehicle_sticker', [App\Http\Controllers\KP_Controller::class, 'vehicleSticker'])->name('kp.vehicle_sticker');
+Route::get('/staff/vehicle_sticker/print/{id}', [App\Http\Controllers\KP_Controller::class, 'printVehicleSticker'])->name('kp.vehicle_sticker.print');
 Route::post('/KP/vehicle_sticker/store', [App\Http\Controllers\KP_Controller::class, 'storeVehicleSticker'])->name('kp.vehicle_sticker.store');
 Route::get('/KP/create', [App\Http\Controllers\KP_Controller::class, 'create'])->name('kp.create');
 Route::post('/KP/store', [App\Http\Controllers\KP_Controller::class, 'store'])->name('kp.store');

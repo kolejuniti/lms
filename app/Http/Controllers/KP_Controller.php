@@ -1904,4 +1904,34 @@ class KP_Controller extends Controller
 
         return redirect()->back()->with('success', 'Vehicle registered successfully.');
     }
+
+    public function printVehicleSticker($id)
+    {
+        $kp = Auth::user();
+
+        // Ensure session variables are populated so the layout doesn't fail
+        if (!Session::get('User')) {
+            Session::put('User', $kp);
+        }
+
+        $vehicle = DB::table('tblvehicle_sticker')
+            ->where('id', $id)
+            ->where('ic', $kp->ic)
+            ->first();
+
+        if (!$vehicle) {
+            return abort(404, 'Vehicle sticker not found.');
+        }
+
+        // Resolve faculty ID to facultycode by joining tblfaculty
+        $facultyInfo = DB::table('tblfaculty')
+            ->where('id', $kp->faculty)
+            ->first();
+
+        $kp->facultycode = $facultyInfo ? $facultyInfo->facultycode : '-';
+
+        $student = $kp;
+
+        return view('kp.print_vehicle_sticker', compact('vehicle', 'student', 'kp'));
+    }
 }
