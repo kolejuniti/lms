@@ -442,7 +442,7 @@ $theme = DB::table('user_setting')->where('user_ic', Auth::user()->ic)->first();
 								</span>
 							</a>
 							<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-								<li><a href="{{ route('kp.vehicle_sticker') }}" class="{{ (route('kp.vehicle_sticker') == Request::url()) ? 'active' : ''}}">Vehicle Sticker Application</a></li>
+								<li><a href="{{ route('kp.vehicle_sticker') }}" class="{{ (route('kp.vehicle_sticker') == Request::url()) ? 'active' : ''}}">Vehicle Registration</a></li>
 							</ul>
 						</li>
 						<li>
