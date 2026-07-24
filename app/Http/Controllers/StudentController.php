@@ -2410,4 +2410,42 @@ class StudentController extends Controller
         return redirect()->back()->with('success', 'Vehicle registered successfully.');
     }
 
+    public function printVehicleSticker($id)
+    {
+        $student = Session::get('StudInfo');
+        if (!$student) {
+            $student = Auth::guard('student')->user();
+        }
+
+        if (!$student) {
+            return redirect()->route('login.student.custom')->withErrors(['message' => 'Please log in first.']);
+        }
+
+        $vehicle = DB::table('tblvehicle_sticker')
+            ->where('id', $id)
+            ->where('ic', $student->ic)
+            ->first();
+
+        if (!$vehicle) {
+            return abort(404, 'Vehicle sticker not found.');
+        }
+
+        // Fetch personal info for phone number
+        $personal = DB::table('tblstudent_personal')->where('student_ic', $student->ic)->first();
+        $student->no_tel = $personal ? $personal->no_tel : '';
+
+        // Fetch program and faculty info
+        $programId = isset($student->program) ? $student->program : (isset($student->progid) ? $student->progid : '');
+        $programInfo = DB::table('tblprogramme')
+            ->leftJoin('tblfaculty', 'tblprogramme.facultyid', '=', 'tblfaculty.id')
+            ->where('tblprogramme.id', $programId)
+            ->select('tblprogramme.progcode', 'tblfaculty.facultycode')
+            ->first();
+            
+        $student->progcode = $programInfo ? $programInfo->progcode : '';
+        $student->facultycode = $programInfo ? $programInfo->facultycode : '';
+
+        return view('student.print_vehicle_sticker', compact('vehicle', 'student'));
+    }
+
 }
