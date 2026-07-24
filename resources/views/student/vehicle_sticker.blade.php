@@ -195,7 +195,7 @@
                     </div>
                 @endif
 
-                @if($vehicles->count() < 2)
+                @if($vehicles->count() < 1)
                 <div class="premium-card">
                     <div class="premium-card-header">
                         <i class="mdi mdi-plus-circle"></i>
