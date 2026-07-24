@@ -266,11 +266,11 @@
                     </div>
 
                     <ol class="terms-list">
-                        <li>Saya faham bahawa permohonan ini hanya untuk staf dan pelajar yang KUPD yang aktif sahaja, dan hanya permohonan lengkap sahaja yang akan diproses.</li>
+                        <li>Saya faham bahawa permohonan ini hanya untuk staf dan pelajar KUPD yang aktif sahaja, dan hanya permohonan lengkap sahaja yang akan diproses.</li>
                         <li>Saya akan tampalkan dan pamerkan pelekat kenderaan pada tempat yang ditetapkan, iaitu:-
                             <ol type="a" style="margin-top: 3px;">
                                 <li>Bagi kenderaan jenis kereta, pelekat tersebut hendaklah ditampal dan dipamerkan di cermin depan, sebelah kiri atas.</li>
-                                <li>Bagi kenderaan jenis motorsikal, pelekat tersebut hendaklah ditampal dan dipamerkan di sebelah kiri motorsikal mengadap depan.</li>
+                                <li>Bagi kenderaan jenis motorsikal, pelekat tersebut hendaklah ditampal dan dipamerkan di sebelah kiri motorsikal menghadap depan.</li>
                             </ol>
                         </li>
                         <li>Saya akan menjaga pelekat kenderaan, tidak akan mengubah rupa dan bentuk pelekat kenderaan, dan tidak akan menanggalkannya selepas ditampal atas tanpa sebarang alasan kecuali ia rosak atau tamat tempoh sah.</li>
