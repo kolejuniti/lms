@@ -815,6 +815,9 @@ Route::get('/test-student-search', function () {
 
 Route::get('/finance_dashboard', [App\Http\Controllers\FinanceController::class, 'dashboard'])->name('finance.dashboard');
 Route::get('/finance', [App\Http\Controllers\FinanceController::class, 'index'])->name('finance');
+Route::get('/finance/vehicle-sticker-records', [App\Http\Controllers\FinanceController::class, 'vehicleStickerStaffIndex'])->name('finance.vehicle_sticker.staff.index');
+Route::match(['get', 'post'], '/finance/vehicle-sticker-records/search', [App\Http\Controllers\FinanceController::class, 'vehicleStickerStaffSearch'])->name('finance.vehicle_sticker.staff.search');
+Route::post('/finance/vehicle-sticker-records/update-sticker', [App\Http\Controllers\FinanceController::class, 'vehicleStickerStaffUpdate'])->name('finance.vehicle_sticker.staff.update');
 Route::post('/finance/claim/create', [App\Http\Controllers\FinanceController::class, 'createClaim']);
 Route::post('/finance/claim/update', [App\Http\Controllers\FinanceController::class, 'updateClaim']);
 Route::post('/finance/claim/delete', [App\Http\Controllers\FinanceController::class, 'deleteClaim']);

@@ -15651,7 +15651,6 @@ class FinanceController extends Controller
                 return response()->json(["message" => "Record not found"], 404);
             }
 
-            // Delete record
             DB::table('student_discount')->where('id', $id)->delete();
 
             DB::commit();
@@ -15660,5 +15659,72 @@ class FinanceController extends Controller
             DB::rollback();
             return response()->json(["message" => "Error deleting record"], 500);
         }
+    }
+
+    // =====================================================================
+    // Vehicle Sticker - Staff Records (Finance)
+    // =====================================================================
+
+    public function vehicleStickerStaffIndex()
+    {
+        return view('finance.vehicle_sticker.index');
+    }
+
+    public function vehicleStickerStaffSearch(Request $request)
+    {
+        $search = $request->input('search');
+
+        if (empty($search)) {
+            return redirect()->back()->with('error', 'Sila masukkan nama atau No. Staf pencarian.');
+        }
+
+        // Query staff only
+        $results = DB::table('users')
+            ->select(
+                'id',
+                'ic',
+                'name',
+                'no_staf as id_number',
+                'no_tel',
+                'email',
+                'status'
+            )
+            ->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('ic', 'like', "%{$search}%")
+                  ->orWhere('no_staf', 'like', "%{$search}%");
+            })
+            ->get();
+
+        if ($results->isEmpty()) {
+            return redirect()->back()->with('error', 'Tiada rekod staf dijumpai.')->withInput();
+        }
+
+        $ics = $results->pluck('ic')->toArray();
+        $applications = DB::table('tblvehicle_sticker')
+            ->whereIn('ic', $ics)
+            ->get();
+
+        $applicationsByIc = $applications->groupBy('ic');
+
+        return view('finance.vehicle_sticker.index', compact('results', 'applicationsByIc', 'search'));
+    }
+
+    public function vehicleStickerStaffUpdate(Request $request)
+    {
+        $request->validate([
+            'sticker_id'    => 'required|integer',
+            'sticker_number' => 'required|string|max:50',
+        ]);
+
+        DB::table('tblvehicle_sticker')
+            ->where('id', $request->sticker_id)
+            ->update([
+                'sticker_number' => trim($request->sticker_number),
+                'status'         => 'SAH',
+                'updated_at'     => now(),
+            ]);
+
+        return redirect()->back()->with('success', 'No. Pelekat telah berjaya dikemaskini.');
     }
 }

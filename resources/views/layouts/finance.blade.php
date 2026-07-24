@@ -518,6 +518,7 @@ li a {
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ route('kp.vehicle_sticker') }}" class="{{ (route('kp.vehicle_sticker') == Request::url()) ? 'active' : ''}}">Vehicle Registration</a></li>
+						<li><a href="{{ route('finance.vehicle_sticker.staff.index') }}" class="{{ (route('finance.vehicle_sticker.staff.index') == Request::url()) ? 'active' : ''}}">Vehicle Registration Records</a></li>
 					</ul>
 				</li>
 			  <li>
