@@ -144,7 +144,7 @@
             <tr>
                 <td class="logo-container">
                     <!-- Placeholder for logo. Add your logo path here -->
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 50px; height: 50px; border: 1px solid #ccc; display: inline-block;">
+                    <img src="https://learn.uniticms.edu.my/assets/images/logo/Kolej-UNITI.png" alt="Logo" style="width: 50px; height: 50px; border: 1px solid #ccc; display: inline-block;">
                 </td>
                 <td>
                     <div class="header-title">BORANG PERMOHONAN DAFTAR KENDERAAN PELAJAR & STAF</div>
