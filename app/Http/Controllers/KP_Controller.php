@@ -1891,7 +1891,7 @@ class KP_Controller extends Controller
 
         DB::table('tblvehicle_sticker')->insert([
             'ic' => $kp->ic,
-            'plate_number' => strtoupper($request->plate_number),
+            'plate_number' => strtoupper(str_replace(' ', '', $request->plate_number)),
             'type' => strtoupper($request->type),
             'color' => strtoupper($request->color),
             'brand' => strtoupper($request->brand),
