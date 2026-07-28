@@ -130,34 +130,36 @@
                                       $currentUserIc = auth()->user()->ic;
                                       $currentSessionId = Session::get('SessionIDS') ?? Session::get('SessionID');
                                       
-                                      $period = null;
-                                      if ($currentSessionId) {
-                                          $period = DB::table('tblassessment_period')
-                                              ->where('Start', '<=', $currentDate)
-                                              ->where('End', '>=', $currentDate)
-                                              ->get()
-                                              ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
-                                                  $userIcs = json_decode($p->user_ic, true) ?: [];
-                                                  $sessions = json_decode($p->session, true) ?: [];
-                                                  
-                                                  return in_array($currentUserIc, $userIcs) && 
-                                                         in_array($currentSessionId, $sessions);
-                                              })
-                                              ->first();
-                                      }
-                                      
-                                      // Determine if buttons should be visible
-                                      $showButtons = false;
-                                      if (!empty($period)) {
-                                          if (empty($period->subject) || $period->subject == 'ALL') {
-                                              $showButtons = true;
-                                          } else {
-                                              $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
+                                      $periods = collect();
+              if ($currentSessionId) {
+                  $periods = DB::table('tblassessment_period')
+                      ->where('Start', '<=', $currentDate)
+                      ->where('End', '>=', $currentDate)
+                      ->get()
+                      ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
+                          $userIcs = json_decode($p->user_ic, true) ?: [];
+                          $sessions = json_decode($p->session, true) ?: [];
+                          
+                          return in_array($currentUserIc, $userIcs) && 
+                                 in_array($currentSessionId, $sessions);
+                      });
+              }
+              
+              if ($periods->count() > 0) {
+                  $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
+                  $courseName = $course->course_name ?? '';
+                  $isLiCourse = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
 
-                                              $courseName = $course->course_name ?? '';
-                                              $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
-                                          }
-                                      }
+                  foreach ($periods as $period) {
+                      if (empty($period->subject) || $period->subject == 'ALL') {
+                          $showButtons = true;
+                          break;
+                      } elseif ($isLiCourse) {
+                          $showButtons = true;
+                          break;
+                      }
+                  }
+              }
                                     @endphp
                                     <td class="project-actions text-center" >
                                       <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/{{ request()->quiz }}/{{ $sts->userid }}/result" {{ $showButtons ? '' : 'hidden' }}>
@@ -199,33 +201,36 @@
                                       $currentUserIc = auth()->user()->ic;
                                       $currentSessionId = Session::get('SessionIDS') ?? Session::get('SessionID');
                                       
-                                      $period = null;
-                                      if ($currentSessionId) {
-                                          $period = DB::table('tblassessment_period')
-                                              ->where('Start', '<=', $currentDate)
-                                              ->where('End', '>=', $currentDate)
-                                              ->get()
-                                              ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
-                                                  $userIcs = json_decode($p->user_ic, true) ?: [];
-                                                  $sessions = json_decode($p->session, true) ?: [];
-                                                  
-                                                  return in_array($currentUserIc, $userIcs) && 
-                                                         in_array($currentSessionId, $sessions);
-                                              })
-                                              ->first();
-                                      }
-                                      
-                                      // Determine if buttons should be visible
-                                      $showButtons = false;
-                                      if (!empty($period)) {
-                                          if (empty($period->subject) || $period->subject == 'ALL') {
-                                              $showButtons = true;
-                                          } else {
-                                              $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
-                                              $courseName = $course->course_name ?? '';
-                                              $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
-                                          }
-                                      }
+                                      $periods = collect();
+              if ($currentSessionId) {
+                  $periods = DB::table('tblassessment_period')
+                      ->where('Start', '<=', $currentDate)
+                      ->where('End', '>=', $currentDate)
+                      ->get()
+                      ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
+                          $userIcs = json_decode($p->user_ic, true) ?: [];
+                          $sessions = json_decode($p->session, true) ?: [];
+                          
+                          return in_array($currentUserIc, $userIcs) && 
+                                 in_array($currentSessionId, $sessions);
+                      });
+              }
+              
+              if ($periods->count() > 0) {
+                  $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
+                  $courseName = $course->course_name ?? '';
+                  $isLiCourse = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
+
+                  foreach ($periods as $period) {
+                      if (empty($period->subject) || $period->subject == 'ALL') {
+                          $showButtons = true;
+                          break;
+                      } elseif ($isLiCourse) {
+                          $showButtons = true;
+                          break;
+                      }
+                  }
+              }
                                     @endphp
                                     <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal('{{ $qz->student_ic }}', '{{ $qz->name }}', '{{ $qz->total_mark }}', '{{ request()->quiz }}')" {{ $showButtons ? '' : 'hidden' }}>
                                         <i class="ti-marker-alt">

@@ -147,9 +147,9 @@
               $currentUserIc = auth()->user()->ic;
               $currentSessionId = Session::get('SessionIDS') ?? Session::get('SessionID');
               
-              $period = null;
+              $periods = collect();
               if ($currentSessionId) {
-                  $period = DB::table('tblassessment_period')
+                  $periods = DB::table('tblassessment_period')
                       ->where('Start', '<=', $currentDate)
                       ->where('End', '>=', $currentDate)
                       ->get()
@@ -159,20 +159,22 @@
                           
                           return in_array($currentUserIc, $userIcs) && 
                                  in_array($currentSessionId, $sessions);
-                      })
-                      ->first();
+                      });
               }
               
-              // Determine if box-footer should be visible
-              $showFooter = false;
-              if (!empty($period)) {
-                  if (empty($period->subject) || $period->subject == 'ALL') {
-                      $showFooter = true;
-                  } else {
-                      $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
+              if ($periods->count() > 0) {
+                  $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
+                  $courseName = $course->course_name ?? '';
+                  $isLiCourse = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
 
-                      $courseName = $course->course_name ?? '';
-                      $showFooter = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
+                  foreach ($periods as $period) {
+                      if (empty($period->subject) || $period->subject == 'ALL') {
+                          $showFooter = true;
+                          break;
+                      } elseif ($isLiCourse) {
+                          $showFooter = true;
+                          break;
+                      }
                   }
               }
               @endphp
