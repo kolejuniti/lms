@@ -166,7 +166,7 @@
               // Determine if box-footer should be visible
               $showFooter = false;
               if (!empty($period)) {
-                  if ($period->subject == 'ALL') {
+                  if (empty($period->subject) || $period->subject == 'ALL') {
                       $showFooter = true;
                   } else {
                       $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();

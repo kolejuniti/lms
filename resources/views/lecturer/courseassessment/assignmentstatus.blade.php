@@ -176,7 +176,7 @@
                                       // Determine if buttons should be visible
                                       $showButtons = false;
                                       if (!empty($period)) {
-                                          if ($period->subject == 'ALL') {
+                                          if (empty($period->subject) || $period->subject == 'ALL') {
                                               $showButtons = true;
                                           } else {
                                               $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
@@ -237,7 +237,7 @@
                                     // Determine if buttons should be visible
                                     $showButtons = false;
                                     if (!empty($period)) {
-                                        if ($period->subject == 'ALL') {
+                                        if (empty($period->subject) || $period->subject == 'ALL') {
                                             $showButtons = true;
                                         } else {
                                             $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
