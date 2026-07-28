@@ -128,7 +128,7 @@
                                       // Get active assessment period for current user and session
                                       $currentDate = now()->format('Y-m-d');
                                       $currentUserIc = auth()->user()->ic;
-                                      $currentSessionId = Session::get('SessionID');
+                                      $currentSessionId = Session::get('SessionIDS') ?? Session::get('SessionID');
                                       
                                       $period = null;
                                       if ($currentSessionId) {
@@ -197,7 +197,7 @@
                                       // Get active assessment period for current user and session
                                       $currentDate = now()->format('Y-m-d');
                                       $currentUserIc = auth()->user()->ic;
-                                      $currentSessionId = Session::get('SessionID');
+                                      $currentSessionId = Session::get('SessionIDS') ?? Session::get('SessionID');
                                       
                                       $period = null;
                                       if ($currentSessionId) {
