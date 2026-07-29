@@ -15727,4 +15727,51 @@ class FinanceController extends Controller
 
         return redirect()->back()->with('success', 'No. Pelekat telah berjaya dikemaskini.');
     }
+
+    // =====================================================================
+    // Vehicle Registration - Non System User (Finance)
+    // =====================================================================
+
+    public function nonStaffVehicleRegister()
+    {
+        // Fetch recent non-user vehicle registrations (user_type = NON_USER), most recent first
+        $records = DB::table('tblvehicle_sticker')
+            ->where('user_type', 'NON_USER')
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get();
+
+        return view('finance.non_staff_vehicle_register', compact('records'));
+    }
+
+    public function storeNonStaffVehicleRegister(Request $request)
+    {
+        $request->validate([
+            'staff_name'     => 'required|string|max:255',
+            'staff_ic'       => 'required|string|max:20',
+            'plate_number'   => 'required|string|max:20',
+            'type'           => 'required|string',
+            'color'          => 'required|string|max:50',
+            'brand'          => 'required|string|max:50',
+            'model'          => 'required|string|max:50',
+            'sticker_number' => 'required|string|max:50',
+        ]);
+
+        DB::table('tblvehicle_sticker')->insert([
+            'ic'             => $request->staff_ic,
+            'name'           => strtoupper(trim($request->staff_name)),
+            'plate_number'   => strtoupper(str_replace(' ', '', $request->plate_number)),
+            'type'           => strtoupper($request->type),
+            'color'          => strtoupper($request->color),
+            'brand'          => strtoupper($request->brand),
+            'model'          => strtoupper($request->model),
+            'sticker_number' => trim($request->sticker_number),
+            'status'         => 'SAH',
+            'user_type'      => 'NON_USER',
+            'created_at'     => now(),
+            'updated_at'     => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Vehicle registered successfully with status SAH.');
+    }
 }
