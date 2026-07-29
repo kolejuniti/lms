@@ -281,7 +281,17 @@
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
 					</ul>
-				  </li>
+				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="server"></i><span>Services</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('kp.vehicle_sticker') }}" class="{{ (route('kp.vehicle_sticker') == Request::url()) ? 'active' : ''}}">Vehicle Registration</a></li>
+					</ul>
+				</li>
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 				</li>
