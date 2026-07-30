@@ -312,7 +312,7 @@
                                         </td>
                                         <td>
                                             <div class="d-flex gap-2 flex-wrap">
-                                                <a href="{{ url('student/vehicle_sticker/print', $vehicle->id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <a href="{{ url('student/vehicle_register/print', $vehicle->id) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                                     <i class="fa fa-print"></i> Print
                                                 </a>
                                                 @if(strtoupper($vehicle->status) === 'BARU')

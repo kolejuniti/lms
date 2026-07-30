@@ -658,10 +658,10 @@ Route::get('/student/setting', [App\Http\Controllers\StudentController::class, '
 Route::post('/student/update', [App\Http\Controllers\StudentController::class, 'updateSetting']);
 Route::post('/student/course/filter', [App\Http\Controllers\StudentController::class, 'getCourseList']);
 Route::get('/student/printStudentSlip/{student}', [App\Http\Controllers\StudentController::class, 'printStudentSlip'])->name('student.printSlip');
-Route::get('/student/vehicle_sticker', [App\Http\Controllers\StudentController::class, 'vehicleSticker'])->name('student.vehicle_sticker');
-Route::get('/student/vehicle_sticker/print/{id}', [App\Http\Controllers\StudentController::class, 'printVehicleSticker'])->name('student.vehicle_sticker.print');
-Route::post('/student/vehicle_sticker/store', [App\Http\Controllers\StudentController::class, 'storeVehicleSticker'])->name('student.vehicle_sticker.store');
-Route::delete('/student/vehicle_sticker/{id}', [App\Http\Controllers\StudentController::class, 'deleteVehicleSticker'])->name('student.vehicle_sticker.delete');
+Route::get('/student/vehicle_register', [App\Http\Controllers\StudentController::class, 'vehicleSticker'])->name('student.vehicle_sticker');
+Route::get('/student/vehicle_register/print/{id}', [App\Http\Controllers\StudentController::class, 'printVehicleSticker'])->name('student.vehicle_sticker.print');
+Route::post('/student/vehicle_register/store', [App\Http\Controllers\StudentController::class, 'storeVehicleSticker'])->name('student.vehicle_sticker.store');
+Route::delete('/student/vehicle_register/{id}', [App\Http\Controllers\StudentController::class, 'deleteVehicleSticker'])->name('student.vehicle_sticker.delete');
 Route::get('/student/{id}', [App\Http\Controllers\StudentController::class, 'courseSummary'])->name('student.summary');
 Route::get('/student/content/{id}', [App\Http\Controllers\StudentController::class, 'courseContent'])->name('student.content');
 Route::get('/student/content/material/{dir}', [App\Http\Controllers\StudentController::class, 'courseDirectory'])->name('student.directory');
