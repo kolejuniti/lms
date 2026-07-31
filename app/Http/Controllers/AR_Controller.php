@@ -2459,6 +2459,7 @@ class AR_Controller extends Controller
                                 'mod_staffID' => Auth::user()->ic,
                                 'mod_date' => date('Y-m-d')
                             ]);
+                            }
                         }
                     }
 
