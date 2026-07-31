@@ -1629,11 +1629,18 @@ class KP_Controller extends Controller
                 ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
                 ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
                 ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
-                ->where('users.usrtype', 'LCT')
-                ->where(function ($query) use ($programs) {
-                    foreach ($programs as $program) {
-                        $query->orWhereJsonContains('replacement_class.selected_programs', (string)$program);
-                    }
+                ->where(function ($q) use ($programs) {
+                    // LCT applications filtered by KP's programs
+                    $q->where(function ($inner) use ($programs) {
+                        $inner->where('users.usrtype', 'LCT')
+                            ->where(function ($query) use ($programs) {
+                                foreach ($programs as $program) {
+                                    $query->orWhereJsonContains('replacement_class.selected_programs', (string)$program);
+                                }
+                            });
+                    })
+                    // DN applications are visible to KP without program filtering
+                    ->orWhere('users.usrtype', 'DN');
                 });
         } elseif ($user->usrtype == 'AO') {
 
@@ -1645,7 +1652,7 @@ class KP_Controller extends Controller
                 ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
                 ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
                 ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
-                ->where('users.usrtype', 'PL');
+                ->whereIn('users.usrtype', ['PL', 'DN']);
         } elseif ($user->usrtype == 'DN') {
 
             $query = DB::table('replacement_class')
@@ -1717,14 +1724,27 @@ class KP_Controller extends Controller
 
             if ($user->usrtype == 'PL') {
 
-                // Verify KP has permission to update this application
+                // Verify KP has permission to update this application (LCT via program, or DN directly)
                 $application = DB::table('replacement_class')
                     ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                    ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
                     ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-                    ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
-                    ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
                     ->where('replacement_class.id', $request->application_id)
-                    ->where('user_program.user_ic', $user->ic)
+                    ->where(function ($q) use ($user) {
+                        $q->where(function ($inner) use ($user) {
+                            // LCT application: must belong to KP's program
+                            $inner->where('users.usrtype', 'LCT')
+                                ->whereExists(function ($sub) use ($user) {
+                                    $sub->select(DB::raw(1))
+                                        ->from('subjek_structure')
+                                        ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
+                                        ->whereColumn('subjek_structure.courseID', 'subjek.sub_id')
+                                        ->where('user_program.user_ic', $user->ic);
+                                });
+                        })
+                        // DN application: KP can verify without program restriction
+                        ->orWhere('users.usrtype', 'DN');
+                    })
                     ->first();
             } elseif ($user->usrtype == 'AO') {
 
@@ -1734,7 +1754,7 @@ class KP_Controller extends Controller
                     ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
                     ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
                     ->where('replacement_class.id', $request->application_id)
-                    ->where('users.usrtype', 'PL')
+                    ->whereIn('users.usrtype', ['PL', 'DN'])
                     ->first();
             } elseif ($user->usrtype == 'DN') {
 
@@ -1798,13 +1818,25 @@ class KP_Controller extends Controller
 
         // Verify KP has permission to update this application
         if ($user->usrtype == 'PL') {
+            // Verify KP has permission to update this application (LCT via program, or DN directly)
             $application = DB::table('replacement_class')
                 ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
                 ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
-                ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
                 ->where('replacement_class.id', $request->application_id)
-                ->where('user_program.user_ic', $user->ic)
+                ->where(function ($q) use ($user) {
+                    $q->where(function ($inner) use ($user) {
+                        $inner->where('users.usrtype', 'LCT')
+                            ->whereExists(function ($sub) use ($user) {
+                                $sub->select(DB::raw(1))
+                                    ->from('subjek_structure')
+                                    ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
+                                    ->whereColumn('subjek_structure.courseID', 'subjek.sub_id')
+                                    ->where('user_program.user_ic', $user->ic);
+                            });
+                    })
+                    ->orWhere('users.usrtype', 'DN');
+                })
                 ->first();
         } elseif ($user->usrtype == 'AO') {
             $application = DB::table('replacement_class')
@@ -1813,7 +1845,7 @@ class KP_Controller extends Controller
                 ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
                 ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
                 ->where('replacement_class.id', $request->application_id)
-                ->where('users.usrtype', 'PL')
+                ->whereIn('users.usrtype', ['PL', 'DN'])
                 ->first();
         } elseif ($user->usrtype == 'DN') {
             $application = DB::table('replacement_class')
