@@ -2382,54 +2382,59 @@ class PendaftarController extends Controller
                         ->select('tblincentive.*')
                         ->get();
 
-                    foreach ($incentive as $key => $icv) {
+                    $intakeYear = DB::table('sessions')->where('id', $student->intake)->value('year');
 
-                        if (($student->intake >= $icv->session_from && $student->intake <= $icv->session_to) || ($student->intake >= $icv->session_from && $icv->session_to == null)) {
+                    if ($intakeYear !== null && $intakeYear < 2025) {
 
-                            $ref_no = DB::table('tblref_no')->where('id', 8)->first();
+                        foreach ($incentive as $key => $icv) {
 
-                            DB::table('tblref_no')->where('id', $ref_no->id)->update([
-                                'ref_no' => $ref_no->ref_no + 1
-                            ]);
+                            if (($student->intake >= $icv->session_from && $student->intake <= $icv->session_to) || ($student->intake >= $icv->session_from && $icv->session_to == null)) {
 
-                            $id = DB::table('tblpayment')->insertGetId([
-                                'student_ic' => $student->ic,
-                                'date' => date('Y-m-d'),
-                                'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
-                                'session_id' => $student->session,
-                                'semester_id' => $student->semester,
-                                'program_id' => $student->program,
-                                'amount' => $icv->amount,
-                                'process_status_id' => 2,
-                                'process_type_id' => 9,
-                                'add_staffID' => Auth::user()->ic,
-                                'add_date' => date('Y-m-d'),
-                                'mod_staffID' => Auth::user()->ic,
-                                'mod_date' => date('Y-m-d')
-                            ]);
+                                $ref_no = DB::table('tblref_no')->where('id', 8)->first();
 
-                            DB::table('tblpaymentmethod')->insert([
-                                'payment_id' => $id,
-                                'claim_method_id' => 10,
-                                'bank_id' => 11,
-                                'no_document' => 'INS-' . $id,
-                                'amount' => $icv->amount,
-                                'add_staffID' => Auth::user()->ic,
-                                'add_date' => date('Y-m-d'),
-                                'mod_staffID' => Auth::user()->ic,
-                                'mod_date' => date('Y-m-d')
-                            ]);
+                                DB::table('tblref_no')->where('id', $ref_no->id)->update([
+                                    'ref_no' => $ref_no->ref_no + 1
+                                ]);
 
-                            DB::table('tblpaymentdtl')->insert([
-                                'payment_id' => $id,
-                                'claimDtl_id' => $icv->id,
-                                'claim_type_id' => 9,
-                                'amount' => $icv->amount,
-                                'add_staffID' => Auth::user()->ic,
-                                'add_date' => date('Y-m-d'),
-                                'mod_staffID' => Auth::user()->ic,
-                                'mod_date' => date('Y-m-d')
-                            ]);
+                                $id = DB::table('tblpayment')->insertGetId([
+                                    'student_ic' => $student->ic,
+                                    'date' => date('Y-m-d'),
+                                    'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
+                                    'session_id' => $student->session,
+                                    'semester_id' => $student->semester,
+                                    'program_id' => $student->program,
+                                    'amount' => $icv->amount,
+                                    'process_status_id' => 2,
+                                    'process_type_id' => 9,
+                                    'add_staffID' => Auth::user()->ic,
+                                    'add_date' => date('Y-m-d'),
+                                    'mod_staffID' => Auth::user()->ic,
+                                    'mod_date' => date('Y-m-d')
+                                ]);
+
+                                DB::table('tblpaymentmethod')->insert([
+                                    'payment_id' => $id,
+                                    'claim_method_id' => 10,
+                                    'bank_id' => 11,
+                                    'no_document' => 'INS-' . $id,
+                                    'amount' => $icv->amount,
+                                    'add_staffID' => Auth::user()->ic,
+                                    'add_date' => date('Y-m-d'),
+                                    'mod_staffID' => Auth::user()->ic,
+                                    'mod_date' => date('Y-m-d')
+                                ]);
+
+                                DB::table('tblpaymentdtl')->insert([
+                                    'payment_id' => $id,
+                                    'claimDtl_id' => $icv->id,
+                                    'claim_type_id' => 9,
+                                    'amount' => $icv->amount,
+                                    'add_staffID' => Auth::user()->ic,
+                                    'add_date' => date('Y-m-d'),
+                                    'mod_staffID' => Auth::user()->ic,
+                                    'mod_date' => date('Y-m-d')
+                                ]);
+                            }
                         }
                     }
 

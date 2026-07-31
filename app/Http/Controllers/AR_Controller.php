@@ -2406,11 +2406,14 @@ class AR_Controller extends Controller
                         ->select('tblincentive.*')
                         ->get();
 
-                    foreach ($incentive as $key => $icv) {
+                    $intakeYear = DB::table('sessions')->where('id', $student->intake)->value('year');
 
-                        if (($student->intake >= $icv->session_from && $student->intake <= $icv->session_to) || ($student->intake >= $icv->session_from && $icv->session_to == null)) {
+                    if ($intakeYear !== null && $intakeYear < 2025) {
+                        foreach ($incentive as $key => $icv) {
 
-                            $ref_no = DB::table('tblref_no')->where('id', 8)->first();
+                            if (($student->intake >= $icv->session_from && $student->intake <= $icv->session_to) || ($student->intake >= $icv->session_from && $icv->session_to == null)) {
+
+                                $ref_no = DB::table('tblref_no')->where('id', 8)->first();
 
                             DB::table('tblref_no')->where('id', $ref_no->id)->update([
                                 'ref_no' => $ref_no->ref_no + 1

@@ -1313,76 +1313,81 @@ class FinanceController extends Controller
                         ->select('tblincentive.*')
                         ->get();
 
-                    foreach ($incentive as $icv) {
-                        // Check if student is eligible based on intake session
-                        $isEligibleSession = ($student->intake >= $icv->session_from) &&
-                            ($icv->session_to === null || $student->intake <= $icv->session_to);
+                    $intakeYear = DB::table('sessions')->where('id', $student->intake)->value('year');
 
-                        // Check semester eligibility
-                        $isSemesterEligible = !$icv->start_at || $icv->start_at >= $student->semester;
+                    if ($intakeYear !== null && $intakeYear < 2025) {
 
-                        if ($isEligibleSession && $isSemesterEligible) {
-                            $ref_no = DB::table('tblref_no')->where('id', 8)->first();
+                        foreach ($incentive as $icv) {
+                            // Check if student is eligible based on intake session
+                            $isEligibleSession = ($student->intake >= $icv->session_from) &&
+                                ($icv->session_to === null || $student->intake <= $icv->session_to);
 
-                            // Begin transaction to ensure data consistency
-                            DB::beginTransaction();
+                            // Check semester eligibility
+                            $isSemesterEligible = !$icv->start_at || $icv->start_at >= $student->semester;
 
-                            try {
-                                // Update reference number
-                                DB::table('tblref_no')
-                                    ->where('id', $ref_no->id)
-                                    ->update(['ref_no' => $ref_no->ref_no + 1]);
+                            if ($isEligibleSession && $isSemesterEligible) {
+                                $ref_no = DB::table('tblref_no')->where('id', 8)->first();
 
-                                // Common data for inserts
-                                $currentDate = date('Y-m-d');
-                                $staffId = Auth::user()->ic;
+                                // Begin transaction to ensure data consistency
+                                DB::beginTransaction();
 
-                                // Insert payment record
-                                $id = DB::table('tblpayment')->insertGetId([
-                                    'student_ic' => $student->ic,
-                                    'date' => $currentDate,
-                                    'ref_no' => $ref_no->code . ($ref_no->ref_no + 1),
-                                    'session_id' => $student->session,
-                                    'semester_id' => $student->semester,
-                                    'program_id' => $student->program,
-                                    'amount' => $icv->amount,
-                                    'process_status_id' => 2,
-                                    'process_type_id' => 9,
-                                    'add_staffID' => $staffId,
-                                    'add_date' => $currentDate,
-                                    'mod_staffID' => $staffId,
-                                    'mod_date' => $currentDate
-                                ]);
+                                try {
+                                    // Update reference number
+                                    DB::table('tblref_no')
+                                        ->where('id', $ref_no->id)
+                                        ->update(['ref_no' => $ref_no->ref_no + 1]);
 
-                                // Insert payment method
-                                DB::table('tblpaymentmethod')->insert([
-                                    'payment_id' => $id,
-                                    'claim_method_id' => 10,
-                                    'bank_id' => 11,
-                                    'no_document' => 'INS-' . $id,
-                                    'amount' => $icv->amount,
-                                    'add_staffID' => $staffId,
-                                    'add_date' => $currentDate,
-                                    'mod_staffID' => $staffId,
-                                    'mod_date' => $currentDate
-                                ]);
+                                    // Common data for inserts
+                                    $currentDate = date('Y-m-d');
+                                    $staffId = Auth::user()->ic;
 
-                                // Insert payment detail
-                                DB::table('tblpaymentdtl')->insert([
-                                    'payment_id' => $id,
-                                    'claimDtl_id' => $icv->id,
-                                    'claim_type_id' => 9,
-                                    'amount' => $icv->amount,
-                                    'add_staffID' => $staffId,
-                                    'add_date' => $currentDate,
-                                    'mod_staffID' => $staffId,
-                                    'mod_date' => $currentDate
-                                ]);
+                                    // Insert payment record
+                                    $id = DB::table('tblpayment')->insertGetId([
+                                        'student_ic' => $student->ic,
+                                        'date' => $currentDate,
+                                        'ref_no' => $ref_no->code . ($ref_no->ref_no + 1),
+                                        'session_id' => $student->session,
+                                        'semester_id' => $student->semester,
+                                        'program_id' => $student->program,
+                                        'amount' => $icv->amount,
+                                        'process_status_id' => 2,
+                                        'process_type_id' => 9,
+                                        'add_staffID' => $staffId,
+                                        'add_date' => $currentDate,
+                                        'mod_staffID' => $staffId,
+                                        'mod_date' => $currentDate
+                                    ]);
 
-                                DB::commit();
-                            } catch (\Exception $e) {
-                                DB::rollBack();
-                                throw $e;
+                                    // Insert payment method
+                                    DB::table('tblpaymentmethod')->insert([
+                                        'payment_id' => $id,
+                                        'claim_method_id' => 10,
+                                        'bank_id' => 11,
+                                        'no_document' => 'INS-' . $id,
+                                        'amount' => $icv->amount,
+                                        'add_staffID' => $staffId,
+                                        'add_date' => $currentDate,
+                                        'mod_staffID' => $staffId,
+                                        'mod_date' => $currentDate
+                                    ]);
+
+                                    // Insert payment detail
+                                    DB::table('tblpaymentdtl')->insert([
+                                        'payment_id' => $id,
+                                        'claimDtl_id' => $icv->id,
+                                        'claim_type_id' => 9,
+                                        'amount' => $icv->amount,
+                                        'add_staffID' => $staffId,
+                                        'add_date' => $currentDate,
+                                        'mod_staffID' => $staffId,
+                                        'mod_date' => $currentDate
+                                    ]);
+
+                                    DB::commit();
+                                } catch (\Exception $e) {
+                                    DB::rollBack();
+                                    throw $e;
+                                }
                             }
                         }
                     }
