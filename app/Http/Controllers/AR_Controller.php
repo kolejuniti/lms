@@ -4925,7 +4925,10 @@ class AR_Controller extends Controller
                 ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
                 ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                 ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
-                ->where('tblstudent_personal.yayasan', '=', 1)
+                ->where(function ($query) {
+                    $query->where('tblstudent_personal.yayasan', '=', 1)
+                          ->orWhere('tblstudent_personal.case', '=', 1);
+                })
                 ->whereBetween('students.date_add', [$request->from, $request->to])
                 ->when($request->session != '', function ($query) use ($request) {
                     return $query->where('students.intake', $request->session);
