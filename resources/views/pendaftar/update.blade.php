@@ -346,6 +346,12 @@
                         </div>
                         <div class="col-md-3 mt-4">
                           <div class="form-group">
+                              <input type="checkbox" id="case" class="filled-in" name="case" value="1" {{ ($student->case != null) ? 'checked'  : '' }}>
+                              <label for="case">PINDAH KOLEJ / LAIN-LAIN</label>
+                          </div>
+                        </div>
+                        <div class="col-md-3 mt-4">
+                          <div class="form-group">
                               <input type="checkbox" id="oku" class="filled-in" name="oku" value="1" {{ ($student->oku != null) ? 'checked'  : '' }}>
                               <label for="oku">OKU</label>
                           </div>
