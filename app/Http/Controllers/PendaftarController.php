@@ -2383,8 +2383,10 @@ class PendaftarController extends Controller
                         ->get();
 
                     $intakeYear = DB::table('sessions')->where('id', $student->intake)->value('year');
+                    
+                    $allowIncentive = ($intakeYear !== null && ($intakeYear > 2025 || ($intakeYear == 2025 && in_array($student->intake, [105, 118]))));
 
-                    if ($intakeYear !== null && $intakeYear < 2025) {
+                    if ($allowIncentive) {
 
                         foreach ($incentive as $key => $icv) {
 
