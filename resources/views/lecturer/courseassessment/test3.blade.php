@@ -175,7 +175,7 @@
 
 <script type="text/javascript">
 $(document).ready( function () {
-    $('#myTable').DataTable();
+    $('#myTable').DataTable({ destroy: true });
 } );
 
     $(document).on('click', '#newFolder', function() {

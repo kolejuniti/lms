@@ -142,6 +142,7 @@
                 </div>
               </div>
               @php
+              $showFooter = false;
               // Get active assessment period for current user and session
               $currentDate = now()->format('Y-m-d');
               $currentUserIc = auth()->user()->ic;
@@ -199,7 +200,7 @@
     var selected_extra = "{{ request()->extra }}";
 
     $(document).ready( function () {
-        $('#myTable').DataTable({
+        $('#myTable').DataTable({ destroy: true,
           dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
           
           buttons: [
@@ -233,7 +234,7 @@
               {
               $('#myTable').DataTable().destroy();
               $('#myTable').html(data.content);
-              $('#myTable').DataTable({
+              $('#myTable').DataTable({ destroy: true,
                 dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                 
                 buttons: [

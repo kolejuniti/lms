@@ -2025,7 +2025,7 @@
 
         //$('#chapter').removeAttr('hidden');
         $('#status').html(data);
-        $('#myTable').DataTable({
+        $('#myTable').DataTable({ destroy: true,
           dom: 'Bfrtip',
           buttons: [{
             extend: 'excelHtml5',

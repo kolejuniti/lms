@@ -152,7 +152,8 @@
                                         {{ empty($sts) ? '-' : $sts->final_mark }} / {{ $qz->total_mark }}
                                   </td>
                                                                       @php
-                                      // Get active assessment period for current user and session
+                                      $showFooter = false;
+              // Get active assessment period for current user and session
                                       $currentDate = now()->format('Y-m-d');
                                       $currentUserIc = auth()->user()->ic;
                                       $currentSessionId = Session::get('SessionIDS') ?? Session::get('SessionID');
@@ -215,7 +216,8 @@
 
                                   </td>
                                   @php
-                                    // Get active assessment period for current user and session
+                                    $showFooter = false;
+              // Get active assessment period for current user and session
                                     $currentDate = now()->format('Y-m-d');
                                     $currentUserIc = auth()->user()->ic;
                                     $currentSessionId = Session::get('SessionIDS') ?? Session::get('SessionID');
@@ -293,7 +295,7 @@
     var selected_assign = "{{ request()->assign }}";
 
     $(document).ready( function () {
-        $('#myTable').DataTable();
+        $('#myTable').DataTable({ destroy: true });
 
         
     } );
@@ -322,7 +324,7 @@
               {
               $('#myTable').DataTable().destroy();
               $('#myTable').html(data.content);
-              $('#myTable').DataTable({
+              $('#myTable').DataTable({ destroy: true,
                 dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                 
                 buttons: [

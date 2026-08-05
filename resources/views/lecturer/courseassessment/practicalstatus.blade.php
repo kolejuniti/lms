@@ -137,7 +137,8 @@
                                         {{ empty($sts) ? '-' : $sts->final_mark }} / {{ $qz->total_mark }}
                                   </td>
                                                                       @php
-                                      // Get active assessment period for current user and session
+                                      $showFooter = false;
+              // Get active assessment period for current user and session
                                       $currentDate = now()->format('Y-m-d');
                                       $currentUserIc = auth()->user()->ic;
                                       $currentSessionId = Session::get('SessionIDS') ?? Session::get('SessionID');
@@ -232,7 +233,7 @@
     var selected_practical = "{{ request()->practical }}";
 
     $(document).ready( function () {
-        $('#myTable').DataTable();
+        $('#myTable').DataTable({ destroy: true });
 
         
     } );
@@ -262,7 +263,7 @@
       
                 //$('#chapter').removeAttr('hidden');
                     $('#status').html(data);
-                    $('#myTable').DataTable();
+                    $('#myTable').DataTable({ destroy: true });
                     //$('#group').selectpicker('refresh');
             }
         });
