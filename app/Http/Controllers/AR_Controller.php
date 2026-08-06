@@ -5477,7 +5477,7 @@ class AR_Controller extends Controller
             ->where('tblstudent_warning.id', $request->id)
             ->orderBy('subjek.course_name')
             ->groupBy('tblstudent_warning.id')
-            ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'subjek.course_credit', 'subjek.id AS subID', 'sessions.SessionName')
+            ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'subjek.course_credit', 'subjek.id AS subID', 'sessions.SessionName', 'student_subjek.semesterid AS semester')
             ->first();
 
         // Define a function to create the base query
