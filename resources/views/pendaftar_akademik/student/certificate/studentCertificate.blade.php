@@ -592,6 +592,15 @@
   }
 
   function displayCertificateHistory(certificates) {
+    function formatDate(value) {
+      var d = new Date(value);
+      if (isNaN(d)) return '-';
+      var day = ('0' + d.getDate()).slice(-2);
+      var month = ('0' + (d.getMonth() + 1)).slice(-2);
+      var year = d.getFullYear();
+      return day + '-' + month + '-' + year;
+    }
+
     var tbody = $('#certificate-history-body');
     tbody.empty();
 
@@ -602,8 +611,8 @@
     if (certificates.length > 0) {
       $.each(certificates, function(index, cert) {
         var statusBadge = getStatusBadge(cert.status);
-        var dateGenerated = new Date(cert.date).toLocaleDateString();
-        var dateClaimed = cert.date_claimed ? new Date(cert.date_claimed).toLocaleDateString() : '-';
+        var dateGenerated = formatDate(cert.date);
+        var dateClaimed = cert.date_claimed ? formatDate(cert.date_claimed) : '-';
         var actionButtons = getActionButtons(cert);
 
         // Check certificate statuses
