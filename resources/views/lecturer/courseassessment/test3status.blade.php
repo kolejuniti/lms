@@ -125,7 +125,7 @@
                                         {{ empty($sts) ? '-' : $sts->final_mark }} / {{ $qz->total_mark }}
                                   </td>
                                                                       @php
-                                      $showFooter = false;
+                                      $showFooter = false; $showButtons = false;
               // Get active assessment period for current user and session
                                       $currentDate = now()->format('Y-m-d');
                                       $currentUserIc = auth()->user()->ic;
@@ -197,7 +197,7 @@
                                   <td class="project-actions text-center">
                                     @if(date('Y-m-d H:i:s') > $qz->date_to)
                                     @php
-                                      $showFooter = false;
+                                      $showFooter = false; $showButtons = false;
               // Get active assessment period for current user and session
                                       $currentDate = now()->format('Y-m-d');
                                       $currentUserIc = auth()->user()->ic;
@@ -496,3 +496,4 @@
 
 </script>
 @stop
+
