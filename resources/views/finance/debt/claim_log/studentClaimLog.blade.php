@@ -150,7 +150,10 @@
                                         <p>TUNGGAKAN PEMBIAYAAN KHAS (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['pk_balance']) ? number_format($data['pk_balance'], 2) : 0.00 }}</p>
                                     </div>
                                     <div class="form-group">
-                                        <p>TUNGGAKAN KESULURUHAN (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_all']) ? number_format($data['total_all'], 2) : 0.00 }}</p>
+                                        <p>TUNGGAKAN DENDA / SAMAN (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['fine']) ? number_format($data['fine'], 2) : 0.00 }}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <p>TUNGGAKAN KESELURUHAN (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_all']) ? number_format($data['total_all'], 2) : 0.00 }}</p>
                                     </div>
                                     <div class="form-group">
                                         <div class="row">

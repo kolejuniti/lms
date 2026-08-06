@@ -10475,6 +10475,45 @@ class FinanceController extends Controller
 
                 $data['pk_balance'][$key] = 0.00;
             }
+
+            // FINE calculation
+            $finePaymentQuery = DB::table('tblpaymentdtl')
+                ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+                ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                ->where([
+                    ['tblpayment.student_ic', $std->ic],
+                    ['tblpayment.process_status_id', 2],
+                    ['tblstudentclaim.groupid', 4],
+                    ['tblpaymentdtl.amount', '!=', 0]
+                ])
+                ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
+                ->select('tblpaymentdtl.amount', 'tblpayment.process_type_id');
+
+            $fineClaims = DB::table('tblclaimdtl')
+                ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+                ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+                ->where([
+                    ['tblclaim.student_ic', $std->ic],
+                    ['tblclaim.process_status_id', 2],
+                    ['tblstudentclaim.groupid', 4],
+                    ['tblclaimdtl.amount', '!=', 0]
+                ])
+                ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
+                ->select('tblclaimdtl.amount', 'tblclaim.process_type_id')
+                ->unionALL($finePaymentQuery)
+                ->get();
+
+            $fineBalance = 0;
+            foreach ($fineClaims as $req) {
+                if (array_intersect([2, 3, 4, 5, 11], (array) $req->process_type_id)) {
+                    $fineBalance += $req->amount;
+                } elseif (array_intersect([1, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], (array) $req->process_type_id)) {
+                    $fineBalance -= $req->amount;
+                }
+            }
+            $data['fine'][$key] = $fineBalance;
+
+            $data['total_balance'][$key] = $data['current_balance'][$key] + $data['pk_balance'][$key] + $data['fine'][$key];
         }
 
 
@@ -10676,7 +10715,44 @@ class FinanceController extends Controller
             $data['pk_balance'] = 0.00;
         }
 
-        $data['total_all'] = $data['current_balance'] + $data['pk_balance'];
+        // FINE calculation
+        $finePaymentQuery = DB::table('tblpaymentdtl')
+            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->where([
+                ['tblpayment.student_ic', request()->ic],
+                ['tblpayment.process_status_id', 2],
+                ['tblstudentclaim.groupid', 4],
+                ['tblpaymentdtl.amount', '!=', 0]
+            ])
+            ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
+            ->select('tblpaymentdtl.amount', 'tblpayment.process_type_id');
+
+        $fineClaims = DB::table('tblclaimdtl')
+            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+            ->where([
+                ['tblclaim.student_ic', request()->ic],
+                ['tblclaim.process_status_id', 2],
+                ['tblstudentclaim.groupid', 4],
+                ['tblclaimdtl.amount', '!=', 0]
+            ])
+            ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
+            ->select('tblclaimdtl.amount', 'tblclaim.process_type_id')
+            ->unionALL($finePaymentQuery)
+            ->get();
+
+        $fineBalance = 0;
+        foreach ($fineClaims as $req) {
+            if (array_intersect([2, 3, 4, 5, 11], (array) $req->process_type_id)) {
+                $fineBalance += $req->amount;
+            } elseif (array_intersect([1, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], (array) $req->process_type_id)) {
+                $fineBalance -= $req->amount;
+            }
+        }
+        $data['fine'] = $fineBalance;
+
+        $data['total_all'] = $data['current_balance'] + $data['pk_balance'] + $data['fine'];
 
         //E
 
