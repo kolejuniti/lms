@@ -201,18 +201,45 @@
                     <div class="card mb-3" id="stud_info">
                         <div class="card-body">
                             <div class="row mb-5">
-                                <div class="col-md-6">
-                                    {{-- <div class="form-group">
-                                            <p>TUNGGAKAN SEMESTER (RM) &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_balance']) ? number_format($data['total_balance'], 2) : 0.00 }}</p>
-                                </div> --}}
-                                <div class="form-group">
-                                    <p>TUNGGAKAN SEMESTER (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['current_balance']) ? number_format($data['current_balance'], 2) : 0.00 }}</p>
+                                <div class="col-md-12 mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="col-md-4">
+                                            <span>TUNGGAKAN SEMESTER (RM)</span>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <strong>{{ isset($data['semester_balance']) ? number_format($data['semester_balance'], 2) : '0.00' }}</strong>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <p>TUNGGAKAN PEMBIAYAAN KHAS (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['pk_balance']) ? number_format($data['pk_balance'], 2) : 0.00 }}</p>
+                                <div class="col-md-12 mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="col-md-4">
+                                            <span>TUNGGAKAN PEMBIAYAAN KHAS (RM)</span>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <strong>{{ isset($data['pk_balance']) ? number_format($data['pk_balance'], 2) : '0.00' }}</strong>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <p>TUNGGAKAN KESULURUHAN (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_all']) ? number_format($data['total_all'], 2) : 0.00 }}</p>
+                                <div class="col-md-12 mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="col-md-4">
+                                            <span>TUNGGAKAN KESELURUHAN (RM)</span>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <strong>{{ isset($data['total_all']) ? number_format($data['total_all'], 2) : '0.00' }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="col-md-4">
+                                            <span>TUNGGAKAN DENDA / SAMAN (RM)</span>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <strong>{{ isset($data['sum3_2']) ? number_format($data['sum3_2'], 2) : '0.00' }}</strong>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
