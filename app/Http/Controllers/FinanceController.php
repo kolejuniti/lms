@@ -13031,6 +13031,49 @@ class FinanceController extends Controller
                     $data['balance'][$key] = DB::query()->fromSub($subQuery, 'sub')
                         ->select(DB::raw('SUM(claim) AS total_claim'), DB::raw('SUM(payment) AS total_payment'), DB::raw('SUM(claim) - SUM(payment) AS balance'))
                         ->get();
+
+                    // FINE calculation
+                    $finePaymentQuery = DB::table('tblpaymentdtl')
+                        ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+                        ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                        ->where([
+                            ['tblpayment.student_ic', $std->ic],
+                            ['tblpayment.process_status_id', 2],
+                            ['tblstudentclaim.groupid', 4],
+                            ['tblpaymentdtl.amount', '!=', 0]
+                        ])
+                        ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
+                        ->when($filter->from != '' && $filter->to != '', function ($query) use ($filter) {
+                            return $query->whereBetween('tblpayment.date', [$filter->from, $filter->to]);
+                        })
+                        ->select('tblpaymentdtl.amount', 'tblpayment.process_type_id');
+
+                    $fineClaims = DB::table('tblclaimdtl')
+                        ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+                        ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+                        ->where([
+                            ['tblclaim.student_ic', $std->ic],
+                            ['tblclaim.process_status_id', 2],
+                            ['tblstudentclaim.groupid', 4],
+                            ['tblclaimdtl.amount', '!=', 0]
+                        ])
+                        ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
+                        ->when($filter->from != '' && $filter->to != '', function ($query) use ($filter) {
+                            return $query->whereBetween('tblclaim.date', [$filter->from, $filter->to]);
+                        })
+                        ->select('tblclaimdtl.amount', 'tblclaim.process_type_id')
+                        ->unionALL($finePaymentQuery)
+                        ->get();
+
+                    $fineBalance = 0;
+                    foreach ($fineClaims as $req) {
+                        if (array_intersect([2, 3, 4, 5, 11], (array) $req->process_type_id)) {
+                            $fineBalance += $req->amount;
+                        } elseif (array_intersect([1, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], (array) $req->process_type_id)) {
+                            $fineBalance -= $req->amount;
+                        }
+                    }
+                    $data['fine'][$key] = $fineBalance;
                 }
 
                 $content = "";
@@ -13079,6 +13122,9 @@ class FinanceController extends Controller
                                         Payment (RM)
                                     </th>
                                     <th>
+                                        Fine / Summons (RM)
+                                    </th>
+                                    <th>
                                         Balance (RM)
                                     </th>
                                 </tr>
@@ -13088,6 +13134,7 @@ class FinanceController extends Controller
                 // Initialize total variables
                 $totalFee = 0;
                 $totalPayment = 0;
+                $totalFine = 0;
                 $totalBalance = 0;
 
                 $bil = 1;
@@ -13149,10 +13196,12 @@ class FinanceController extends Controller
                     }
                     $content .= '</td>';
                     foreach ($data['balance'][$key] as $blc) {
+                        $blc_balance = $blc->balance + $data['fine'][$key];
                         // Add to totals
                         $totalFee += $blc->total_claim;
                         $totalPayment += $blc->total_payment;
-                        $totalBalance += $blc->balance;
+                        $totalFine += $data['fine'][$key];
+                        $totalBalance += $blc_balance;
 
                         $content .= '<td>
                                             ' . $blc->total_claim . '
@@ -13161,7 +13210,10 @@ class FinanceController extends Controller
                                             ' . $blc->total_payment . '
                                         </td>
                                         <td>
-                                            ' . $blc->balance . '
+                                            ' . $data['fine'][$key] . '
+                                        </td>
+                                        <td>
+                                            ' . $blc_balance . '
                                         </td>';
                     }
                     $content .= '</tr>';
@@ -13185,6 +13237,7 @@ class FinanceController extends Controller
                     <td></td>
                     <td><strong>' . number_format($totalFee, 2) . '</strong></td>
                     <td><strong>' . number_format($totalPayment, 2) . '</strong></td>
+                    <td><strong>' . number_format($totalFine, 2) . '</strong></td>
                     <td><strong>' . number_format($totalBalance, 2) . '</strong></td>
                 </tr>';
 

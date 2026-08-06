@@ -154,6 +154,9 @@
                       Payment (RM)
                   </th>
                   <th>
+                      Fine / Summons (RM)
+                  </th>
+                  <th>
                       Balance (RM)
                   </th>
               </tr>
