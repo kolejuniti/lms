@@ -10406,6 +10406,7 @@ class FinanceController extends Controller
 
             if ($package != null) {
 
+                $discount = 0;
                 if ($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14) {
 
                     $discount = abs(DB::table('tblclaim')
@@ -10416,9 +10417,6 @@ class FinanceController extends Controller
                             ['tblclaim.process_status_id', 2],
                             ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
                         ])->sum('tblclaimdtl.amount'));
-                } else {
-
-                    $discount = 0;
                 }
 
                 if ($package->package_id == 5) {
@@ -10444,34 +10442,52 @@ class FinanceController extends Controller
 
                 $stddetail = DB::table('students')->where('ic', $request->student)->select('program', 'semester')->first();
 
-                if ($stddetail->program == 7 || $stddetail->program == 8) {
-
+                if ($stddetail != null) {
+                    $discount = 0;
                     if ($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14) {
 
-                        if ($data['current_balance'][$key] == 0.00) {
+                        $discount = abs(DB::table('tblclaim')
+                            ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
+                            ->where([
+                                ['tblclaim.student_ic', $request->student],
+                                ['tblclaim.process_type_id', 5],
+                                ['tblclaim.process_status_id', 2],
+                                ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
+                            ])->sum('tblclaimdtl.amount'));
+                    }
 
-                            $data['pk_balance'][$key] = $data['sum3'];
-                        } else {
+                    if ($stddetail->program == 7 || $stddetail->program == 8) {
 
-                            $data['pk_balance'][$key] = ($package->amount - $discount);
+                        if ($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14) {
+
+                            if ($data['current_balance'][$key] == 0.00) {
+
+                                $data['pk_balance'][$key] = $data['sum3'];
+                            } else {
+
+                                $data['pk_balance'][$key] = ($package->amount - $discount);
+                            }
+                        }
+                    } else {
+
+                        if ($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14) {
+
+                            if ($data['current_balance'][$key] == 0.00) {
+
+                                $data['pk_balance'][$key] = $data['sum3'];
+                            } else {
+
+                                $data['pk_balance'][$key] = ($package->amount - $discount);
+                            }
                         }
                     }
                 } else {
 
-                    if ($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14) {
-
-                        if ($data['current_balance'][$key] == 0.00) {
-
-                            $data['pk_balance'][$key] = $data['sum3'];
-                        } else {
-
-                            $data['pk_balance'][$key] = ($package->amount - $discount);
-                        }
-                    }
+                    $data['pk_balance'][$key] = 0.00;
                 }
             } else {
 
-                $data['current_balance'][$key] = 0.00;
+                $data['current_balance'][$key] = $data['sum3'];
 
                 $data['pk_balance'][$key] = 0.00;
             }
