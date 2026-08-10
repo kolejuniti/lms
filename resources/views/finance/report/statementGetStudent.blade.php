@@ -207,7 +207,7 @@
                                             <span>TUNGGAKAN SEMESTER (RM)</span>
                                         </div>
                                         <div class="col-md-8">
-                                            <strong>{{ isset($data['semester_balance']) ? number_format($data['semester_balance'], 2) : '0.00' }}</strong>
+                                            <strong>{{ isset($data['value']) ? number_format($data['value'], 2) : '0.00' }}</strong>
                                         </div>
                                     </div>
                                 </div>
@@ -224,20 +224,20 @@
                                 <div class="col-md-12 mb-3">
                                     <div class="d-flex justify-content-between">
                                         <div class="col-md-4">
-                                            <span>TUNGGAKAN KESELURUHAN (RM)</span>
+                                            <span>TUNGGAKAN DENDA / SAMAN (RM)</span>
                                         </div>
                                         <div class="col-md-8">
-                                            <strong>{{ isset($data['total_all']) ? number_format($data['total_all'], 2) : '0.00' }}</strong>
+                                            <strong>{{ isset($data['sum3_2']) ? number_format($data['sum3_2'], 2) : '0.00' }}</strong>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <div class="d-flex justify-content-between">
                                         <div class="col-md-4">
-                                            <span>TUNGGAKAN DENDA / SAMAN (RM)</span>
+                                            <span>TUNGGAKAN KESELURUHAN (RM)</span>
                                         </div>
                                         <div class="col-md-8">
-                                            <strong>{{ isset($data['sum3_2']) ? number_format($data['sum3_2'], 2) : '0.00' }}</strong>
+                                            <strong>{{ isset($data['total_all']) ? number_format($data['total_all'], 2) : '0.00' }}</strong>
                                         </div>
                                     </div>
                                 </div>
