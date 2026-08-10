@@ -3095,7 +3095,8 @@ class PendaftarController extends Controller
                             ['group_id', '!=', null]
                         ])
                         ->whereIn('course_status_id', [1, 2, 12, 15])
-                        ->selectRaw('SUM(credit * pointer) / SUM(credit) as total')
+                        //->selectRaw('SUM(credit * pointer) / SUM(credit) as total')
+                        ->selectRaw('ROUND(CAST(SUM(credit * pointer) / SUM(credit) AS DECIMAL(12,4)), 2) as total')
                         ->value('total');
 
                     $total_credit_c = DB::table('student_subjek')->where([
@@ -3266,7 +3267,7 @@ class PendaftarController extends Controller
                     $cgpa = DB::table('student_subjek')
                         ->whereNotNull('group_id')
                         ->whereIn('id', $cgpa_old->pluck('max_id'))
-                        ->selectRaw('ROUND(SUM(credit * pointer) / SUM(credit), 2) as total')
+                        ->selectRaw('ROUND(CAST(SUM(credit * pointer) / SUM(credit) AS DECIMAL(12,4)), 2) as total')
                         ->value('total');
 
                     if ($cgpa >= 3.67 && $cgpa <= 4) {
