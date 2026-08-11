@@ -313,6 +313,8 @@ Route::post('/AR/student/resultOverall/submit', [App\Http\Controllers\AR_Control
 Route::get('/AR/student/resultOverall/get/{id}', [App\Http\Controllers\AR_Controller::class, 'resultOverallGet']);
 Route::post('/AR/student/resultOverall/edit/{id}', [App\Http\Controllers\AR_Controller::class, 'resultOverallEdit']);
 Route::delete('/AR/student/resultOverall/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'resultOverallDelete']);
+Route::get('/AR/student/examResultByProgram', [App\Http\Controllers\AR_Controller::class, 'examResultByProgram'])->name('pendaftar_akademik.examResultByProgram');
+Route::get('/AR/student/examResultByProgram/print', [App\Http\Controllers\AR_Controller::class, 'examResultByProgramPrint'])->name('pendaftar_akademik.examResultByProgram.print');
 Route::get('/AR/student/slipFilter', [App\Http\Controllers\AR_Controller::class, 'slipFilter'])->name('pendaftar_akademik.slipFilter');
 Route::post('/AR/student/slipFilter/submit', [App\Http\Controllers\AR_Controller::class, 'slipFilterSubmit']);
 Route::get('/AR/student/slipFilter/get/{id}', [App\Http\Controllers\AR_Controller::class, 'slipFilterGet']);

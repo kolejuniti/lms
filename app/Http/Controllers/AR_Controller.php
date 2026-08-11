@@ -6877,6 +6877,92 @@ class AR_Controller extends Controller
         return response()->json($period);
     }
 
+    public function examResultByProgram()
+    {
+        $data['programs'] = DB::table('tblprogramme')->orderBy('progname')->get();
+        $data['sessions'] = DB::table('sessions')->orderBy('SessionName', 'desc')->get();
+
+        return view('pendaftar_akademik.student.exam_result_by_program.examResultByProgram', compact('data'));
+    }
+
+    public function examResultByProgramPrint(Request $request)
+    {
+        $programId  = $request->program;
+        $sessionId  = $request->session;
+        $semesterId = $request->semester;
+
+        // Fetch all students matching program + session, with transcript for that semester
+        $students = DB::table('students')
+            ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
+            ->join('sessions AS A2', 'students.session', 'A2.SessionID')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->join('student_transcript', function ($join) use ($sessionId, $semesterId) {
+                $join->on('student_transcript.student_ic', 'students.ic')
+                     ->where('student_transcript.session_id', $sessionId)
+                     ->where('student_transcript.semester', $semesterId);
+            })
+            ->join('sessions AS A3', 'student_transcript.session_id', 'A3.SessionID')
+            ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+            ->where('students.program', $programId)
+            ->select(
+                'students.*',
+                'tblprogramme.progname AS program_name',
+                'tblprogramme.progcode AS program_code',
+                'tblprogramme.credit_hour AS limit_credit',
+                'tblstudent_status.name AS status_name',
+                'A1.SessionName AS intake_name',
+                'A2.SessionName AS current_session_name',
+                'A3.SessionName AS exam_session_name',
+                'student_transcript.id AS transcript_id',
+                'student_transcript.semester AS transcript_semester',
+                'student_transcript.gpa',
+                'student_transcript.cgpa',
+                'student_transcript.passed_credit_s',
+                'student_transcript.passed_credit_c',
+                'student_transcript.grade_pointer_s',
+                'student_transcript.grade_pointer_c',
+                'student_transcript.count_credit_c',
+                'transcript_status.status_name AS result_status'
+            )
+            ->orderBy('students.name')
+            ->get();
+
+        // For each student, fetch their subjects for this semester
+        $studentsData = [];
+        foreach ($students as $student) {
+            $subjects = DB::table('student_subjek')
+                ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                ->where([
+                    ['student_subjek.student_ic', $student->ic],
+                    ['student_subjek.semesterid', $semesterId],
+                    ['student_subjek.sessionid', $sessionId],
+                ])
+                ->where('student_subjek.group_id', '!=', null)
+                ->groupBy('student_subjek.courseid')
+                ->select('student_subjek.*', 'subjek.course_name', 'subjek.course_code')
+                ->get();
+
+            $studentsData[] = [
+                'student'  => $student,
+                'subjects' => $subjects,
+            ];
+        }
+
+        // Resolve program and session names for header display
+        $program = DB::table('tblprogramme')->where('id', $programId)->first();
+        $session = DB::table('sessions')->where('SessionID', $sessionId)->first();
+
+        $data = [
+            'studentsData' => $studentsData,
+            'program'      => $program,
+            'session'      => $session,
+            'semester'     => $semesterId,
+        ];
+
+        return view('pendaftar_akademik.student.exam_result_by_program.examResultByProgramPrint', compact('data'));
+    }
+
     public function slipFilter()
     {
         $data = [

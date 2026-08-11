@@ -390,6 +390,7 @@ li a {
 						<li><a href="{{ route('pendaftar_akademik.assessmentFilter') }}" class="{{ (route('pendaftar_akademik.assessmentFilter') == Request::url()) ? 'active' : ''}}">Assessment Filter</a></li>
 						<li><a href="{{ route('pendaftar_akademik.slipFilter') }}" class="{{ (route('pendaftar_akademik.slipFilter') == Request::url()) ? 'active' : ''}}">Slip Exam Filter</a></li>
 						<li><a href="{{ route('pendaftar_akademik.barcodeGenerate') }}" class="{{ (route('pendaftar_akademik.barcodeGenerate') == Request::url()) ? 'active' : ''}}">Barcode Generate</a></li>
+						<li><a href="{{ route('pendaftar_akademik.examResultByProgram') }}" class="{{ (route('pendaftar_akademik.examResultByProgram') == Request::url()) ? 'active' : ''}}">Exam Result By Program</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
