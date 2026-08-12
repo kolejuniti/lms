@@ -294,7 +294,7 @@
         </div>
       </div>
 
-      <!-- Add this right after the hostel status section -->
+      {{-- <!-- Add this right after the hostel status section -->
       <div class="row">
         <div class="col-12">
           <div class="box">
@@ -330,10 +330,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> --}}
 
       
-      <!-- Statistics Summary Cards -->
+      {{-- <!-- Statistics Summary Cards -->
       <div class="row">
         <div class="col-xl-3 col-md-6 col-12">
           <div class="box">
@@ -403,7 +403,7 @@
         </div>
           </div>
         </div>
-      </div>
+      </div> --}}
       
       <!-- Today's Classes -->
       {{-- <div class="row" id="today-classes">
@@ -468,7 +468,7 @@
       
       <!-- Upcoming Deadlines -->
       <div class="row">
-        <div class="col-xl-6 col-12">
+        {{-- <div class="col-xl-6 col-12">
           <div class="box">
             <div class="box-header with-border">
               <h4 class="box-title modern-title">Upcoming Deadlines
@@ -524,7 +524,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> --}}
         
         <!-- Quick Links -->
         <div class="col-xl-6 col-12">
