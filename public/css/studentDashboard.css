@@ -1,0 +1,384 @@
+  .profile-card {
+    background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+    color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: url('images/svg-icon/color-svg/custom-30.svg');
+    background-position: right bottom;
+    background-size: auto 100%;
+    opacity: 0.2;
+}
+
+.profile-content {
+    position: relative;
+    z-index: 1;
+    padding: 30px;
+}
+
+/* Modern Date Styling with Fixed Edges */
+.current-date-wrapper {
+    display: inline-block;
+    margin-left: auto;
+  }
+  
+  .current-date-container {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #8A2BE2 0%, #5151E5 100%);
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 15px rgba(114, 237, 242, 0.2);
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  
+  .current-date-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(81, 81, 229, 0.3);
+  }
+  
+  .current-date-icon {
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    height: 2.2rem;
+    width: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+  }
+  
+  .current-date-text {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #current-day {
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+  }
+  
+  #current-date {
+    font-size: 0.8rem;
+    opacity: 0.9;
+  }
+  
+  /* For smaller screens */
+  @media (max-width: 576px) {
+    .current-date-container {
+      padding: 0.4rem 0.8rem;
+    }
+    
+    .current-date-icon {
+      height: 1.8rem;
+      width: 1.8rem;
+      font-size: 0.9rem;
+    }
+    
+    #current-day {
+      font-size: 0.85rem;
+    }
+    
+    #current-date {
+      font-size: 0.7rem;
+    }
+  }
+
+  /* Additional Styles for Hostel Section */
+.btn-light-primary {
+  background-color: rgba(67, 97, 238, 0.1);
+  color: #4361ee;
+  border: none;
+}
+.btn-light-primary:hover {
+  background-color: rgba(67, 97, 238, 0.2);
+  color: #4361ee;
+}
+
+.btn-light-warning {
+  background-color: rgba(247, 37, 133, 0.1);
+  color: #f72585;
+  border: none;
+}
+.btn-light-warning:hover {
+  background-color: rgba(247, 37, 133, 0.2);
+  color: #f72585;
+}
+
+.btn-light-danger {
+  background-color: rgba(230, 57, 70, 0.1);
+  color: #e63946;
+  border: none;
+}
+.btn-light-danger:hover {
+  background-color: rgba(230, 57, 70, 0.2);
+  color: #e63946;
+}
+
+.btn-light-info {
+  background-color: rgba(72, 149, 239, 0.1);
+  color: #4895ef;
+  border: none;
+}
+.btn-light-info:hover {
+  background-color: rgba(72, 149, 239, 0.2);
+  color: #4895ef;
+}
+
+.modern-title {
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+  position: relative;
+  padding-left: 0.75rem;
+}
+
+.modern-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 1.25rem;
+  width: 4px;
+  background: linear-gradient(to bottom, #8A2BE2, #5151E5);
+  border-radius: 0.25rem;
+}
+
+/* Weather Widget Styles */
+.weather-card {
+  background: linear-gradient(135deg, #00b4db, #0083b0);
+  border-radius: 15px;
+  padding: 20px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.weather-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.weather-info .temperature {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.weather-info .description {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.weather-info .location {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.sun-icon {
+  position: relative;
+  animation: float 6s ease-in-out infinite;
+}
+
+.sun {
+  width: 60px;
+  height: 60px;
+  background: #ffd700;
+  border-radius: 50%;
+  box-shadow: 0 0 20px #ffd700;
+}
+
+.rays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  animation: rotate 30s linear infinite;
+}
+
+.rays:before, .rays:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 3px;
+  background: #ffd700;
+  transform: translate(-50%, -50%);
+}
+
+.rays:after {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.rays:before {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Achievement Popup Styles */
+.achievement-popup {
+  position: fixed;
+  bottom: -100px;
+  right: 20px;
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.achievement-popup.show {
+  transform: translateY(-120px);
+}
+
+.achievement-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.achievement-icon {
+  font-size: 2em;
+  /* Removed infinite bounce to save CPU, trigger on hover instead */
+  transition: transform 0.3s ease;
+}
+
+.achievement-content:hover .achievement-icon {
+  transform: translateY(-5px);
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Progress Circle Styles */
+.progress-circle {
+  width: 100px;
+  height: 100px;
+}
+
+.circular-chart {
+  display: block;
+  margin: 10px auto;
+  max-width: 100%;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke: #4361ee;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+.percentage {
+  fill: #4361ee;
+  font-family: sans-serif;
+  font-size: 0.5em;
+  text-anchor: middle;
+}
+
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+
+/* Quote Container Styles */
+.quote-container {
+  padding: 20px;
+  background: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
+  border-radius: 10px;
+  margin: 20px 0;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.quote-text {
+  position: relative;
+  z-index: 1;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.quote-container::before {
+  content: '"';
+  position: absolute;
+  top: -20px;
+  left: 10px;
+  font-size: 8rem;
+  color: rgba(255,255,255,0.1);
+  font-family: Georgia, serif;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Enhanced Class Card Hover Effects */
+.class-card {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.class-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.class-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.class-card:hover::before {
+  opacity: 1;
+}
