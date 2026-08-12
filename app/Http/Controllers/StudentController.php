@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
 
@@ -34,17 +35,42 @@ class StudentController extends Controller
 
         Session::put('StudInfo', $student);
 
-        $data['hostel'] = DB::connection(name: 'mysql3')->table('tblstudent_hostel')
-                  ->join('tblblock_unit', 'tblstudent_hostel.block_unit_id', 'tblblock_unit.id')
-                  ->join('tblblock', 'tblblock_unit.block_id', 'tblblock.id')
-                  ->where('tblstudent_hostel.student_ic', $student->ic)
-                  ->select('tblstudent_hostel.entry_date', 'tblstudent_hostel.exit_date', 
-                  'tblstudent_hostel.status AS student_status', 'tblblock_unit.status AS block_unit_status', 
-                  'tblblock_unit.no_unit', 'tblblock.name', 'tblblock.location')
-                  ->orderBy('tblstudent_hostel.id', 'desc')
-                  ->first();
+        // Cache hostel query for 60 minutes to avoid repeated cross-database round-trips
+        $data['hostel'] = Cache::remember('hostel_' . $student->ic, 60 * 60, function () use ($student) {
+            return DB::connection(name: 'mysql3')->table('tblstudent_hostel')
+                ->join('tblblock_unit', 'tblstudent_hostel.block_unit_id', 'tblblock_unit.id')
+                ->join('tblblock', 'tblblock_unit.block_id', 'tblblock.id')
+                ->where('tblstudent_hostel.student_ic', $student->ic)
+                ->select('tblstudent_hostel.entry_date', 'tblstudent_hostel.exit_date',
+                    'tblstudent_hostel.status AS student_status', 'tblblock_unit.status AS block_unit_status',
+                    'tblblock_unit.no_unit', 'tblblock.name', 'tblblock.location')
+                ->orderBy('tblstudent_hostel.id', 'desc')
+                ->first();
+        });
 
-        return view('student.dashboard', compact('data'));
+        // Check active result periods in the controller (not in the view) and cache for 10 minutes
+        $hasActiveResultPeriod = Cache::remember('result_period_' . $student->ic, 10 * 60, function () use ($student) {
+            $now = now();
+            $activePeriods = DB::table('tblresult_period')
+                ->where('Start', '<=', $now)
+                ->where('End', '>=', $now)
+                ->get();
+
+            foreach ($activePeriods as $period) {
+                $programs  = json_decode($period->program, true) ?: [];
+                $sessions  = json_decode($period->session, true) ?: [];
+                $semesters = json_decode($period->semester, true) ?: [];
+
+                if (in_array($student->program, $programs) &&
+                    in_array($student->session, $sessions) &&
+                    in_array($student->semester, $semesters)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        return view('student.dashboard', compact('data', 'hasActiveResultPeriod'));
     }
 
     public function idCard()

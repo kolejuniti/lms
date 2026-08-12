@@ -555,36 +555,8 @@
                 </div>
                 
                 <!-- Quick Access Item 3 -->
-                @php
-                $now = now();
-                $block_status = Auth::guard('student')->user()->block_status;
-                $student = Session::get('User');
-                
-                // Check if there are any active result periods that match this student
-                $hasActiveResultPeriod = false;
-                
-                if ($student) {
-                    $activePeriods = DB::table('tblresult_period')
-                        ->where('Start', '<=', $now)
-                        ->where('End', '>=', $now)
-                        ->get();
-                    
-                    foreach ($activePeriods as $period) {
-                        $programs = json_decode($period->program, true) ?: [];
-                        $sessions = json_decode($period->session, true) ?: [];
-                        $semesters = json_decode($period->semester, true) ?: [];
-                        
-                        if (in_array($student->program, $programs) && 
-                            in_array($student->session, $sessions) && 
-                            in_array($student->semester, $semesters)) {
-                            $hasActiveResultPeriod = true;
-                            break;
-                        }
-                    }
-                }
-                @endphp
-
-                @if($hasActiveResultPeriod && $block_status == 0)                <div class="col-6 col-sm-4">
+                @if($hasActiveResultPeriod && Auth::guard('student')->user()->block_status == 0)
+                <div class="col-6 col-sm-4">
                   <a href="{{ route('student.affair.result') }}" class="quick-access-item">
                     <div class="icon-container bg-gradient-orange">
                       <i class="mdi mdi-chart-line fs-24"></i>
