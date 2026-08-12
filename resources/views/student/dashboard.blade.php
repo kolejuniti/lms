@@ -3627,5 +3627,18 @@ function loadDashboardStudentConversations() {
     });
 }
 </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    @if(Session::has('alert'))
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: '{{ Session::get('alert') }}',
+        confirmButtonColor: '#3085d6',
+      });
+    @endif
+  });
+</script>
 @endsection
           

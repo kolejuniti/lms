@@ -1745,6 +1745,14 @@ class StudentController extends Controller
 
     public function studentResult()
     {
+        $currentTime = now()->format('H:i:s');
+        $startTime = '18:00:00';
+        $endTime = '07:00:00';
+
+        if ($currentTime > $endTime && $currentTime < $startTime) {
+            return redirect()->back()->with('alert', 'Result page can only be accessed between 06:00 PM and 07:00 AM.');
+        }
+
         $student = Session::get('StudInfo');
 
         $firstSem = $student->semester;
