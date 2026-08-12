@@ -1775,7 +1775,11 @@ class StudentController extends Controller
         $startTime = '18:00:00';
         $endTime = '07:00:00';
 
-        if ($currentTime > $endTime && $currentTime < $startTime) {
+        // Allow access only between 18:00 (6pm) and 07:00 (7am next day)
+        $isAfterSix = $currentTime >= $startTime;
+        $isBeforeSeven = $currentTime <= $endTime;
+
+        if (!$isAfterSix && !$isBeforeSeven) {
             return redirect()->back()->with('alert', 'Result page can only be accessed between 06:00 PM and 07:00 AM.');
         }
 
