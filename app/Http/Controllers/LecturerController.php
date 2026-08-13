@@ -86,23 +86,26 @@ class LecturerController extends Controller
             if ($request->hasFile('image')) {
                 $imageName = $request->file('image')->getClientOriginalName();
                 $filepath = "storage/";
-
-                // Store image in Linode Object Storage
-                Storage::disk('linode')->putFileAs(
-                    $filepath,
-                    $request->file('image'),
-                    $imageName,
-                    'public'
-                );
-
                 $imagePath = $filepath . $imageName;
 
-                // Resize image using Intervention Image
                 try {
-                    $image = Image::make(Storage::disk('linode')->url($imagePath))->fit(1000, 1000);
-                    $image->save($imagePath);
+                    // Resize image locally in memory first
+                    $image = Image::make($request->file('image'))->fit(1000, 1000);
+                    
+                    // Convert it back to a string, and put to Linode directly
+                    Storage::disk('linode')->put(
+                        $imagePath,
+                        (string) $image->encode(),
+                        'public'
+                    );
                 } catch (\Exception $e) {
-                    // If image processing fails, continue without resizing
+                    // If image processing fails, upload original
+                    Storage::disk('linode')->putFileAs(
+                        $filepath,
+                        $request->file('image'),
+                        $imageName,
+                        'public'
+                    );
                 }
 
                 $imageArray = ['image' => $imagePath];
@@ -164,69 +167,31 @@ class LecturerController extends Controller
 
     public function getCourseList(Request $request)
     {
-        if (isset($request->search) && isset($request->session)) {
-            //forgot current session
-            Session::forget(['CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
+        //forgot current session
+        Session::forget(['CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
 
-            $data = auth()->user()->subjects()
-                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                ->where('sessions.Status', 'ACTIVE')
-                ->where('tblprogramme.progstatusid', 1)
-                ->groupBy('subjek.sub_id', 'user_subjek.session_id')
-                ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode')
-                ->where('subjek.course_name', 'LIKE', '%' . $request->search . "%")
-                ->orwhere('subjek.course_code', 'LIKE', '%' . $request->search . "%")
-                ->where('user_subjek.session_id', 'LIKE', '%' . $request->session . '%')
-                ->get();
-        } elseif (isset($request->search)) {
-            //forgot current session
-            Session::forget(['CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
+        $query = auth()->user()->subjects()
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->where('sessions.Status', 'ACTIVE')
+            ->where('tblprogramme.progstatusid', 1)
+            ->groupBy('subjek.sub_id', 'user_subjek.session_id')
+            ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode');
 
-            $data = auth()->user()->subjects()
-                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                ->where('sessions.Status', 'ACTIVE')
-                ->where('tblprogramme.progstatusid', 1)
-                ->groupBy('subjek.sub_id', 'user_subjek.session_id')
-                ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode')
-                ->where('subjek.course_name', 'LIKE', '%' . $request->search . "%")
-                ->orwhere('subjek.course_code', 'LIKE', '%' . $request->search . "%")
-                ->get();
-        } elseif (isset($request->session)) {
-            //forgot current session
-            Session::forget(['CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
-
-            $data = auth()->user()->subjects()
-                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                ->where('sessions.Status', 'ACTIVE')
-                ->where('tblprogramme.progstatusid', 1)
-                ->groupBy('subjek.sub_id', 'user_subjek.session_id')
-                ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode')
-                ->where('user_subjek.session_id', 'LIKE', '%' . $request->session . '%')
-                ->get();
-        } else {
-            //forgot current session
-            Session::forget(['CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
-
-            $data = auth()->user()->subjects()
-                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                ->where('sessions.Status', 'ACTIVE')
-                ->where('tblprogramme.progstatusid', 1)
-                ->groupBy('subjek.sub_id', 'user_subjek.session_id')
-                ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode')
-                ->get();
+        if (isset($request->search)) {
+            $query->where(function ($q) use ($request) {
+                $q->where('subjek.course_name', 'LIKE', '%' . $request->search . "%")
+                  ->orWhere('subjek.course_code', 'LIKE', '%' . $request->search . "%");
+            });
         }
+
+        if (isset($request->session)) {
+            $query->where('user_subjek.session_id', 'LIKE', '%' . $request->session . '%');
+        }
+
+        $data = $query->get();
 
         return view('lecturergetcourse', compact('data'));
     }
@@ -247,14 +212,8 @@ class LecturerController extends Controller
         $period = DB::table('tblassessment_period')
             ->where('Start', '<=', $currentDate)
             ->where('End', '>=', $currentDate)
-            ->get()
-            ->filter(function ($period) use ($currentUserIc, $currentSessionId) {
-                $userIcs = json_decode($period->user_ic, true) ?: [];
-                $sessions = json_decode($period->session, true) ?: [];
-
-                return in_array($currentUserIc, $userIcs) &&
-                    in_array($currentSessionId, $sessions);
-            })
+            ->whereJsonContains('user_ic', $currentUserIc)
+            ->whereJsonContains('session', $currentSessionId)
             ->first();
 
         return $period;
@@ -297,13 +256,31 @@ class LecturerController extends Controller
             ->whereIn('subjek.sub_id', $collection->pluck('sub_id'))
             ->whereIn('subjek_structure.program_id', $collection->pluck('program_id'))->groupBy('tblprogramme.id')->get();
 
+        // Batch fetch files per program directory to avoid N+1 storage API calls
+        $existingFiles = [];
+        $progCodes = $summary->pluck('progcode')->unique();
+        
+        try {
+            foreach ($progCodes as $progCode) {
+                // Fetch all file paths in the directory and store them
+                $files = Storage::disk('linode')->files('coursesummary/' . $progCode);
+                foreach ($files as $file) {
+                    $existingFiles[$file] = true;
+                }
+            }
+        } catch (\Exception $e) {
+            // Ignore if directory fetch fails (e.g., config error)
+        }
+
         // Pre-check storage URLs to handle errors gracefully (e.g. localhost config issues)
         foreach ($summary as $sum) {
             $sum->pdfUrl = null;
             $sum->storageError = null;
             try {
                 $path = 'coursesummary/' . $sum->progcode . '/' . str_replace(" ", "_", $sum->course_code) . '.pdf';
-                if (Storage::disk('linode')->exists($path)) {
+                
+                // Check against the locally cached array instead of making a network call
+                if (isset($existingFiles[$path])) {
                     $sum->pdfUrl = Storage::disk('linode')->temporaryUrl($path, now()->addMinutes(5));
                 }
             } catch (\Exception $e) {
