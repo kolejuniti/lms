@@ -5444,7 +5444,7 @@ class FinanceController extends Controller
             $data['pk_balance'] = 0.00;
         }
 
-        $data['total_all'] =  $data['current_balance'] + $data['pk_balance'];
+        $data['total_all'] =  $data['value'] + $data['pk_balance'];
 
         //REMARk
 
