@@ -11367,6 +11367,7 @@ class FinanceController extends Controller
                     ['tblstudentclaim.groupid', 4],
                     ['tblpaymentdtl.amount', '!=', 0]
                 ])
+                ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
                 ->select('tblpayment.ref_no', 'tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program');
 
             $data['record2'] = DB::table('tblclaimdtl')
@@ -11379,6 +11380,7 @@ class FinanceController extends Controller
                     ['tblstudentclaim.groupid', 4],
                     ['tblclaimdtl.amount', '!=', 0]
                 ])
+                ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
                 ->unionALL($record2)
                 ->select('tblclaim.ref_no', 'tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program')
                 ->orderBy('date')
@@ -12943,6 +12945,7 @@ class FinanceController extends Controller
                 ['tblstudentclaim.groupid', 4],
                 ['tblpaymentdtl.amount', '!=', 0]
             ])
+            ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
             ->select('tblpayment.ref_no', 'tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program');
 
         $data['record2'] = DB::table('tblclaimdtl')
@@ -12955,6 +12958,7 @@ class FinanceController extends Controller
                 ['tblstudentclaim.groupid', 4],
                 ['tblclaimdtl.amount', '!=', 0]
             ])
+            ->whereNotIn('tblstudentclaim.id', [34, 35, 50])
             ->unionALL($record2)
             ->select('tblclaim.ref_no', 'tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program')
             ->orderBy('date')
