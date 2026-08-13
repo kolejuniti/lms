@@ -3682,18 +3682,18 @@ class AR_Controller extends Controller
                 ? $event->first()->session_id
                 : DB::table('sessions')->where('Status', 'ACTIVE')->value('SessionID');
 
-            if (!is_null($defaultLectureId) && !is_null($defaultSessionId)) {
-                $programEvent = new Tblevent2;
-                $programEvent->lecture_id = $defaultLectureId;
-                $programEvent->user_ic = $request->id;
-                $programEvent->group_id = 0;
-                $programEvent->group_name = 'PROGRAM KEUSAHAWANAN';
-                $programEvent->session_id = $defaultSessionId;
-                $programEvent->title = 'PROGRAM KEUSAHAWANAN';
-                $programEvent->start = $programStart->toDateTimeString();
-                $programEvent->end = $programEnd->toDateTimeString();
-                $programEvent->save();
-            }
+            // if (!is_null($defaultLectureId) && !is_null($defaultSessionId)) {
+            //     $programEvent = new Tblevent2;
+            //     $programEvent->lecture_id = $defaultLectureId;
+            //     $programEvent->user_ic = $request->id;
+            //     $programEvent->group_id = 0;
+            //     $programEvent->group_name = 'PROGRAM KEUSAHAWANAN';
+            //     $programEvent->session_id = $defaultSessionId;
+            //     $programEvent->title = 'PROGRAM KEUSAHAWANAN';
+            //     $programEvent->start = $programStart->toDateTimeString();
+            //     $programEvent->end = $programEnd->toDateTimeString();
+            //     $programEvent->save();
+            // }
 
             return response()->json(['success' => 'Event has been published successfully!']);
         } catch (Exception $e) {
