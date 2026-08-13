@@ -5445,7 +5445,7 @@ class FinanceController extends Controller
             $data['pk_balance'] = 0.00;
         }
 
-        $data['total_all'] =  $data['value'] + $data['pk_balance'];
+        $data['total_all'] =  $data['value'] + $data['pk_balance'] + $data['sum3_2'];
 
         //REMARk
 
@@ -5459,7 +5459,7 @@ class FinanceController extends Controller
             $data['remark']->latest_balance = number_format($data['sum3'] - $data['remark']->correction_amount, 2, '.', '');
         }
 
-        $data['value'] = $data['value'] + $data['sum3_2'];
+        $data['value'] = $data['value'] + 0;
 
         // Add sum3_3 only for records where tblstudentclaim.id is 47 AND from tblclaimdtl table
         $sum3_3_conditional = 0;
