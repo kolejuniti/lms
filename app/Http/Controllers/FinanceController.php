@@ -5227,13 +5227,14 @@ class FinanceController extends Controller
                     $data['value'] = $data['sum3'] - $data['package']->$semester_column;
                     // Do something with $semester_value
                 } else {
-                    $data['value'] = 0;
+                    $data['value'] = $data['sum3'];
                     // Handle case where the column is not set
                 }
             }
         } else {
 
             $data['package'] = null;
+            $data['value'] = $data['sum3'];
         }
 
         //GET SPONSOR
@@ -13564,13 +13565,13 @@ class FinanceController extends Controller
                             $data['value'] = $data['sum3'] - $data['package']->$semester_column;
                             // Do something with $semester_value
                         } else {
-                            $data['value'] = 0;
+                            $data['value'] = $data['sum3'];
                             // Handle case where the column is not set
                         }
                     }
                 } else {
 
-                    $data['value'] = 0;
+                    $data['value'] = $data['sum3'];
                 }
 
                 $data['value2'] = $data['value'] + $data['sum3_2'];
