@@ -1427,8 +1427,12 @@ class FinanceController extends Controller
                                     continue;
                                 }
 
-                                // Skip if semester eligibility not met
-                                if ($tbg->start_at !== null && $tbg->start_at < $student->semester) {
+                                // Skip if semester eligibility not met (from start_at until semester 6)
+                                if ($tbg->start_at !== null && $student->semester < $tbg->start_at) {
+                                    continue;
+                                }
+
+                                if ($student->semester > 6) {
                                     continue;
                                 }
 
@@ -1487,27 +1491,20 @@ class FinanceController extends Controller
 
                     //INSENTIFKHAS
 
-                    $insentif = DB::table('tblinsentifkhas')
+                    $insentifs = DB::table('tblinsentifkhas')
                         ->join('tblprocess_type', 'tblinsentifkhas.process_type_id', 'tblprocess_type.id')
                         ->where([
                             ['tblinsentifkhas.intake_id', $student->intake]
-                        ])->select('tblinsentifkhas.*', 'tblprocess_type.code');
+                        ])->select('tblinsentifkhas.*', 'tblprocess_type.code')
+                        ->get();
 
-                    if ($insentif->isNotEmpty()) {
-
-                        $insentifs = $insentif->get();
+                    if ($insentifs->isNotEmpty()) {
 
                         foreach ($insentifs as $key => $icv) {
 
                             $checkStudentEligible = DB::table('tblinsentifkhas_program')->where([['insentifkhas_id', $icv->id], ['program_id', $student->program]])->exists();
 
                             if (!$checkStudentEligible) {
-                                continue;
-                            }
-
-                            $checkSemesterEligible = $icv->start_at !== null && $icv->start_at < $student->semester;
-
-                            if ($checkSemesterEligible) {
                                 continue;
                             }
 

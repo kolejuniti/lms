@@ -2460,6 +2460,16 @@ class PendaftarController extends Controller
 
                                 foreach ($tabung as $key => $tbg) {
                                     if (DB::table('tbltabungkhas_program')->where([['tabungkhas_id', $tbg->id], ['program_id', $student->program]])->exists()) {
+                                        
+                                        // Skip if semester eligibility not met (from start_at until semester 6)
+                                        if ($tbg->start_at !== null && $student->semester < $tbg->start_at) {
+                                            continue;
+                                        }
+
+                                        if ($student->semester > 6) {
+                                            continue;
+                                        }
+
                                         $ref_no = DB::table('tblref_no')->where('id', 8)->first();
 
                                         DB::table('tblref_no')->where('id', $ref_no->id)->update([
