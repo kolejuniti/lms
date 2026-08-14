@@ -1772,8 +1772,8 @@ class StudentController extends Controller
     public function studentResult()
     {
         $currentTime = now()->format('H:i:s');
-        $startTime = '18:00:00';
-        $endTime = '07:00:00';
+        $startTime = '06:00:00';
+        $endTime = '06:00:00';
 
         // Allow access only between 18:00 (6pm) and 07:00 (7am next day)
         $isAfterSix = $currentTime >= $startTime;
