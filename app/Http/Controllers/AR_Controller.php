@@ -2406,9 +2406,9 @@ class AR_Controller extends Controller
                         ->select('tblincentive.*')
                         ->get();
 
-                    $intakeYear = DB::table('sessions')->where('id', $student->intake)->value('year');
+                    $intakeYear = DB::table('sessions')->where('SessionID', $student->intake)->value('Year');
                     
-                    $allowIncentive = ($intakeYear !== null && ($intakeYear > 2025 || ($intakeYear == 2025 && in_array($student->intake, [105, 118]))));
+                    $allowIncentive = ($intakeYear !== null && ($intakeYear < 2025 || ($intakeYear == 2025 && in_array($student->intake, [105, 118]))));
 
                     if ($allowIncentive) {
                         foreach ($incentive as $key => $icv) {
