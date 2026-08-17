@@ -121,7 +121,7 @@ use Carbon\Carbon;
         <!-- Black Line Divider using Border -->
         <div class="border-line"></div>
 
-        <p>Pelajar seperti berikut hanya dibenarkan mengambil <b>MINI TRANSKRIP</b> sahaja kerana <span style="background-color: #87CEEB; padding: 2px 4px;">masih mempunyai tunggakan kewangan</span> di Kolej Uniti :-</p>
+        <p>Pelajar seperti berikut hanya boleh mendapatkan <b>MINI TRANSKRIP</b> sahaja kerana <span style="background-color: #87CEEB; padding: 2px 4px;">masih mempunyai tunggakan kewangan</span> di Kolej Uniti :-</p>
         
         <!-- Balance Summary Table -->
         <div class="col-12 mb-2 mt-2" style="display: flex; justify-content: center;">
@@ -170,7 +170,7 @@ use Carbon\Carbon;
                 </table>
             </div> 
         </div>
-        <p>Tarikh tuntutan adalah pada <b>11/10/2026</b> dan bertempat di <b>Bilik Pemulangan Jubah - Bangi Avenue Convention Centre (BACC)</b></p>
+        <p>Tarikh tuntutan adalah pada <b>12/10/2026</b> dan melalui emel <b>suriya@uniti.edu.my</b></p>
         <br>
         {{-- <p style="text-align: center;"><b>[THIS IS A COMPUTER GENERATED AND DOES NOT REQUIRE SIGNATURE]</b></p> --}}
         <p>Dikeluarkan oleh:</p>
