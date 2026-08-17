@@ -409,9 +409,11 @@ class PendaftarController extends Controller
                 ->leftJoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
                 ->leftJoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
                 ->leftJoin('tblstate AS state_address', 'tblstudent_address.state_id', 'state_address.id')
-                ->leftJoin('tblpackage_sponsorship', 'students.ic', 'tblpackage_sponsorship.student_ic')
-                ->leftJoin('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
-                ->leftJoin('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
+                ->leftJoin('tblpackage_sponsorship', function ($join) {
+                    $join->on('students.ic', '=', 'tblpackage_sponsorship.student_ic');
+                })
+                ->leftJoin('tblpackage', 'tblpackage_sponsorship.package_id', '=', 'tblpackage.id')
+                ->leftJoin('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', '=', 'tblpayment_type.id')
                 ->leftJoin('tblspm_dtl AS spm_bm', function ($join) {
                     $join->on('students.ic', '=', 'spm_bm.student_spm_ic')
                         ->where('spm_bm.subject_spm_id', '=', 1);
@@ -435,8 +437,8 @@ class PendaftarController extends Controller
                     'tblprogramme.mqa_code',
                     'tblprogramme.ifms_code',
                     'a.SessionName AS intake',
-                    DB::raw("DATE_FORMAT(students.date, '%m') AS month"),
-                    DB::raw("DATE_FORMAT(students.date, '%Y') AS year"),
+                    DB::raw("IFNULL(DATE_FORMAT(CAST(students.date AS DATE), '%m'), '') AS month"),
+                    DB::raw("IFNULL(DATE_FORMAT(CAST(students.date AS DATE), '%Y'), '') AS year"),
                     'b.SessionName AS session',
                     'tblstudent_status.name AS status',
                     'tblstudent_personal.date_birth',
