@@ -5213,25 +5213,9 @@ class FinanceController extends Controller
                     ['tblpayment_program.program_id', $data['student']->progid]
                 ])->select('tblpayment_package.*', 'tblpackage.name AS package', 'tblpayment_type.name AS type')->first();
 
-            $semester_column = 'semester_' . $data['student']->semester; // e.g., this will be 'semester_2' if $user->semester is 2
-
-            if ($data['student']->status == 'TARIK DIRI') {
-
-                $data['value'] = $data['sum3'];
-            } else {
-
-                if (isset($data['package']->$semester_column)) {
-                    $data['value'] = $data['sum3'] - $data['package']->$semester_column;
-                    // Do something with $semester_value
-                } else {
-                    $data['value'] = $data['sum3'];
-                    // Handle case where the column is not set
-                }
-            }
         } else {
 
             $data['package'] = null;
-            $data['value'] = $data['sum3'];
         }
 
         //GET SPONSOR
@@ -5441,6 +5425,9 @@ class FinanceController extends Controller
 
             $data['pk_balance'] = 0.00;
         }
+
+        // TUNGGAKAN SEMESTER: use the same current_balance logic as /finance/debt/claimLog
+        $data['value'] = $data['current_balance'];
 
         $data['total_all'] =  $data['value'] + $data['pk_balance'] + $data['sum3_2'];
 
