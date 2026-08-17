@@ -425,6 +425,11 @@ class PendaftarController extends Controller
                 })
                 ->leftJoin('tblgrade_spm AS grade_bi', 'spm_bi.grade_spm_id', '=', 'grade_bi.id')
                 ->leftJoin('student_tin_no', 'students.ic', 'student_tin_no.student_ic')
+                ->leftJoin('tblclaim', function ($join) {
+                    $join->on('students.ic', '=', 'tblclaim.student_ic')
+                        ->where('tblclaim.semester_id', '=', 1)
+                        ->where('tblclaim.process_type_id', '=', 2);
+                })
                 ->select(
                     'students.ic',
                     'student_tin_no.tin_number',
@@ -437,8 +442,8 @@ class PendaftarController extends Controller
                     'tblprogramme.mqa_code',
                     'tblprogramme.ifms_code',
                     'a.SessionName AS intake',
-                    DB::raw("IFNULL(DATE_FORMAT(CAST(students.date AS DATE), '%m'), '') AS month"),
-                    DB::raw("IFNULL(DATE_FORMAT(CAST(students.date AS DATE), '%Y'), '') AS year"),
+                    DB::raw("IFNULL(DATE_FORMAT(tblclaim.date, '%m'), '') AS month"),
+                    DB::raw("IFNULL(DATE_FORMAT(tblclaim.date, '%Y'), '') AS year"),
                     'b.SessionName AS session',
                     'tblstudent_status.name AS status',
                     'tblstudent_personal.date_birth',
@@ -523,7 +528,6 @@ class PendaftarController extends Controller
                 'Intake',
                 'Bulan',
                 'Tahun',
-                'Intake',
                 'Session',
                 'Semester',
                 'Status',
