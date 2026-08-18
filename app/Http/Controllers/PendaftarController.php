@@ -409,11 +409,9 @@ class PendaftarController extends Controller
                 ->leftJoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
                 ->leftJoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
                 ->leftJoin('tblstate AS state_address', 'tblstudent_address.state_id', 'state_address.id')
-                ->leftJoin('tblpackage_sponsorship', function ($join) {
-                    $join->on('students.ic', '=', 'tblpackage_sponsorship.student_ic');
-                })
-                ->leftJoin('tblpackage', 'tblpackage_sponsorship.package_id', '=', 'tblpackage.id')
-                ->leftJoin('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', '=', 'tblpayment_type.id')
+                // ->leftJoin('tblpackage_sponsorship', 'students.ic', 'tblpackage_sponsorship.student_ic')
+                // ->leftJoin('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
+                // ->leftJoin('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
                 ->leftJoin('tblspm_dtl AS spm_bm', function ($join) {
                     $join->on('students.ic', '=', 'spm_bm.student_spm_ic')
                         ->where('spm_bm.subject_spm_id', '=', 1);
@@ -425,11 +423,6 @@ class PendaftarController extends Controller
                 })
                 ->leftJoin('tblgrade_spm AS grade_bi', 'spm_bi.grade_spm_id', '=', 'grade_bi.id')
                 ->leftJoin('student_tin_no', 'students.ic', 'student_tin_no.student_ic')
-                ->leftJoin('tblclaim', function ($join) {
-                    $join->on('students.ic', '=', 'tblclaim.student_ic')
-                        ->where('tblclaim.semester_id', '=', 1)
-                        ->where('tblclaim.process_type_id', '=', 2);
-                })
                 ->select(
                     'students.ic',
                     'student_tin_no.tin_number',
@@ -442,14 +435,14 @@ class PendaftarController extends Controller
                     'tblprogramme.mqa_code',
                     'tblprogramme.ifms_code',
                     'a.SessionName AS intake',
-                    DB::raw("IFNULL(DATE_FORMAT(tblclaim.date, '%m'), '') AS month"),
-                    DB::raw("IFNULL(DATE_FORMAT(tblclaim.date, '%Y'), '') AS year"),
+                    DB::raw("DATE_FORMAT(students.date, '%m') AS month"),
+                    DB::raw("DATE_FORMAT(students.date, '%Y') AS year"),
                     'b.SessionName AS session',
                     'tblstudent_status.name AS status',
                     'tblstudent_personal.date_birth',
                     'tblstudent_personal.no_tel AS phone_no',
                     'descendants.descendants_name',
-                    'muet.muet_name',
+                    'muet.muet_code',
                     'tblsex.sex_name',
                     'tblnationality.nationality_name',
                     'state_birth.state_name AS birth_state',
@@ -461,10 +454,13 @@ class PendaftarController extends Controller
                     'tblstudent_address.city',
                     'state_address.state_name AS address_state',
                     'tblcountry.name AS country_name',
-                    'tblpackage.name AS package',
-                    'tblpayment_type.name AS type',
+                    // 'tblpackage.name AS package',
+                    // 'tblpayment_type.name AS type',
                     'grade_bm.name AS spm_bm',
-                    'grade_bi.name AS spm_bi'
+                    'grade_bi.name AS spm_bi',
+                    'tblstudent_personal.statelevel_id',
+                    'students.date_offer',
+                    DB::raw('(SELECT cgpa FROM student_transcript WHERE student_transcript.student_ic = students.ic ORDER BY semester DESC LIMIT 1) as latest_cgpa')
                 );
 
             // Apply same filters
@@ -501,41 +497,62 @@ class PendaftarController extends Controller
             // Prepare export data
             $exportData = [];
             $exportData[] = [
-                'No.',
-                'No Rujukan MQA',
-                'Kod Kursus',
-                'Ijazah yang Dianugerahkan',
-                'No. TIN',
-                'No. IC/Passport',
-                'No. Matrik',
-                'Nama Penuh',
-                'Jantina',
+                'No',
+                'No. KP/No. Passport',
+                'No Matrik',
                 'Hari Lahir',
                 'Bulan Lahir',
                 'Tahun Lahir',
-                'Tempat Lahir',
+                'Nama Penuh',
+                'Jantina',
+                'Negeri Lahir',
                 'Warganegara',
-                'Agama',
-                'No. Telefon Bimbit',
-                'Emel',
-                'Keturunan',
-                'Muet',
+                'Negara*',
                 'Alamat Tetap',
-                'Bandar',
-                'Poskod',
-                'Negeri',
-                'Negara',
-                'Intake',
-                'Bulan',
-                'Tahun',
-                'Session',
-                'Semester',
-                'Status',
-                'Package',
-                'Type',
-                'SPM BM',
-                'SPM BI'
+                'Negeri Tetap',
+                'Daerah Tetap',
+                'Poskod Tetap',
+                'Keturunan',
+                'Peringkat Pengajian',
+                'NEC Kod',
+                'Fakulti',
+                'Ijazah yang Dianugerahkan',
+                'Kod Kursus',
+                'No Rujukan MQA',
+                'Program',
+                'Pengkhususan',
+                'Kod Progam NOSS (jika ada)',
+                'Nama Program NOSS (jika ada)',
+                'CGPA',
+                'Gred (yang berkaitan)',
+                'Lokasi Pengajian',
+                'Mod Pengajian',
+                'Kaedah Pengajian',
+                'Jenis Pengajian',
+                'Bulan Kemasukan Pengajian',
+                'Tahun Kemasukan Pengajian',
+                'Bulan Tamat Pengajian',
+                'Tahun Tamat Pengajian',
+                'Kategori Pembiayaan Penaja',
+                'Penaja Pengajian',
+                'Keterangan Penaja Pengajian',
+                'Program Pembiayaan oleh KPT',
+                'BM(SPM)',
+                'BI(SPM)',
+                'MUET',
+                'Cawangan',
+                'Status Francais',
+                'Kod Institusi Francais',
+                'Kelayakan Masuk',
+                'Keterangan Kelayakan Masuk',
+                'OKU',
+                'Jenis Kecacatan 1',
+                'Nombor Tentera/Polis',
+                'Bulan Konvokesyen',
+                'Tahun Konvokesyen'
             ];
+
+            $daerahList = \Illuminate\Support\Facades\DB::table('tbldaerah')->get();
 
             foreach ($students as $key => $student) {
                 // Parse date_birth into day, month, year
@@ -557,48 +574,228 @@ class PendaftarController extends Controller
                 $fullAddress = trim(implode(', ', array_filter([
                     $student->address1 ?? '',
                     $student->address2 ?? '',
-                    $student->address3 ?? '',
-                    $student->city ?? '',
-                    $student->postcode ?? '',
-                    $student->address_state ?? '',
-                    $student->country_name ?? ''
+                    $student->address3 ?? ''
                 ])));
 
+                // Format Negeri Tetap (Match name to specific ID)
+                $negeriTetapId = '';
+                if (!empty($student->address_state)) {
+                    $stateMap = [
+                        'johor' => '1',
+                        'kedah' => '2',
+                        'kelantan' => '3',
+                        'melaka' => '4',
+                        'negeri sembilan' => '5',
+                        'pahang' => '6',
+                        'pulau pinang' => '7',
+                        'perak' => '8',
+                        'perlis' => '9',
+                        'selangor' => '10',
+                        'terengganu' => '11',
+                        'sabah' => '12',
+                        'sarawak' => '13',
+                        'wilayah persekutuan kuala lumpur' => '14',
+                        'w.p. kuala lumpur' => '14',
+                        'kuala lumpur' => '14',
+                        'wilayah persekutuan labuan' => '15',
+                        'w.p. labuan' => '15',
+                        'labuan' => '15',
+                        'wilayah persekutuan putrajaya' => '16',
+                        'w.p. putrajaya' => '16',
+                        'putrajaya' => '16',
+                        'luar negara' => '18'
+                    ];
+                    
+                    $stateLower = strtolower(trim($student->address_state));
+                    if (isset($stateMap[$stateLower])) {
+                        $negeriTetapId = $stateMap[$stateLower];
+                    } else {
+                        // Fallback: Check for partial match (e.g. "WP Kuala Lumpur")
+                        foreach ($stateMap as $name => $id) {
+                            if (strpos($stateLower, $name) !== false) {
+                                $negeriTetapId = $id;
+                                break;
+                            }
+                        }
+                        if (empty($negeriTetapId)) {
+                            $negeriTetapId = $student->address_state; // Leave as original if no match
+                        }
+                    }
+                }
+
+                // Get Daerah Code
+                $daerahTetap = $student->city ?? '';
+                if (!empty($student->city)) {
+                    $cityLower = strtolower(trim($student->city));
+                    foreach ($daerahList as $daerah) {
+                        $daerahNameLower = strtolower(trim($daerah->name));
+                        if (strpos($daerahNameLower, $cityLower) !== false || strpos($cityLower, str_replace('daerah ', '', $daerahNameLower)) !== false) {
+                            $daerahTetap = $daerah->code;
+                            break;
+                        }
+                    }
+                }
+
+                // Format Jantina
+                $jantina = '';
+                if (!empty($student->sex_name)) {
+                    $sexLower = strtolower(trim($student->sex_name));
+                    if ($sexLower === 'lelaki') {
+                        $jantina = '1';
+                    } elseif ($sexLower === 'perempuan') {
+                        $jantina = '2';
+                    } else {
+                        $jantina = $student->sex_name;
+                    }
+                }
+
+                // Format Negeri Lahir from IC
+                $negeriLahirCode = '';
+                if (!empty($student->ic)) {
+                    // Remove any non-numeric characters (like dashes) just in case
+                    $cleanIc = preg_replace('/[^0-9]/', '', $student->ic);
+                    if (strlen($cleanIc) >= 8) {
+                        // Extract 7th and 8th digits (index 6, length 2)
+                        $negeriLahirCode = substr($cleanIc, 6, 2);
+                    }
+                }
+
+                // Format Warganegara and Negara
+                if (isset($student->statelevel_id) && $student->statelevel_id == 1) {
+                    $warganegara = '1';
+                    $negara = '217';
+                } else {
+                    $warganegara = '2';
+                    $negara = '999';
+                }
+
+                // Extract month and year from date_offer
+                $offerMonth = '';
+                $offerYear = '';
+                if (!empty($student->date_offer)) {
+                    try {
+                        $offerDate = Carbon::parse($student->date_offer);
+                        $offerMonth = $offerDate->format('n');
+                        $offerYear = $offerDate->format('Y');
+                    } catch (\Exception $e) {}
+                }
+
+                // Format SPM Grades
+                $spmMap = [
+                    '1a' => '1', 'a1' => '1', '1' => '1',
+                    '2a' => '2', 'a2' => '2', '2' => '2',
+                    '3b' => '3', 'c3' => '3', '3' => '3',
+                    '4b' => '4', 'c4' => '4', '4' => '4',
+                    '5c' => '5', 'c5' => '5', '5' => '5',
+                    '6c' => '6', 'c6' => '6', '6' => '6',
+                    '7d' => '7', 'p7' => '7', '7' => '7',
+                    '8e' => '8', 'p8' => '8', '8' => '8',
+                    '9f' => '9', 'f9' => '9', '9' => '9', '9g' => '9',
+                    'a+' => '20',
+                    'a' => '21',
+                    'a-' => '22',
+                    'b+' => '23',
+                    'b' => '24',
+                    'b-' => '31',
+                    'c+' => '25',
+                    'c' => '26',
+                    'c-' => '30',
+                    'd' => '27',
+                    'e' => '28',
+                    'g' => '29',
+                    'tidak berkaitan' => '10',
+                    'tidak hadir' => '10'
+                ];
+
+                $spmBmId = '';
+                if (!empty($student->spm_bm)) {
+                    $bmStr = strtolower(trim($student->spm_bm));
+                    $spmBmId = $spmMap[$bmStr] ?? $student->spm_bm;
+                }
+
+                $spmBiId = '';
+                if (!empty($student->spm_bi)) {
+                    $biStr = strtolower(trim($student->spm_bi));
+                    $spmBiId = $spmMap[$biStr] ?? $student->spm_bi;
+                }
+
+                $kategoriPembiayaan = '5';
+                $penajaPengajian = '';
+                $programPembiayaanKPT = '';
+                if (!empty($student->ic)) {
+                    $sponsorStudent = \Illuminate\Support\Facades\DB::table('tblpayment')
+                        ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
+                        ->where([
+                            ['tblpayment.process_type_id', 7],
+                            ['tblpayment.process_status_id', 2],
+                            ['tblpayment.student_ic', $student->ic]
+                        ])
+                        ->whereIn('tblsponsor_library.id', [1, 2, 3])
+                        ->orderBy('tblpayment.id', 'DESC')
+                        ->select('tblsponsor_library.id')
+                        ->first();
+
+                    if ($sponsorStudent && $sponsorStudent->id == 3) {
+                        $kategoriPembiayaan = '1';
+                        $penajaPengajian = '8';
+                        $programPembiayaanKPT = '2';
+                    }
+                }
+
                 $exportData[] = [
-                    $key + 1, // No.
-                    $student->mqa_code ?? '', // No Rujukan MQA
-                    $student->ifms_code ?? '', // Kod Kursus
-                    $student->progname ?? '', // Ijazah yang Dianugerahkan
-                    $student->tin_number ?? '', // No. TIN
-                    $student->ic ?? '', // No. IC/Passport
-                    $student->no_matric ?? '', // No. Matrik
-                    $student->name ?? '', // Nama Penuh
-                    $student->sex_name ?? '', // Jantina
+                    $key + 1, // No
+                    $student->ic ?? '', // No. KP/No. Passport
+                    $student->no_matric ?? '', // No Matrik
                     $day, // Hari Lahir
                     $month, // Bulan Lahir
                     $year, // Tahun Lahir
-                    $student->birth_state ?? '', // Tempat Lahir
-                    $student->nationality_name ?? '', // Warganegara
-                    $student->religion_name ?? '', // Agama
-                    $student->phone_no ?? '', // No. Telefon Bimbit
-                    $student->email ?? '', // Emel
-                    $student->descendants_name ?? '', // Keturunan
-                    $student->muet_name ?? '', // Muet
+                    $student->name ?? '', // Nama Penuh
+                    $jantina, // Jantina
+                    $negeriLahirCode, // Negeri Lahir
+                    $warganegara, // Warganegara
+                    $negara, // Negara*
                     $fullAddress, // Alamat Tetap
-                    $student->city ?? '', // Bandar
-                    $student->postcode ?? '', // Poskod
-                    $student->address_state ?? '', // Negeri
-                    $student->country_name ?? '', // Negara
-                    $student->intake ?? '', // Intake
-                    $student->month ?? '', // Bulan
-                    $student->year ?? '', // Tahun
-                    $student->session ?? '', // Session
-                    $student->semester ?? '', // Semester
-                    $student->status ?? '', // Status
-                    $student->package ?? '', // Package
-                    $student->type ?? '', // Type
-                    $student->spm_bm ?? '', // SPM BM
-                    $student->spm_bi ?? '', // SPM BI
+                    $negeriTetapId, // Negeri Tetap
+                    $daerahTetap, // Daerah Tetap
+                    $student->postcode ?? '', // Poskod Tetap
+                    $student->descendants_name ?? '', // Keturunan
+                    '1', // Peringkat Pengajian
+                    '', // NEC Kod
+                    '', // Fakulti
+                    $student->progname ?? '', // Ijazah yang Dianugerahkan
+                    $student->ifms_code ?? '', // Kod Kursus
+                    $student->mqa_code ?? '', // No Rujukan MQA
+                    '', // Program
+                    '', // Pengkhususan
+                    '', // Kod Progam NOSS (jika ada)
+                    '', // Nama Program NOSS (jika ada)
+                    $student->latest_cgpa ?? '', // CGPA
+                    '', // Gred (yang berkaitan)
+                    '1', // Lokasi Pengajian
+                    '1', // Mod Pengajian
+                    '4', // Kaedah Pengajian
+                    '-2', // Jenis Pengajian
+                    $offerMonth, // Bulan Kemasukan Pengajian
+                    $offerYear, // Tahun Kemasukan Pengajian
+                    '', // Bulan Tamat Pengajian
+                    '', // Tahun Tamat Pengajian
+                    $kategoriPembiayaan, // Kategori Pembiayaan Penaja
+                    $penajaPengajian, // Penaja Pengajian
+                    '', // Keterangan Penaja Pengajian
+                    $programPembiayaanKPT, // Program Pembiayaan oleh KPT
+                    $spmBmId, // BM(SPM)
+                    $spmBiId, // BI(SPM)
+                    $student->muet_code ?? '7*', // MUET
+                    '-2', // Cawangan
+                    '2', // Status Francais
+                    '', // Kod Institusi Francais
+                    '1', // Kelayakan Masuk
+                    '', // Keterangan Kelayakan Masuk
+                    '', // OKU
+                    '', // Jenis Kecacatan 1
+                    '', // Nombor Tentera/Polis
+                    '', // Bulan Konvokesyen
+                    '', // Tahun Konvokesyen
                 ];
 
                 // Clear memory periodically for large datasets
@@ -640,7 +837,7 @@ class PendaftarController extends Controller
 
                 Log::info('Export file created successfully', ['file' => $filePath]);
 
-                // Return file as download using the most basic method (avoids all disabled functions)
+                // Return file as download using the most basic method (avoids all disabled functions on live server)
                 $fullPath = storage_path('app/public/' . $filePath);
 
                 if (file_exists($fullPath)) {
@@ -660,14 +857,16 @@ class PendaftarController extends Controller
                         ->header('Expires', '0');
                 } else {
                     Log::error('Export file not found after creation', ['path' => $fullPath]);
-                    return back()->with('error', 'Failed to create export file.');
+                    return response()->json(['message' => 'Failed to create export file.'], 500);
                 }
             } catch (\Exception $e) {
                 Log::error('Excel generation failed', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
-                return back()->with('error', 'Failed to generate Excel file: ' . $e->getMessage());
+                return response()->json([
+                    'message' => 'Failed to generate Excel file: ' . $e->getMessage()
+                ], 500);
             }
         } catch (\Exception $e) {
             Log::error('Student Export Failed', [
@@ -677,7 +876,9 @@ class PendaftarController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return back()->with('error', 'Export failed. Please try again or contact administrator. Error: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Export failed: ' . $e->getMessage()
+            ], 500);
         }
     }
 
