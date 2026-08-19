@@ -2883,6 +2883,7 @@ class LecturerController extends Controller
         $extraavgoverall = [];
 
         $overallall = [];
+        $overallall2 = [];
         $avgoverall = [];
         $valGrade = [];
         $pointerGrade = [];
@@ -5255,6 +5256,7 @@ class LecturerController extends Controller
         $extraavgoverall = [];
 
         $overallall = [];
+        $overallall2 = [];
         $avgoverall = [];
 
         $groups = DB::table('user_subjek')
