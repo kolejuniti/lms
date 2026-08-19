@@ -773,7 +773,7 @@ class PendaftarController extends Controller
                     '', // Gred (yang berkaitan)
                     '1', // Lokasi Pengajian
                     '1', // Mod Pengajian
-                    '4', // Kaedah Pengajian
+                    '7', // Kaedah Pengajian
                     '-2', // Jenis Pengajian
                     $offerMonth, // Bulan Kemasukan Pengajian
                     $offerYear, // Tahun Kemasukan Pengajian
