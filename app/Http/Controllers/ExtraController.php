@@ -210,21 +210,26 @@ class ExtraController extends Controller
     {
 
         try {
+            $user = Auth::user();
 
-            $extra = DB::table('tblclassextra')->where('id', $request->id)->first();
+            $extra = DB::table('tblclassextra')->where('id', $request->id)->where('addby', $user->ic)->first();
 
-            if($extra->status != 3)
-            {
-            DB::table('tblclassextra')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
+            if($extra){
+                if($extra->status != 3)
+                {
+                DB::table('tblclassextra')->where('id', $request->id)->where('addby', $user->ic)->update([
+                    'status' => 3
+                ]);
 
-            return true;
+                return true;
 
-            }else{
+                }else{
 
-                die;
+                    die;
 
+                }
+            } else {
+                return false;
             }
           
           } catch (\Exception $e) {
