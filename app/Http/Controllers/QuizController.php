@@ -94,20 +94,26 @@ class QuizController extends Controller
 
         try {
 
-            $quiz = DB::table('tblclassquiz')->where('id', $request->id)->first();
+            $user = Auth::user();
 
-            if($quiz->status != 3)
-            {
-            DB::table('tblclassquiz')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
+            $quiz = DB::table('tblclassquiz')->where('id', $request->id)->where('addby', $user->ic)->first();
 
-            return true;
+            if($quiz){
+                if($quiz->status != 3)
+                {
+                DB::table('tblclassquiz')->where('id', $request->id)->where('addby', $user->ic)->update([
+                    'status' => 3
+                ]);
 
-            }else{
+                return true;
 
-                die;
+                }else{
 
+                    die;
+
+                }
+            } else {
+                return false;
             }
           
           } catch (\Exception $e) {
