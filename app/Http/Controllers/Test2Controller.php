@@ -92,21 +92,26 @@ class Test2Controller extends Controller
     {
 
         try {
+            $user = Auth::user();
 
-            $test = DB::table('tblclasstest2')->where('id', $request->id)->first();
+            $test = DB::table('tblclasstest2')->where('id', $request->id)->where('addby', $user->ic)->first();
 
-            if($test->status != 3)
-            {
-            DB::table('tblclasstest2')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
+            if($test){
+                if($test->status != 3)
+                {
+                DB::table('tblclasstest2')->where('id', $request->id)->where('addby', $user->ic)->update([
+                    'status' => 3
+                ]);
 
-            return true;
+                return true;
 
-            }else{
+                }else{
 
-                die;
+                    die;
 
+                }
+            } else {
+                return false;
             }
           
           } catch (\Exception $e) {

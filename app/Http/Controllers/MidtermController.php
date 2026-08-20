@@ -251,21 +251,26 @@ class MidtermController extends Controller
     {
 
         try {
+            $user = Auth::user();
 
-            $midterm = DB::table('tblclassmidterm')->where('id', $request->id)->first();
+            $midterm = DB::table('tblclassmidterm')->where('id', $request->id)->where('addby', $user->ic)->first();
 
-            if($midterm->status != 3)
-            {
-            DB::table('tblclassmidterm')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
+            if($midterm){
+                if($midterm->status != 3)
+                {
+                DB::table('tblclassmidterm')->where('id', $request->id)->where('addby', $user->ic)->update([
+                    'status' => 3
+                ]);
 
-            return true;
+                return true;
 
-            }else{
+                }else{
 
-                die;
+                    die;
 
+                }
+            } else {
+                return false;
             }
           
           } catch (\Exception $e) {

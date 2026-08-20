@@ -388,21 +388,26 @@ class OtherController extends Controller
     {
 
         try {
+            $user = Auth::user();
 
-            $other = DB::table('tblclassother')->where('id', $request->id)->first();
+            $other = DB::table('tblclassother')->where('id', $request->id)->where('addby', $user->ic)->first();
 
-            if($other->status != 3)
-            {
-            DB::table('tblclassother')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
+            if($other){
+                if($other->status != 3)
+                {
+                DB::table('tblclassother')->where('id', $request->id)->where('addby', $user->ic)->update([
+                    'status' => 3
+                ]);
 
-            return true;
+                return true;
 
-            }else{
+                }else{
 
-                die;
+                    die;
 
+                }
+            } else {
+                return false;
             }
           
           } catch (\Exception $e) {

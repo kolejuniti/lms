@@ -61,21 +61,26 @@ class PracticalController extends Controller
     {
 
         try {
+            $user = Auth::user();
 
-            $practical = DB::table('tblclasspractical')->where('id', $request->id)->first();
+            $practical = DB::table('tblclasspractical')->where('id', $request->id)->where('addby', $user->ic)->first();
 
-            if($practical->status != 3)
-            {
-            DB::table('tblclasspractical')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
+            if($practical){
+                if($practical->status != 3)
+                {
+                DB::table('tblclasspractical')->where('id', $request->id)->where('addby', $user->ic)->update([
+                    'status' => 3
+                ]);
 
-            return true;
+                return true;
 
-            }else{
+                }else{
 
-                die;
+                    die;
 
+                }
+            } else {
+                return false;
             }
           
           } catch (\Exception $e) {

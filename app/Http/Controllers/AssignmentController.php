@@ -62,21 +62,26 @@ class AssignmentController extends Controller
     {
 
         try {
+            $user = Auth::user();
 
-            $assign = DB::table('tblclassassign')->where('id', $request->id)->first();
+            $assign = DB::table('tblclassassign')->where('id', $request->id)->where('addby', $user->ic)->first();
 
-            if($assign->status != 3)
-            {
-            DB::table('tblclassassign')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
+            if($assign){
+                if($assign->status != 3)
+                {
+                DB::table('tblclassassign')->where('id', $request->id)->where('addby', $user->ic)->update([
+                    'status' => 3
+                ]);
 
-            return true;
+                return true;
 
-            }else{
+                }else{
 
-                die;
+                    die;
 
+                }
+            } else {
+                return false;
             }
           
           } catch (\Exception $e) {

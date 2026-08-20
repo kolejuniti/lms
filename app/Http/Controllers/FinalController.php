@@ -251,21 +251,26 @@ class FinalController extends Controller
     {
 
         try {
+            $user = Auth::user();
 
-            $final = DB::table('tblclassfinal')->where('id', $request->id)->first();
+            $final = DB::table('tblclassfinal')->where('id', $request->id)->where('addby', $user->ic)->first();
 
-            if($final->status != 3)
-            {
-            DB::table('tblclassfinal')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
+            if($final){
+                if($final->status != 3)
+                {
+                DB::table('tblclassfinal')->where('id', $request->id)->where('addby', $user->ic)->update([
+                    'status' => 3
+                ]);
 
-            return true;
+                return true;
 
-            }else{
+                }else{
 
-                die;
+                    die;
 
+                }
+            } else {
+                return false;
             }
           
           } catch (\Exception $e) {
