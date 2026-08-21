@@ -74,6 +74,7 @@
                         <option value="" selected>-</option>
                         <option value="10%">10%</option>
                         <option value="20%">20%</option>
+                        <option value="Elaun">Elaun</option>
                     </select>
                     </div>
                 </div>
