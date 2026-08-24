@@ -25,8 +25,14 @@ class HEPController extends Controller
         $search = $request->input('search');
 
         if (empty($search)) {
-            return redirect()->back()->with('error', 'Sila masukkan nama atau IC pencarian.');
+            return redirect()->back()->with('error', 'Sila masukkan nama, IC atau no. stiker pencarian.');
         }
+
+        // Get ICs from tblvehicle_sticker matching sticker_number
+        $stickerIcs = DB::table('tblvehicle_sticker')
+            ->where('sticker_number', 'like', "%{$search}%")
+            ->pluck('ic')
+            ->toArray();
 
         // Query for staff
         $staffQuery = DB::table('users')
@@ -42,9 +48,12 @@ class HEPController extends Controller
                 'status',
                 DB::raw("'staff' as user_type")
             )
-            ->where(function($q) use ($search) {
+            ->where(function($q) use ($search, $stickerIcs) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('ic', 'like', "%{$search}%");
+                if (!empty($stickerIcs)) {
+                    $q->orWhereIn('ic', $stickerIcs);
+                }
             });
 
         // Query for students
@@ -64,9 +73,12 @@ class HEPController extends Controller
                 'tblstudent_status.name as status',
                 DB::raw("'student' as user_type")
             )
-            ->where(function($q) use ($search) {
+            ->where(function($q) use ($search, $stickerIcs) {
                 $q->where('students.name', 'like', "%{$search}%")
                   ->orWhere('students.ic', 'like', "%{$search}%");
+                if (!empty($stickerIcs)) {
+                    $q->orWhereIn('students.ic', $stickerIcs);
+                }
             });
 
         // Combine queries

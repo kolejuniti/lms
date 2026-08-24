@@ -21,9 +21,9 @@
 
                         <form action="{{ route('hep.vehicle_sticker.search') }}" method="GET">
                             <div class="form-group row">
-                                <label for="search" class="col-sm-2 col-form-label">Name / IC</label>
+                                <label for="search" class="col-sm-2 col-form-label">Name / IC / Sticker Number</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="search" name="search" placeholder="Enter Name or IC" value="{{ $search ?? '' }}">
+                                    <input type="text" class="form-control" id="search" name="search" placeholder="Enter Name, IC or Sticker Number" value="{{ $search ?? '' }}">
                                 </div>
                                 <div class="col-sm-2">
                                     <button type="submit" class="btn btn-primary">Search</button>
@@ -77,6 +77,7 @@
                                                 <th>Brand</th>
                                                 <th>Model</th>
                                                 <th>Color</th>
+                                                <th>Sticker Number</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -89,6 +90,7 @@
                                                 <td>{{ $app->brand }}</td>
                                                 <td>{{ $app->model }}</td>
                                                 <td>{{ $app->color }}</td>
+                                                <td>{{ $app->sticker_number }}</td>
                                                 <td>
                                                     @if(strtoupper($app->status) == 'SAH')
                                                         <span class="badge badge-success">{{ $app->status }}</span>
