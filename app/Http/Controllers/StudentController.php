@@ -2426,10 +2426,18 @@ class StudentController extends Controller
             'model' => 'required|string|max:50',
         ]);
 
-        $vehicleCount = DB::table('tblvehicle_sticker')->where('ic', $student->ic)->count();
+        $vehicles = DB::table('tblvehicle_sticker')->where('ic', $student->ic)->get();
 
-        if ($vehicleCount >= 1) {
-            return redirect()->back()->with('alert', 'You can only register a maximum of one vehicle.');
+        if ($vehicles->count() >= 2) {
+            return redirect()->back()->with('alert', 'You can only register a maximum of two vehicles (1 car and 1 motorcycle).');
+        }
+
+        $requestedType = strtoupper($request->type);
+        $typeCount = $vehicles->where('type', $requestedType)->count();
+
+        if ($typeCount >= 1) {
+            $typeName = $requestedType == 'KERETA' ? 'car' : 'motorcycle';
+            return redirect()->back()->with('alert', "You have already registered a $typeName. You can only register 1 car and 1 motorcycle.");
         }
 
         DB::table('tblvehicle_sticker')->insert([
