@@ -345,6 +345,7 @@ li a {
 						<li><a href="{{ route('pendaftar_akademik.assignCourse') }}" class="{{ (route('pendaftar_akademik.assignCourse') == Request::url()) ? 'active' : ''}}">Structure List</a></li>
 						<li><a href="{{ route('pendaftar_akademik.structureReport') }}" class="{{ (route('pendaftar_akademik.structureReport') == Request::url()) ? 'active' : ''}}">Structure Report</a></li>
 						<li><a href="{{ route('kp.coursemark') }}" class="{{ (route('kp.coursemark') == Request::url()) ? 'active' : ''}}">Subject Marks</a></li>
+						<li><a href="{{ route('pendaftar_akademik.studentSubjectLecturerReport') }}" class="{{ (route('pendaftar_akademik.studentSubjectLecturerReport') == Request::url()) ? 'active' : ''}}">Student Subject - Lecturer Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.student') }}" class="{{ (route('pendaftar_akademik.student') == Request::url()) ? 'active' : ''}}">Assign Subject</a></li>
 						<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>

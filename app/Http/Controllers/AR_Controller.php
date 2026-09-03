@@ -7828,4 +7828,90 @@ class AR_Controller extends Controller
 
         return view('pendaftar_akademik.barcode.generate', compact('numbers'));
     }
+
+    public function studentSubjectLecturerReport(Request $request)
+    {
+        $programs = DB::table('tblprogramme')->get();
+        $sessions = DB::table('sessions')->orderBy('SessionID', 'desc')->get();
+        
+        return view('pendaftar_akademik.studentSubjectLecturerReport', compact('programs', 'sessions'));
+    }
+
+    public function getStudentSubjectLecturerReport(Request $request)
+    {
+        $program = $request->program;
+        $session = $request->session;
+        $semester = $request->semester;
+
+        $query = DB::table('students')
+            ->leftJoin('student_subjek', 'students.ic', '=', 'student_subjek.student_ic')
+            ->leftJoin('subjek', 'student_subjek.courseid', '=', 'subjek.sub_id')
+            ->leftJoin('user_subjek', 'student_subjek.group_id', '=', 'user_subjek.id')
+            ->leftJoin('users', 'user_subjek.user_ic', '=', 'users.ic')
+            ->select(
+                'students.name as student_name',
+                'students.no_matric',
+                'subjek.course_code',
+                'subjek.course_name',
+                'student_subjek.group_name',
+                'users.name as lecturer_name'
+            );
+
+        if (!empty($program)) {
+            $query->where('students.program', $program);
+        }
+        if (!empty($session)) {
+            $query->where('student_subjek.sessionid', $session);
+        }
+        if (!empty($semester)) {
+            $query->where('student_subjek.semesterid', $semester);
+        }
+
+        $data = $query->orderBy('students.name')->get();
+
+        return view('pendaftar_akademik.getStudentSubjectLecturerReport', compact('data'));
+    }
+
+    public function exportStudentSubjectLecturerReport(Request $request)
+    {
+        $program = $request->program;
+        $session = $request->session;
+        $semester = $request->semester;
+        $type = $request->type; // 'excel' or 'pdf'
+
+        $query = \Illuminate\Support\Facades\DB::table('students')
+            ->leftJoin('student_subjek', 'students.ic', '=', 'student_subjek.student_ic')
+            ->leftJoin('subjek', 'student_subjek.courseid', '=', 'subjek.sub_id')
+            ->leftJoin('user_subjek', 'student_subjek.group_id', '=', 'user_subjek.id')
+            ->leftJoin('users', 'user_subjek.user_ic', '=', 'users.ic')
+            ->select(
+                'students.name as student_name',
+                'students.no_matric',
+                'subjek.course_code',
+                'subjek.course_name',
+                'student_subjek.group_name',
+                'users.name as lecturer_name'
+            );
+
+        if (!empty($program)) {
+            $query->where('students.program', $program);
+        }
+        if (!empty($session)) {
+            $query->where('student_subjek.sessionid', $session);
+        }
+        if (!empty($semester)) {
+            $query->where('student_subjek.semesterid', $semester);
+        }
+
+        $data = $query->orderBy('students.name')->get();
+
+        if ($type == 'excel') {
+            return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\StudentSubjectLecturerExport($data), 'student_subject_lecturer_report.xlsx');
+        } elseif ($type == 'pdf') {
+            $pdf = \PDF::loadView('pendaftar_akademik.exportStudentSubjectLecturerReport_pdf', compact('data'));
+            return $pdf->download('student_subject_lecturer_report.pdf');
+        }
+
+        return back();
+    }
 }
