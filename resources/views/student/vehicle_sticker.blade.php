@@ -262,7 +262,7 @@
                 </div>
                 @else
                 <div class="alert alert-info mb-4" style="border-radius: 12px;">
-                    <i class="mdi mdi-information me-2"></i> You have reached the maximum limit of 1 registered vehicles.
+                    <i class="mdi mdi-information me-2"></i> You have reached the maximum limit of 2 registered vehicles.
                 </div>
                 @endif
 
