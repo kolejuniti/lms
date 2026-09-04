@@ -198,6 +198,18 @@
     var from = $('#from').val();
     var to = $('#to').val();
 
+    // Warn user if the date range is large (may take longer to load)
+    if (from && to) {
+      var fromDate = new Date(from);
+      var toDate = new Date(to);
+      var diffDays = Math.round((toDate - fromDate) / (1000 * 60 * 60 * 24));
+      if (diffDays > 90) {
+        if (!confirm('The selected range is ' + diffDays + ' days. Generating the print report for a large range may take a moment. Continue?')) {
+          return;
+        }
+      }
+    }
+
     var filters = {
       'yuran-pengajian': $('#chk-yuran-pengajian').is(':checked'),
       'yuran-konvokesyen': $('#chk-yuran-konvokesyen').is(':checked'),
