@@ -5191,7 +5191,7 @@ class FinanceController extends Controller
             }
         }
 
-        $data['sum3'] = end($data['total']);
+        $data['sum3'] = (empty($data['total'])) ? 0 : end($data['total']);
 
         $data['sponsor'] = DB::table('tblpackage_sponsorship')
             ->join('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
@@ -5445,14 +5445,8 @@ class FinanceController extends Controller
 
         $data['value'] = $data['value'] + 0;
 
-        // Add sum3_3 only for records where tblstudentclaim.id is 47 AND from tblclaimdtl table
-        $sum3_3_conditional = 0;
-        foreach ($data['record3'] as $record) {
-            if ($record->claim_id == 47 && $record->source_table == 'tblclaimdtl') {
-                $sum3_3_conditional += $record->amount;
-            }
-        }
-        $data['value'] = $data['value'] + $sum3_3_conditional;
+        // The additional sum3_3_conditional calculation was removed so TUNGGAKAN SEMESTER (RM)
+        // matches Current Arrears exactly as in finance/debt/claimLog.
 
         if (isset($request->print)) {
 
