@@ -6460,6 +6460,10 @@ class FinanceController extends Controller
             $data['from'] = Carbon::createFromFormat('Y-m-d', $request->from)->translatedFormat('d F Y');;
             $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');
 
+            if ($request->print === 'summary') {
+                return view('finance.report.printSummaryChargeReport', compact('data'));
+            }
+
             $filters = $request->filters;
 
             return view('finance.report.printDailyReport', compact('data', 'filters'));
@@ -6798,6 +6802,10 @@ class FinanceController extends Controller
         if (isset($request->print)) {
             $data['from'] = Carbon::createFromFormat('Y-m-d', $request->from)->translatedFormat('d F Y');;
             $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');
+
+            if ($request->print === 'summary') {
+                return view('finance.report.printSummaryChargeReport', compact('data'));
+            }
 
             return view('finance.report.printChargeReport', compact('data'));
         } else {

@@ -240,6 +240,7 @@
             <th colspan="2" class="text-center" style="background:#6f42c1; color:#fff;">Credit Note – Fee (RM)</th>
             <th colspan="2" class="text-center" style="background:#20c997; color:#fff;">Credit Note – Fine (RM)</th>
             <th colspan="1" class="text-center" style="background:#6c757d; color:#fff;">Credit Note – Discount (RM)</th>
+            <th rowspan="2" class="align-middle text-center" style="background:#212529; color:#fff; width:9%;">Total (RM)</th>
           </tr>
           <tr>
             <th class="text-center" style="background:#138496; color:#fff;">New</th>
@@ -257,6 +258,19 @@
         </thead>
         <tbody>
           @foreach ($data['program'] as $key => $prg)
+          @php
+            $rowTotal =
+              ((!empty($data['newStudentTotals'])) ? $data['newStudentTotals'][$key] : 0) +
+              ((!empty($data['oldStudentTotals'])) ? $data['oldStudentTotals'][$key] : 0) +
+              ((!empty($data['debitTotals'])) ? $data['debitTotals'][$key] : 0) +
+              ((!empty($data['debitCorrectionTotals'])) ? $data['debitCorrectionTotals'][$key] : 0) +
+              ((!empty($data['debitCorrectionIncentifTotals'])) ? $data['debitCorrectionIncentifTotals'][$key] : 0) +
+              ((!empty($data['creditFeeOldTotals'])) ? $data['creditFeeOldTotals'][$key] : 0) +
+              ((!empty($data['creditFeeGradTotals'])) ? $data['creditFeeGradTotals'][$key] : 0) +
+              ((!empty($data['creditFineOldTotals'])) ? $data['creditFineOldTotals'][$key] : 0) +
+              ((!empty($data['creditFineGradTotals'])) ? $data['creditFineGradTotals'][$key] : 0) +
+              ((!empty($data['creditDiscountTotals'])) ? $data['creditDiscountTotals'][$key] : 0);
+          @endphp
           <tr>
             <td class="text-center">{{ $prg->program_ID }}</td>
             <td class="font-weight-bold">{{ $prg->progcode }}</td>
@@ -271,10 +285,24 @@
             <td class="text-right">{{ number_format((!empty($data['creditFineOldTotals'])) ? $data['creditFineOldTotals'][$key] : 0, 2) }}</td>
             <td class="text-right">{{ number_format((!empty($data['creditFineGradTotals'])) ? $data['creditFineGradTotals'][$key] : 0, 2) }}</td>
             <td class="text-right">{{ number_format((!empty($data['creditDiscountTotals'])) ? $data['creditDiscountTotals'][$key] : 0, 2) }}</td>
+            <td class="text-right font-weight-bold" style="background:#f8f9fa;">{{ number_format($rowTotal, 2) }}</td>
           </tr>
           @endforeach
         </tbody>
         <tfoot>
+          @php
+            $grandTotal =
+              array_sum($data['newStudentTotals']) +
+              array_sum($data['oldStudentTotals']) +
+              array_sum($data['debitTotals']) +
+              array_sum($data['debitCorrectionTotals']) +
+              array_sum($data['debitCorrectionIncentifTotals']) +
+              array_sum($data['creditFeeOldTotals']) +
+              array_sum($data['creditFeeGradTotals']) +
+              array_sum($data['creditFineOldTotals']) +
+              array_sum($data['creditFineGradTotals']) +
+              array_sum($data['creditDiscountTotals']);
+          @endphp
           <tr style="background:#dee2e6; font-weight:bold;">
             <td colspan="2" class="text-center">TOTAL</td>
             <td class="text-right">{{ number_format(array_sum($data['newStudentTotals']), 2) }}</td>
@@ -288,6 +316,7 @@
             <td class="text-right">{{ number_format(array_sum($data['creditFineOldTotals']), 2) }}</td>
             <td class="text-right">{{ number_format(array_sum($data['creditFineGradTotals']), 2) }}</td>
             <td class="text-right">{{ number_format(array_sum($data['creditDiscountTotals']), 2) }}</td>
+            <td class="text-right" style="background:#ced4da;">{{ number_format($grandTotal, 2) }}</td>
           </tr>
         </tfoot>
       </table>

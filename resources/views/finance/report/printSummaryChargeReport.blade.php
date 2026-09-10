@@ -104,93 +104,75 @@
         }
 
         /* Coloured group headers for summary dashboard */
-        .th-blue {
-            background: #17a2b8;
+        .th-blue { background: #b02a2a;
             color: #fff;
         }
 
-        .th-blue2 {
-            background: #138496;
+        .th-blue2 { background: #8a1f1f;
             color: #fff;
         }
 
-        .th-blue3 {
-            background: #117a8b;
+        .th-blue3 { background: #6b1616;
             color: #fff;
         }
 
-        .th-red {
-            background: #dc3545;
+        .th-red { background: #b02a2a;
             color: #fff;
         }
 
-        .th-red2 {
-            background: #c82333;
+        .th-red2 { background: #8a1f1f;
             color: #fff;
         }
 
-        .th-red3 {
-            background: #a71d2a;
+        .th-red3 { background: #6b1616;
             color: #fff;
         }
 
-        .th-red4 {
-            background: #881524;
+        .th-red4 { background: #4d0f0f;
             color: #fff;
         }
 
-        .th-orange {
-            background: #fd7e14;
+        .th-orange { background: #b02a2a;
             color: #fff;
         }
 
-        .th-orange2 {
-            background: #e8590c;
+        .th-orange2 { background: #8a1f1f;
             color: #fff;
         }
 
-        .th-purple {
-            background: #6f42c1;
+        .th-purple { background: #b02a2a;
             color: #fff;
         }
 
-        .th-purple2 {
-            background: #5a32a3;
+        .th-purple2 { background: #8a1f1f;
             color: #fff;
         }
 
-        .th-purple3 {
-            background: #4c1d8a;
+        .th-purple3 { background: #6b1616;
             color: #fff;
         }
 
-        .th-teal {
-            background: #20c997;
+        .th-teal { background: #b02a2a;
             color: #fff;
         }
 
-        .th-teal2 {
-            background: #199d76;
+        .th-teal2 { background: #8a1f1f;
             color: #fff;
         }
 
-        .th-teal3 {
-            background: #168a64;
+        .th-teal3 { background: #6b1616;
             color: #fff;
         }
 
-        .th-gray {
-            background: #6c757d;
+        .th-gray { background: #b02a2a;
             color: #fff;
         }
 
-        .th-gray2 {
-            background: #545b62;
+        .th-gray2 { background: #8a1f1f;
             color: #fff;
         }
 
-        .th-dark {
-            background: #343a40;
+        .th-dark { background: #b02a2a;
             color: #fff;
         }
 
@@ -332,12 +314,10 @@
             <thead>
                 <tr>
                     <th rowspan="2" class="th-dark" style="width:4%">#</th>
-                    <th rowspan="2" class="th-dark" style="width:8%">Program</th>
+                    <th rowspan="2" class="th-dark" style="width:10%">Program</th>
                     <th colspan="2" class="th-blue">Student Fee (RM)</th>
-                    <th colspan="3" class="th-red">Debit Note (RM)</th>
-                    <th colspan="1" class="th-orange">Summons/Fine (RM)</th>
+                    <th colspan="1" class="th-red">Debit Note (RM)</th>
                     <th colspan="2" class="th-purple">Credit Note &ndash; Fee (RM)</th>
-                    <th colspan="2" class="th-teal">Credit Note &ndash; Fine (RM)</th>
                     <th colspan="1" class="th-gray">CN Discount (RM)</th>
                     <th rowspan="2" class="th-dark" style="width:9%">Total (RM)</th>
                 </tr>
@@ -345,46 +325,32 @@
                     <th class="th-blue2">New</th>
                     <th class="th-blue3">Old</th>
                     <th class="th-red2">Debit</th>
-                    <th class="th-red3">Correction</th>
-                    <th class="th-red4">Correction Insentif/Tabung</th>
-                    <th class="th-orange2">Fine</th>
                     <th class="th-purple2">Active &amp; Withdraw</th>
                     <th class="th-purple3">Graduation</th>
-                    <th class="th-teal2">Active &amp; Withdraw</th>
-                    <th class="th-teal3">Graduation</th>
                     <th class="th-gray2">Discount</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($data['program'] as $key => $prg)
                 @php
-                    $rowTotal =
-                        ((!empty($data['newStudentTotals'])) ? $data['newStudentTotals'][$key] : 0) +
-                        ((!empty($data['oldStudentTotals'])) ? $data['oldStudentTotals'][$key] : 0) +
-                        ((!empty($data['debitTotals'])) ? $data['debitTotals'][$key] : 0) +
-                        ((!empty($data['debitCorrectionTotals'])) ? $data['debitCorrectionTotals'][$key] : 0) +
-                        ((!empty($data['debitCorrectionIncentifTotals'])) ? $data['debitCorrectionIncentifTotals'][$key] : 0) +
-                        ((!empty($data['creditFeeOldTotals'])) ? $data['creditFeeOldTotals'][$key] : 0) +
-                        ((!empty($data['creditFeeGradTotals'])) ? $data['creditFeeGradTotals'][$key] : 0) +
-                        ((!empty($data['creditFineOldTotals'])) ? $data['creditFineOldTotals'][$key] : 0) +
-                        ((!empty($data['creditFineGradTotals'])) ? $data['creditFineGradTotals'][$key] : 0) +
-                        ((!empty($data['creditDiscountTotals'])) ? $data['creditDiscountTotals'][$key] : 0);
+                    $new      = (!empty($data['newStudentTotals']))     ? $data['newStudentTotals'][$key]     : 0;
+                    $old      = (!empty($data['oldStudentTotals']))     ? $data['oldStudentTotals'][$key]     : 0;
+                    $debit    = (!empty($data['debitTotals']))          ? $data['debitTotals'][$key]          : 0;
+                    $feeOld   = (!empty($data['creditFeeOldTotals']))   ? $data['creditFeeOldTotals'][$key]   : 0;
+                    $feeGrad  = (!empty($data['creditFeeGradTotals']))  ? $data['creditFeeGradTotals'][$key]  : 0;
+                    $discount = (!empty($data['creditDiscountTotals'])) ? $data['creditDiscountTotals'][$key] : 0;
+                    $rowTotal = $new + $old + $debit + $feeOld + $feeGrad + $discount;
                 @endphp
                 <tr>
                     <td class="text-center">{{ $prg->program_ID }}</td>
                     <td><b>{{ $prg->progcode }}</b></td>
-                    <td class="text-right">{{ number_format((!empty($data['newStudentTotals'])) ? $data['newStudentTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right">{{ number_format((!empty($data['oldStudentTotals'])) ? $data['oldStudentTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right">{{ number_format((!empty($data['debitTotals'])) ? $data['debitTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right">{{ number_format((!empty($data['debitCorrectionTotals'])) ? $data['debitCorrectionTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right">{{ number_format((!empty($data['debitCorrectionIncentifTotals'])) ? $data['debitCorrectionIncentifTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right">-</td>
-                    <td class="text-right">{{ number_format((!empty($data['creditFeeOldTotals'])) ? $data['creditFeeOldTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right">{{ number_format((!empty($data['creditFeeGradTotals'])) ? $data['creditFeeGradTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right">{{ number_format((!empty($data['creditFineOldTotals'])) ? $data['creditFineOldTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right">{{ number_format((!empty($data['creditFineGradTotals'])) ? $data['creditFineGradTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right">{{ number_format((!empty($data['creditDiscountTotals'])) ? $data['creditDiscountTotals'][$key] : 0, 2) }}</td>
-                    <td class="text-right" style="font-weight: bold; background: #e9ecef;">{{ number_format($rowTotal, 2) }}</td>
+                    <td class="text-right">{{ number_format($new, 2) }}</td>
+                    <td class="text-right">{{ number_format($old, 2) }}</td>
+                    <td class="text-right">{{ number_format($debit, 2) }}</td>
+                    <td class="text-right">{{ number_format($feeOld, 2) }}</td>
+                    <td class="text-right">{{ number_format($feeGrad, 2) }}</td>
+                    <td class="text-right">{{ number_format($discount, 2) }}</td>
+                    <td class="text-right" style="font-weight: bold; background: #ffe6e6;">{{ number_format($rowTotal, 2) }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -394,12 +360,8 @@
                         array_sum($data['newStudentTotals']) +
                         array_sum($data['oldStudentTotals']) +
                         array_sum($data['debitTotals']) +
-                        array_sum($data['debitCorrectionTotals']) +
-                        array_sum($data['debitCorrectionIncentifTotals']) +
                         array_sum($data['creditFeeOldTotals']) +
                         array_sum($data['creditFeeGradTotals']) +
-                        array_sum($data['creditFineOldTotals']) +
-                        array_sum($data['creditFineGradTotals']) +
                         array_sum($data['creditDiscountTotals']);
                 @endphp
                 <tr>
@@ -407,15 +369,10 @@
                     <td class="text-right">{{ number_format(array_sum($data['newStudentTotals']), 2) }}</td>
                     <td class="text-right">{{ number_format(array_sum($data['oldStudentTotals']), 2) }}</td>
                     <td class="text-right">{{ number_format(array_sum($data['debitTotals']), 2) }}</td>
-                    <td class="text-right">{{ number_format(array_sum($data['debitCorrectionTotals']), 2) }}</td>
-                    <td class="text-right">{{ number_format(array_sum($data['debitCorrectionIncentifTotals']), 2) }}</td>
-                    <td class="text-right">-</td>
                     <td class="text-right">{{ number_format(array_sum($data['creditFeeOldTotals']), 2) }}</td>
                     <td class="text-right">{{ number_format(array_sum($data['creditFeeGradTotals']), 2) }}</td>
-                    <td class="text-right">{{ number_format(array_sum($data['creditFineOldTotals']), 2) }}</td>
-                    <td class="text-right">{{ number_format(array_sum($data['creditFineGradTotals']), 2) }}</td>
                     <td class="text-right">{{ number_format(array_sum($data['creditDiscountTotals']), 2) }}</td>
-                    <td class="text-right" style="background: #dee2e6;">{{ number_format($grandTotal, 2) }}</td>
+                    <td class="text-right" style="background: #f8d7da;">{{ number_format($grandTotal, 2) }}</td>
                 </tr>
             </tfoot>
         </table>
@@ -467,145 +424,6 @@
             </tfoot>
         </table>
 
-        {{-- ========== DEBIT NOTE – CORRECTION (correction=1, non-insentif/tabung) ========== --}}
-        <div class="section-title">Debit Note – Correction</div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:3%">No.</th>
-                    <th>Date</th>
-                    <th>No. Resit</th>
-                    <th>Name</th>
-                    <th>No.KP</th>
-                    <th>No.Matric</th>
-                    <th>Program</th>
-                    <th>Semester</th>
-                    <th>Claim</th>
-                    <th>Remark</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $totalDebitCorrectionALL = 0; @endphp
-                @foreach ($data['debitCorrection'] as $key => $rgs)
-                <tr>
-                    <td class="text-center">{{ $key+1 }}</td>
-                    <td>{{ $rgs->date }}</td>
-                    <td>{{ $rgs->ref_no }}</td>
-                    <td>{{ $rgs->name }}</td>
-                    <td>{{ $rgs->student_ic }}</td>
-                    <td>{{ $rgs->no_matric }}</td>
-                    <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->semester_id }}</td>
-                    <td>{{ $rgs->type }}</td>
-                    <td>{{ $rgs->remark }}</td>
-                    <td class="text-right">
-                        {{ $rgs->amount }}
-                        @php $totalDebitCorrectionALL += $rgs->amount; @endphp
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="10" class="text-center">TOTAL</td>
-                    <td class="text-right">{{ number_format($totalDebitCorrectionALL, 2) }}</td>
-                </tr>
-            </tfoot>
-        </table>
-
-        {{-- ========== DEBIT NOTE – CORRECTION INSENTIF/TABUNG ========== --}}
-        <div class="section-title">Debit Note – Correction Insentif / Tabung</div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:3%">No.</th>
-                    <th>Date</th>
-                    <th>No. Resit</th>
-                    <th>Name</th>
-                    <th>No.KP</th>
-                    <th>No.Matric</th>
-                    <th>Program</th>
-                    <th>Semester</th>
-                    <th>Claim</th>
-                    <th>Remark</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $totalDebitIncentifALL = 0; @endphp
-                @foreach ($data['debitCorrectionIncentif'] as $key => $rgs)
-                <tr>
-                    <td class="text-center">{{ $key+1 }}</td>
-                    <td>{{ $rgs->date }}</td>
-                    <td>{{ $rgs->ref_no }}</td>
-                    <td>{{ $rgs->name }}</td>
-                    <td>{{ $rgs->student_ic }}</td>
-                    <td>{{ $rgs->no_matric }}</td>
-                    <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->semester_id }}</td>
-                    <td>{{ $rgs->type }}</td>
-                    <td>{{ $rgs->remark }}</td>
-                    <td class="text-right">
-                        {{ $rgs->amount }}
-                        @php $totalDebitIncentifALL += $rgs->amount; @endphp
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="10" class="text-center">TOTAL</td>
-                    <td class="text-right">{{ number_format($totalDebitIncentifALL, 2) }}</td>
-                </tr>
-            </tfoot>
-        </table>
-
-        {{-- ========== SUMMONS / FINE ========== --}}
-        <div class="section-title">Summons / Fine</div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:3%">No.</th>
-                    <th>Date</th>
-                    <th>No. Resit</th>
-                    <th>Name</th>
-                    <th>No.KP</th>
-                    <th>No.Matric</th>
-                    <th>Program</th>
-                    <th>Semester</th>
-                    <th>Claim</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $totalFineALL = 0; @endphp
-                @foreach ($data['fine'] as $key => $rgs)
-                <tr>
-                    <td class="text-center">{{ $key+1 }}</td>
-                    <td>{{ $rgs->date }}</td>
-                    <td>{{ $rgs->ref_no }}</td>
-                    <td>{{ $rgs->name }}</td>
-                    <td>{{ $rgs->student_ic }}</td>
-                    <td>{{ $rgs->no_matric }}</td>
-                    <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->semester_id }}</td>
-                    <td>{{ $rgs->type }}</td>
-                    <td class="text-right">
-                        {{ $rgs->amount }}
-                        @php $totalFineALL += $rgs->amount; @endphp
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="9" class="text-center">TOTAL</td>
-                    <td class="text-right">{{ number_format($totalFineALL, 2) }}</td>
-                </tr>
-            </tfoot>
-        </table>
-
         {{-- ========== OTHERS ========== --}}
         <div class="section-title">Others</div>
         <table>
@@ -651,8 +469,8 @@
             </tfoot>
         </table>
 
-        {{-- Others – Breakdown by Type --}}
-        <div class="card-header-plain">Others – Breakdown by Type</div>
+        {{-- Others Ã¢â‚¬â€œ Breakdown by Type --}}
+        <div class="card-header-plain">Others Ã¢â‚¬â€œ Breakdown by Type</div>
         <table style="width:40%;">
             <thead>
                 <tr>
@@ -774,100 +592,6 @@
             </tfoot>
         </table>
 
-        {{-- ========== CREDIT NOTE ACTIVE & WITHDRAW (FINE) ========== --}}
-        <div class="section-title">Credit Note Active &amp; Withdraw Student (Fine)</div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:3%">No.</th>
-                    <th>Date</th>
-                    <th>No. Resit</th>
-                    <th>Name</th>
-                    <th>No.KP</th>
-                    <th>No.Matric</th>
-                    <th>Program</th>
-                    <th>Semester</th>
-                    <!-- <th>Claim</th> -->
-                    <th>Remark</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $totalcreditFineALL1 = 0; @endphp
-                @foreach ($data['creditFineOld'] as $key => $rgs)
-                <tr>
-                    <td class="text-center">{{ $key+1 }}</td>
-                    <td>{{ $rgs->date }}</td>
-                    <td>{{ $rgs->ref_no }}</td>
-                    <td>{{ $rgs->name }}</td>
-                    <td>{{ $rgs->student_ic }}</td>
-                    <td>{{ $rgs->no_matric }}</td>
-                    <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->semester_id }}</td>
-                    <!-- <td>{{ $rgs->reduction_id }}</td> -->
-                    <td>{{ $rgs->remark }}</td>
-                    <td class="text-right">
-                        {{ $rgs->amount }}
-                        @php $totalcreditFineALL1 += $rgs->amount; @endphp
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="9" class="text-center">TOTAL</td>
-                    <td class="text-right">{{ number_format($totalcreditFineALL1, 2) }}</td>
-                </tr>
-            </tfoot>
-        </table>
-
-        {{-- ========== CREDIT NOTE GRADUATION (FINE) ========== --}}
-        <div class="section-title">Credit Note Graduation Student (Fine)</div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:3%">No.</th>
-                    <th>Date</th>
-                    <th>No. Resit</th>
-                    <th>Name</th>
-                    <th>No.KP</th>
-                    <th>No.Matric</th>
-                    <th>Program</th>
-                    <th>Semester</th>
-                    <!-- <th>Claim</th> -->
-                    <th>Remark</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $totalcreditFineALL2 = 0; @endphp
-                @foreach ($data['creditFineGrad'] as $key => $rgs)
-                <tr>
-                    <td class="text-center">{{ $key+1 }}</td>
-                    <td>{{ $rgs->date }}</td>
-                    <td>{{ $rgs->ref_no }}</td>
-                    <td>{{ $rgs->name }}</td>
-                    <td>{{ $rgs->student_ic }}</td>
-                    <td>{{ $rgs->no_matric }}</td>
-                    <td>{{ $rgs->progname }}</td>
-                    <td>{{ $rgs->semester_id }}</td>
-                    <!-- <td>{{ $rgs->reduction_id }}</td> -->
-                    <td>{{ $rgs->remark }}</td>
-                    <td class="text-right">
-                        {{ $rgs->amount }}
-                        @php $totalcreditFineALL2 += $rgs->amount; @endphp
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="9" class="text-center">TOTAL</td>
-                    <td class="text-right">{{ number_format($totalcreditFineALL2, 2) }}</td>
-                </tr>
-            </tfoot>
-        </table>
-
         {{-- ========== CREDIT NOTE (DISCOUNT) ========== --}}
         <div class="section-title">Credit Note (Discount)</div>
         <table>
@@ -923,3 +647,6 @@
         };
     </script>
 </body>
+
+
+

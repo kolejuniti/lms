@@ -43,6 +43,9 @@
             <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
               <i class="ti-printer"></i>&nbsp Print
             </button>
+            <button id="printSummaryButton" class="waves-effect waves-light btn btn-danger btn-sm ml-2">
+              <i class="ti-printer"></i>&nbsp Print Summary
+            </button>
           </div>
           <div class="card-body">
             <div class="row">
@@ -193,6 +196,11 @@
       e.preventDefault();
       printReport();
     });
+
+    $('#printSummaryButton').on('click', function(e) {
+      e.preventDefault();
+      printSummaryReport();
+    });
   });
 
   function printReport() {
@@ -202,6 +210,27 @@
     return $.ajax({
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
       url: "{{ url('finance/report/chargeReport/getChargeReport?print=true') }}",
+      method: 'GET',
+      data: { from: from, to: to },
+      error: function(err) {
+        alert("Error");
+        console.log(err);
+      },
+      success: function(data) {
+        var newWindow = window.open();
+        newWindow.document.write(data);
+        newWindow.document.close();
+      }
+    });
+  }
+
+  function printSummaryReport() {
+    var from = $('#from').val();
+    var to = $('#to').val();
+
+    return $.ajax({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      url: "{{ url('finance/report/chargeReport/getChargeReport?print=summary') }}",
       method: 'GET',
       data: { from: from, to: to },
       error: function(err) {
