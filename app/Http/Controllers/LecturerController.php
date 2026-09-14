@@ -1615,7 +1615,7 @@ class LecturerController extends Controller
                         ]);
                     }
                 }
-            } elseif (!empty(array_filter($data['excuse'], function ($value) {
+            } elseif (!empty(array_filter($data['excuse'] ?? [], function ($value) {
                 return $value !== null;
             })) && isset($data['mc']) && isset($data['lc'])) {
             } else {
@@ -1632,7 +1632,7 @@ class LecturerController extends Controller
 
             // Filter the 'excuse' array from $data to remove any NULL values.
             // array_filter() is used to filter the array based on a callback function.
-            $filtered_excuse = array_filter($data['excuse'], function ($value) {
+            $filtered_excuse = array_filter($data['excuse'] ?? [], function ($value) {
                 return !is_null($value);  // Returns TRUE if the value is NOT NULL, thus keeping it in the filtered array.
             });
 
