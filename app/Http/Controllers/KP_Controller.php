@@ -1915,7 +1915,10 @@ class KP_Controller extends Controller
             'model' => 'required|string|max:50',
         ]);
 
-        $vehicleCount = DB::table('tblvehicle_sticker')->where('ic', $kp->ic)->count();
+        $vehicleCount = DB::table('tblvehicle_sticker')
+            ->where('ic', $kp->ic)
+            ->where('status', '!=', 'BATAL')
+            ->count();
 
         if ($vehicleCount >= 4) {
             return redirect()->back()->with('alert', 'You can only register a maximum of four vehicles.');
