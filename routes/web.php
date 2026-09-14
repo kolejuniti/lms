@@ -58,6 +58,7 @@ Route::group(['prefix' => 'hep', 'middleware' => 'auth'], function () {
     Route::get('/vehicle-sticker-records', [App\Http\Controllers\HEPController::class, 'vehicleStickerIndex'])->name('hep.vehicle_sticker.index');
     Route::match(['get', 'post'], '/vehicle-sticker/search', [App\Http\Controllers\HEPController::class, 'vehicleStickerSearch'])->name('hep.vehicle_sticker.search');
     Route::post('/vehicle-sticker/update', [App\Http\Controllers\HEPController::class, 'vehicleStickerUpdate'])->name('hep.vehicle_sticker.update');
+    Route::post('/vehicle-sticker/cancel', [App\Http\Controllers\HEPController::class, 'vehicleStickerCancel'])->name('hep.vehicle_sticker.cancel');
 });
 Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin');
 Route::get('/admin/{id}/edit', [App\Http\Controllers\AdminController::class, 'edit'])->name('admin.edit');

@@ -115,4 +115,20 @@ class HEPController extends Controller
 
         return redirect()->back()->with('success', 'Status permohonan telah dikemaskini kepada SAH.');
     }
+
+    public function vehicleStickerCancel(Request $request)
+    {
+        $request->validate([
+            'sticker_id' => 'required|integer'
+        ]);
+
+        DB::table('tblvehicle_sticker')
+            ->where('id', $request->sticker_id)
+            ->update([
+                'status' => 'BATAL',
+                'updated_at' => now()
+            ]);
+
+        return redirect()->back()->with('success', 'Status permohonan telah dibatalkan.');
+    }
 }

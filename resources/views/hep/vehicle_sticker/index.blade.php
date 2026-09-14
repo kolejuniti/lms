@@ -94,6 +94,8 @@
                                                 <td>
                                                     @if(strtoupper($app->status) == 'SAH')
                                                         <span class="badge badge-success">{{ $app->status }}</span>
+                                                    @elseif(strtoupper($app->status) == 'BATAL')
+                                                        <span class="badge badge-danger">{{ $app->status }}</span>
                                                     @else
                                                         <span class="badge badge-warning">{{ $app->status }}</span>
                                                     @endif
@@ -104,6 +106,12 @@
                                                         @csrf
                                                         <input type="hidden" name="sticker_id" value="{{ $app->id }}">
                                                         <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to update the status to SAH?')">Sahkan (SAH)</button>
+                                                    </form>
+                                                    @elseif(strtoupper($app->status) == 'SAH')
+                                                    <form action="{{ route('hep.vehicle_sticker.cancel') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="sticker_id" value="{{ $app->id }}">
+                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this record?')">Batalkan (BATAL)</button>
                                                     </form>
                                                     @else
                                                         <span class="text-muted">No Action</span>
