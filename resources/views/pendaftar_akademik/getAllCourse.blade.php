@@ -230,19 +230,22 @@
                                         @elseif(Auth::user()->usrtype == 'PL')
                                         @if($data['students']->semester == $crs->semester && in_array($crs->sessionid, $data['atvSession']))
                                         <td style="text-align: center;">
+                                            <!-- Unregister button will only be available between set dates for Ketua Program. It will be hidden outside of the set dates. The dates are set in the code below. -->
                                             @php
-                                            $start_date = strtotime('2026-08-07'); // Format: YYYY-MM-DD
-                                            $end_date = strtotime('2026-08-30'); // Format: YYYY-MM-DD
-                                            $current_date = strtotime(date('Y-m-d')); // Format: YYYY-MM-DD
+                                                $start_date = strtotime('2026-09-18');  // Format: YYYY-MM-DD
+                                                $end_date = strtotime('2026-10-09');    // Format: YYYY-MM-DD
+                                                $current_date = strtotime(date('Y-m-d'));  // Format: YYYY-MM-DD
                                             @endphp
 
                                             @if ($current_date >= $start_date && $current_date <= $end_date)
+                                                @if ($data['students']->intake === 128)
                                                 <div class="float-right">
-                                                <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
-                                                    <i class="fa fa-user-times"></i> Un-Register
-                                                </button>
-                        </div>
-                        @endif
+                                                    <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
+                                                        <i class="fa fa-user-times"></i> Un-Register
+                                                    </button>
+                                                </div>
+                                                @endif
+                                            @endif
                         </td>
                         @else
                         <td></td>
