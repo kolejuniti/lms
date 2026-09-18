@@ -6677,9 +6677,16 @@ class AR_Controller extends Controller
                 ' . $student->no_matric . '
                 </td>
                 <td>
-                  <div class="col-md-6">
+                  <div class="col-md-12">
                     <div class="form-group">
                       <input type="date" class="form-control" id="date-' . $student->ic . '">
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group mt-2">
+                      <input type="checkbox" id="cetakan-checkbox-' . $student->ic . '" onclick="toggleCetakanDate(\'' . $student->ic . '\')">
+                      <label for="cetakan-checkbox-' . $student->ic . '">Cetakan ke-2</label>
+                      <input type="date" class="form-control mt-2" id="cetakan-date-' . $student->ic . '" style="display: none;">
                     </div>
                   </div>
                 </td>
@@ -6707,6 +6714,12 @@ class AR_Controller extends Controller
         $classdateParsed = Carbon::parse($request->date);
 
         $data['date'] = $classdateParsed->isoFormat('D MMMM Y');
+        
+        $data['cetakan_date'] = '';
+        if ($request->has('cetakan_date') && $request->cetakan_date != '') {
+            $cetakanDateParsed = Carbon::parse($request->cetakan_date);
+            $data['cetakan_date'] = $cetakanDateParsed->isoFormat('D MMMM Y');
+        }
 
         $data['student'] = DB::table('students')
             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
@@ -6745,7 +6758,8 @@ class AR_Controller extends Controller
                 ->first();
         }
 
-        $lastDetail = end($data['detail']); // Get the last element of the $data['detail'] array
+        $data['detail'] = $data['detail'] ?? [];
+        $lastDetail = !empty($data['detail']) ? end($data['detail']) : null; // Get the last element of the $data['detail'] array
         $data['lastCGPA'] = $lastDetail->cgpa ?? null; // Access the `cgpa` value
 
         return view('pendaftar_akademik.student.transcript.printTranscript', compact('data'));
@@ -6806,7 +6820,8 @@ class AR_Controller extends Controller
                 ->first();
         }
 
-        $lastDetail = end($data['detail']); // Get the last element of the $data['detail'] array
+        $data['detail'] = $data['detail'] ?? [];
+        $lastDetail = !empty($data['detail']) ? end($data['detail']) : null; // Get the last element of the $data['detail'] array
         $data['lastCGPA'] = $lastDetail->cgpa ?? null; // Access the `cgpa` value
 
         return view('pendaftar_akademik.student.mini_transcript.printMiniTranscript', compact('data'));

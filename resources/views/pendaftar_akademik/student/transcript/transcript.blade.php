@@ -262,12 +262,16 @@
   {
 
       var date = $('#date-' + ic).val();
+      var cetakan_date = '';
+      if($('#cetakan-checkbox-' + ic).is(':checked')) {
+          cetakan_date = $('#cetakan-date-' + ic).val();
+      }
 
       return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('AR/student/transcript/printStudentTranscript') }}",
             method   : 'POST',
-            data 	 : {ic: ic, date: date},
+            data 	 : {ic: ic, date: date, cetakan_date: cetakan_date},
             error:function(err){
                 alert("Error");
                 console.log(err);
@@ -285,6 +289,15 @@
             }
         });
 
+  }
+
+  function toggleCetakanDate(ic) {
+      if($('#cetakan-checkbox-' + ic).is(':checked')) {
+          $('#cetakan-date-' + ic).show();
+      } else {
+          $('#cetakan-date-' + ic).hide();
+          $('#cetakan-date-' + ic).val('');
+      }
   }
   </script>
 @endsection

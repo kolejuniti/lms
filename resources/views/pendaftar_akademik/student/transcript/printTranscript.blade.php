@@ -279,7 +279,10 @@
         </div>
 
         <p style="text-align: right;"><b>TARIKH: {{ $data['date'] }}</b><br>
-        
+        @if(isset($data['cetakan_date']) && $data['cetakan_date'] != '')
+        <b>TARIKH CETAKAN KE-2 : {{ $data['cetakan_date'] }}</b><br>
+        @endif
+        </p>
     </body>
 </html>
 
