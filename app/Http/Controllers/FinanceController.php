@@ -5426,8 +5426,18 @@ class FinanceController extends Controller
             $data['pk_balance'] = 0.00;
         }
 
-        // TUNGGAKAN SEMESTER: use the same current_balance logic as /finance/debt/claimLog
-        $data['value'] = $data['current_balance'];
+        // TUNGGAKAN SEMESTER: deduct semester package from sum3
+        $semester_column = 'semester_' . $data['student']->semester;
+        $student_raw = DB::table('students')->where('ic', $request->student)->first();
+        if ($student_raw->status == 4) {
+            $data['value'] = $data['sum3'];
+        } else {
+            if (isset($data['package']->$semester_column)) {
+                $data['value'] = $data['sum3'] - $data['package']->$semester_column;
+            } else {
+                $data['value'] = $data['sum3'];
+            }
+        }
 
         $data['total_all'] =  $data['value'] + $data['pk_balance'] + $data['sum3_2'];
 
