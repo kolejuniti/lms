@@ -298,7 +298,7 @@ tr:hover {
                                                         <span>TUNGGAKAN SEMESTER (RM)</span>
                                                     </div>
                                                     <div class="col-md-8">
-                                                        <strong>{{ isset($data['value']) ? number_format($data['value'], 2) : '0.00' }}</strong>
+                                                        <strong>{{ isset($data['current_balance']) ? number_format($data['current_balance'], 2) : '0.00' }}</strong>
                                                     </div>
                                                 </div>
                                             </div>
