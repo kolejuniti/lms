@@ -3553,6 +3553,26 @@ class PendaftarController extends Controller
                         'cgpa' => $cgpa,
                         'transcript_status_id' => $transcript_status_id
                     ]);
+
+                    if ($transcript_status_id == 5) {
+                        DB::table('students')->where('ic', $std)->update([
+                            'status' => 3
+                        ]);
+
+                        $std_info = DB::table('students')->where('ic', $std)->first();
+
+                        DB::table('tblstudent_log')->insert([
+                            'student_ic' => $std,
+                            'session_id' => $data->session,
+                            'semester_id' => $data->semester,
+                            'status_id' => 3,
+                            'kuliah_id' => $std_info->student_status ?? 1,
+                            'campus_id' => $std_info->campus_id ?? 0,
+                            'date' => date("Y-m-d H:i:s"),
+                            'remark' => 'PELAJAR TELAH DIBERHENTIKAN DENGAN STATUS GB KERANA MENDAPAT PNGK < 2.00',
+                            'add_staffID' => Auth::user()->ic
+                        ]);
+                    }
                 }
             }
 
@@ -3908,6 +3928,26 @@ class PendaftarController extends Controller
                         'cgpa' => $cgpa,
                         'transcript_status_id' => $transcript_status_id
                     ]);
+
+                    if ($transcript_status_id == 5) {
+                        DB::table('students')->where('ic', $std)->update([
+                            'status' => 3
+                        ]);
+
+                        $std_info = DB::table('students')->where('ic', $std)->first();
+
+                        DB::table('tblstudent_log')->insert([
+                            'student_ic' => $std,
+                            'session_id' => $data->session,
+                            'semester_id' => $data->semester,
+                            'status_id' => 3,
+                            'kuliah_id' => $std_info->student_status ?? 1,
+                            'campus_id' => $std_info->campus_id ?? 0,
+                            'date' => date("Y-m-d H:i:s"),
+                            'remark' => 'PELAJAR TELAH DIBERHENTIKAN DENGAN STATUS GB KERANA MENDAPAT PNGK < 2.00',
+                            'add_staffID' => Auth::user()->ic
+                        ]);
+                    }
                 }
             }
 
