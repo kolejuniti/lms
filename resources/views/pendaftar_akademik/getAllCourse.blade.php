@@ -112,6 +112,9 @@
                                         <th style="width: 5%">
                                             Semester
                                         </th>
+                                        <th style="width: 10%">
+                                            Status
+                                        </th>
                                         <th style="width: 20%">
                                         </th>
                                     </tr>
@@ -133,6 +136,13 @@
                                         </td>
                                         <td>
                                             {{ $crs->semesterid }}
+                                        </td>
+                                        <td>
+                                            @if(in_array($crs->sub_id, $data['allRegistered']))
+                                                <span class="badge badge-warning">ULANG</span>
+                                            @else
+                                                <span class="badge badge-success">BARU</span>
+                                            @endif
                                         </td>
                                         <td style="text-align: center;">
                                             <div class="pull right">
