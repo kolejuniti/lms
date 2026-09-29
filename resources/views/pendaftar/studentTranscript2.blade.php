@@ -77,6 +77,18 @@
               </div>
             </div>
           </div>
+          <div class="row mt-3 ">
+            <div class="col-md-12 ml-3">
+              <div class="form-group">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="keputusan_penuh" name="keputusan_penuh" value="1">
+                  <label class="form-check-label" for="keputusan_penuh">
+                    Keputusan Penuh
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="row mt-3 " id="group-card" hidden>
             <div class="col-md-6 ml-3">
               <div class="form-group">
@@ -476,7 +488,8 @@
       getInput = {
         student : $('#student').val(),
         session : $('#session').val(),
-        semester : $('#semester').val()
+        semester : $('#semester').val(),
+        keputusan_penuh : $('#keputusan_penuh').is(':checked') ? 1 : 0
       };
       
       formData.append('addTranscript', JSON.stringify(getInput));

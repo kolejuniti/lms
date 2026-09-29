@@ -3554,7 +3554,7 @@ class PendaftarController extends Controller
                         'transcript_status_id' => $transcript_status_id
                     ]);
 
-                    if ($transcript_status_id == 5) {
+                    if ($transcript_status_id == 5 && isset($data->keputusan_penuh) && $data->keputusan_penuh == 1) {
                         DB::table('students')->where('ic', $std)->update([
                             'status' => 3
                         ]);
@@ -3929,7 +3929,7 @@ class PendaftarController extends Controller
                         'transcript_status_id' => $transcript_status_id
                     ]);
 
-                    if ($transcript_status_id == 5) {
+                    if ($transcript_status_id == 5 && isset($data->keputusan_penuh) && $data->keputusan_penuh == 1) {
                         DB::table('students')->where('ic', $std)->update([
                             'status' => 3
                         ]);
