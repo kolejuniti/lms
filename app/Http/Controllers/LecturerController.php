@@ -6338,7 +6338,7 @@ class LecturerController extends Controller
             'wakil_pelajar' => 'required',
             'wakil_pelajar_nama' => 'required|string|max:255',
             'wakil_pelajar_no_tel' => 'required|string|max:20',
-            'maklumat_kuliah_gantian_tarikh' => 'required|date|after:tarikh_kuliah_dibatalkan',
+            'maklumat_kuliah_gantian_tarikh' => 'required|date',
             'maklumat_kuliah_gantian_hari_masa' => 'required|string|max:255',
             'lecture_room_id' => 'required|exists:tbllecture_room,id'
         ]);
