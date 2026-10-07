@@ -5557,30 +5557,7 @@ class AR_Controller extends Controller
                 ->orderBy('ca1.classdate');
         };
 
-        $data['absents'] = $baseQuery()->get();
-
-        $totalhours = 0;
-
-        foreach ($data['absents'] as $abs) {
-
-            $data['absent'][] = $abs;
-
-            $totalhours += $abs->total_hours;
-
-            if ($data['warning']->warning == 1) {
-                if ($totalhours >= $data['warning']->course_credit) {
-                    break;
-                }
-            } elseif ($data['warning']->warning == 2) {
-                if ($totalhours >= $data['warning']->course_credit * 2) {
-                    break;
-                }
-            } elseif ($data['warning']->warning == 3) {
-                if ($totalhours >= $data['warning']->course_credit * 3) {
-                    break;
-                }
-            }
-        }
+        $data['absent'] = $baseQuery()->get()->all();
 
         //dd(collect($data['absent']));
 
