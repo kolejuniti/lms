@@ -93,6 +93,10 @@
             <thead>
               <tr>
                   <th>Program Name</th>
+                  <th>GAGAL BERHENTI</th>
+                  <th>TARIK DIRI</th>
+                  <th>TIDAK AKTIF</th>
+                  <th>Total Aging</th>
               </tr>
             </thead>
             <tbody id="table2">

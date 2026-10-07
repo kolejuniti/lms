@@ -11950,6 +11950,8 @@ class FinanceController extends Controller
                 $content .= '</tr>
                     </tfoot>';
 
+                $summaryStatuses = [3, 4, 14];
+
                 $queryClaim = DB::table('students')
                     ->join('tblclaim', 'students.ic', 'tblclaim.student_ic')
                     ->join('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
@@ -11959,11 +11961,11 @@ class FinanceController extends Controller
                         ['tblclaim.process_status_id', '=', 2],
                         ['tblstudentclaim.groupid', '=', 1]
                     ])
-                    ->whereIn('students.status', $data['status'])
+                    ->whereIn('students.status', $summaryStatuses)
                     ->whereBetween('tblclaim.add_date', [$filter->from, $filter->to])
                     ->where('tblstudentclaim.id', '!=', 39)
-                    ->select('tblprogramme.progname', DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'))
-                    ->groupBy('tblprogramme.progname');
+                    ->select('tblprogramme.progname', 'students.status', DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'))
+                    ->groupBy('tblprogramme.progname', 'students.status');
 
                 $subQueryProgram = DB::table('students')
                     ->join('tblpayment', 'students.ic', 'tblpayment.student_ic')
@@ -11974,38 +11976,70 @@ class FinanceController extends Controller
                         ['tblpayment.process_status_id', '=', 2],
                         ['tblstudentclaim.groupid', '=', 1]
                     ])
-                    ->whereIn('students.status', $data['status'])
+                    ->whereIn('students.status', $summaryStatuses)
                     ->whereBetween('tblpayment.add_date', [$filter->from, $filter->to])
-                    ->select('tblprogramme.progname', DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
-                    ->groupBy('tblprogramme.progname')
+                    ->select('tblprogramme.progname', 'students.status', DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
+                    ->groupBy('tblprogramme.progname', 'students.status')
                     ->unionAll($queryClaim);
 
                 $programBalances = DB::query()->fromSub($subQueryProgram, 'sub')
-                    ->select('progname', DB::raw('SUM(claim) - SUM(payment) AS balance'))
-                    ->groupBy('progname')
+                    ->select('progname', 'status', DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                    ->groupBy('progname', 'status')
                     ->get();
+
+                $programsData = [];
+                $totalGB = 0;
+                $totalTD = 0;
+                $totalTA = 0;
+                $totalAll = 0;
+
+                foreach ($programBalances as $row) {
+                    $prog = $row->progname;
+                    if (!isset($programsData[$prog])) {
+                        $programsData[$prog] = [3 => 0, 4 => 0, 14 => 0];
+                    }
+                    $programsData[$prog][$row->status] += $row->balance;
+                }
 
                 $content2 = "<thead>
                                 <tr>
                                     <th>Program Name</th>
+                                    <th>GAGAL BERHENTI</th>
+                                    <th>TARIK DIRI</th>
+                                    <th>TIDAK AKTIF</th>
                                     <th>Total Aging</th>
                                 </tr>
                              </thead>
                              <tbody id='table2'>";
-                $totalProgramAging = 0;
-                foreach ($programBalances as $prog) {
+
+                foreach ($programsData as $prog => $balances) {
+                    $gb = $balances[3];
+                    $td = $balances[4];
+                    $ta = $balances[14];
+                    $rowTotal = $gb + $td + $ta;
+
+                    $totalGB += $gb;
+                    $totalTD += $td;
+                    $totalTA += $ta;
+                    $totalAll += $rowTotal;
+
                     $content2 .= '<tr>
-                                    <td>' . $prog->progname . '</td>
-                                    <td>' . number_format($prog->balance, 2) . '</td>
+                                    <td>' . $prog . '</td>
+                                    <td>' . number_format($gb, 2) . '</td>
+                                    <td>' . number_format($td, 2) . '</td>
+                                    <td>' . number_format($ta, 2) . '</td>
+                                    <td>' . number_format($rowTotal, 2) . '</td>
                                   </tr>';
-                    $totalProgramAging += $prog->balance;
                 }
                 
                 $content2 .= '</tbody>
                               <tfoot>
                                 <tr>
                                     <td>TOTAL</td>
-                                    <td>' . number_format($totalProgramAging, 2) . '</td>
+                                    <td>' . number_format($totalGB, 2) . '</td>
+                                    <td>' . number_format($totalTD, 2) . '</td>
+                                    <td>' . number_format($totalTA, 2) . '</td>
+                                    <td>' . number_format($totalAll, 2) . '</td>
                                 </tr>
                               </tfoot>';
 
