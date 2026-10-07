@@ -11949,6 +11949,66 @@ class FinanceController extends Controller
                 }
                 $content .= '</tr>
                     </tfoot>';
+
+                $queryClaim = DB::table('students')
+                    ->join('tblclaim', 'students.ic', 'tblclaim.student_ic')
+                    ->join('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
+                    ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
+                    ->join('tblprogramme', 'students.program', '=', 'tblprogramme.id')
+                    ->where([
+                        ['tblclaim.process_status_id', '=', 2],
+                        ['tblstudentclaim.groupid', '=', 1]
+                    ])
+                    ->whereIn('students.status', $data['status'])
+                    ->whereBetween('tblclaim.add_date', [$filter->from, $filter->to])
+                    ->where('tblstudentclaim.id', '!=', 39)
+                    ->select('tblprogramme.progname', DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'))
+                    ->groupBy('tblprogramme.progname');
+
+                $subQueryProgram = DB::table('students')
+                    ->join('tblpayment', 'students.ic', 'tblpayment.student_ic')
+                    ->join('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                    ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                    ->join('tblprogramme', 'students.program', '=', 'tblprogramme.id')
+                    ->where([
+                        ['tblpayment.process_status_id', '=', 2],
+                        ['tblstudentclaim.groupid', '=', 1]
+                    ])
+                    ->whereIn('students.status', $data['status'])
+                    ->whereBetween('tblpayment.add_date', [$filter->from, $filter->to])
+                    ->select('tblprogramme.progname', DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
+                    ->groupBy('tblprogramme.progname')
+                    ->unionAll($queryClaim);
+
+                $programBalances = DB::query()->fromSub($subQueryProgram, 'sub')
+                    ->select('progname', DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                    ->groupBy('progname')
+                    ->get();
+
+                $content2 = "<thead>
+                                <tr>
+                                    <th>Program Name</th>
+                                    <th>Total Aging</th>
+                                </tr>
+                             </thead>
+                             <tbody id='table2'>";
+                $totalProgramAging = 0;
+                foreach ($programBalances as $prog) {
+                    $content2 .= '<tr>
+                                    <td>' . $prog->progname . '</td>
+                                    <td>' . number_format($prog->balance, 2) . '</td>
+                                  </tr>';
+                    $totalProgramAging += $prog->balance;
+                }
+                
+                $content2 .= '</tbody>
+                              <tfoot>
+                                <tr>
+                                    <td>TOTAL</td>
+                                    <td>' . number_format($totalProgramAging, 2) . '</td>
+                                </tr>
+                              </tfoot>';
+
             } catch (QueryException $ex) {
                 DB::rollback();
                 if ($ex->getCode() == 23000) {
@@ -11964,7 +12024,7 @@ class FinanceController extends Controller
             return ["message" => "Error"];
         }
 
-        return response()->json(['message' => 'Success', 'data' => $content]);
+        return response()->json(['message' => 'Success', 'data' => $content, 'data2' => $content2]);
     }
 
     public function ctosReport()

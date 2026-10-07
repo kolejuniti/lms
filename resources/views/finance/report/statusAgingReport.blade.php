@@ -87,6 +87,18 @@
             </tbody>
           </table>
         </div>
+        <div class="card-body p-0 mt-5" style="overflow-x: auto;">
+          <h4 class="m-3">Program Summary</h4>
+          <table id="program_summary" class="w-100 table table-bordered display margin-top-10 w-p100">
+            <thead>
+              <tr>
+                  <th>Program Name</th>
+              </tr>
+            </thead>
+            <tbody id="table2">
+            </tbody>
+          </table>
+        </div>
       </div>
       <!-- /.card -->
     </section>
@@ -169,6 +181,7 @@
       formData.append('filtersData', JSON.stringify(forminput));
 
       $('#complex_header').DataTable().destroy();
+      $('#program_summary').DataTable().destroy();
 
       $.ajax({
           headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
@@ -185,6 +198,7 @@
               try{
                   if(res.message == "Success"){
                       $('#complex_header').html(res.data);
+                      $('#program_summary').html(res.data2);
 
                       $('#complex_header').DataTable({
                         dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
@@ -210,6 +224,23 @@
                             }
                         ],
 
+                      });
+
+                      $('#program_summary').DataTable({
+                        dom: 'lBfrtip',
+                        paging: false,
+                        buttons: [
+                            {
+                              text: 'Excel',
+                              action: function () {
+                                const table = document.getElementById("program_summary");
+                                const wb = XLSX.utils.book_new();
+                                const ws = XLSX.utils.table_to_sheet(table);
+                                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+                                XLSX.writeFile(wb, "program-summary.xlsx");
+                              }
+                            }
+                        ],
                       });
 
                       let db = document.getElementById("complex_header");
