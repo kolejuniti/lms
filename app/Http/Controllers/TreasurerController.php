@@ -406,7 +406,7 @@ class TreasurerController extends Controller
                 $remark = $payment->remark ?? null;
                 $ic = $payment->ic ?? null;
 
-                if ($type != null && $unit != null && $amount != null && $ic != null && $correction != null) {
+                if ($type != null && $unit != null && $amount != null && $ic != null) {
                     $stddetail = DB::table('students')->where('ic', $ic)->first();
 
                     $ref_no = DB::table('tblref_no')
