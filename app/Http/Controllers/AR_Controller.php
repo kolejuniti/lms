@@ -1144,7 +1144,7 @@ class AR_Controller extends Controller
                 ->orderBy('SessionName')
                 ->get();
 
-            // Build table HTML — no Intake column (shown in caption above the table)
+            // Build table HTML â€” no Intake column (shown in caption above the table)
             $tableHtml  = '<thead><tr>';
             $tableHtml .= '<th style="width:4%">No.</th>';
             $tableHtml .= '<th style="width:32%">Course Name</th>';
@@ -1467,7 +1467,12 @@ class AR_Controller extends Controller
     public function registerCourse(Request $request)
     {
 
+        // Fix Bug 3: null guard — abort early if student not found
         $data['student'] = UserStudent::where('ic', $request->ic)->first();
+
+        if (!$data['student']) {
+            return response('Student not found.', 404);
+        }
 
         $data['course'] = DB::table('subjek')
             ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
@@ -1524,7 +1529,8 @@ class AR_Controller extends Controller
             }
         }
 
-
+        // Fix Bug 2: initialize $loop to [] before the for-loop to prevent undefined variable error
+        $loop = [];
         for ($i = 0; $i <= $data['student']->semester; $i++) {
             $loop[] = $i;
         }
@@ -1554,24 +1560,46 @@ class AR_Controller extends Controller
         //                 ->groupBy('student_subjek.courseid')
         //                 ->groupBy('student_subjek.semesterid');
 
-        $getCourse =  DB::table('student_subjek')
+        // Fix Bug 1: use a fresh independent query for allCourse
+        $data['allCourse'] = DB::table('student_subjek')
             ->join('students', 'student_subjek.student_ic', 'students.ic')
             ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
             //->where('student_subjek.sessionid', $data['student']->session)
             ->where('students.ic', $data['student']->ic)
             ->groupBy('student_subjek.courseid')
-            ->groupBy('student_subjek.semesterid');
+            ->groupBy('student_subjek.semesterid')
+            ->select('student_subjek.sessionid', 'student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')
+            ->orderBy('student_subjek.semesterid')
+            ->get();
 
-        $data['allCourse'] = $getCourse->select('student_subjek.sessionid', 'student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
+        // Fix Bug 1: use a separate fresh query for $crsExists instead of reusing the
+        // already-executed builder (which had select/orderBy mutated by ->get() above)
+        $crsExists = DB::table('student_subjek')
+            ->join('students', 'student_subjek.student_ic', 'students.ic')
+            ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+            ->where('students.ic', $data['student']->ic)
+            ->where('student_subjek.course_status_id', '!=', 2)
+            ->where(function ($query) {
+                $query->where('student_subjek.pointer', '>', 0.67)
+                      ->orWhereNull('student_subjek.pointer');
+            })
+            ->groupBy('student_subjek.courseid')
+            ->groupBy('student_subjek.semesterid')
+            ->pluck('student_subjek.courseid')
+            ->toArray();
 
-        $crsExists = $getCourse->where('student_subjek.course_status_id', '!=', 2)->pluck('student_subjek.courseid')->toArray();
+        $data['allRegistered'] = DB::table('student_subjek')
+            ->where('student_ic', $data['student']->ic)
+            ->where('course_status_id', '!=', 2)
+            ->pluck('courseid')
+            ->toArray();
 
         $data['regCourse'] = DB::table('subjek')->whereNotIn('sub_id', $crsExists)
             ->join('subjek_structure', function ($join) {
                 $join->on('subjek.sub_id', 'subjek_structure.courseID');
             })
-            ->where('subjek_structure.intake_id', $data['student']->intake)
             ->whereIn('subjek_structure.semester_id', $loop)
             ->where([
                 ['subjek_structure.program_id', $data['student']->program],
