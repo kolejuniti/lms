@@ -9842,9 +9842,15 @@ class FinanceController extends Controller
                 ->where([
                     ['tblclaim.student_ic', $std->ic],
                     ['tblclaim.process_status_id', 2],
-                    ['tblstudentclaim.groupid', 1],
                     ['tblclaimdtl.amount', '!=', 0]
                 ])
+                ->where(function ($query) {
+                    $query->where('tblstudentclaim.groupid', 1)
+                        ->orWhere(function ($query) {
+                            $query->where('tblstudentclaim.groupid', 5)
+                                ->where('tblstudentclaim.id', 47);
+                        });
+                })
                 ->unionALL($record)
                 ->select(
                     DB::raw("'claim' as source"),
