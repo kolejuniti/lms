@@ -37,10 +37,15 @@
         <div class="card-body">
           <div class="row mt-3 ">
             <div class="row col-md-12">
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <div class="form-group">
-                  <label class="form-label" for="name">Name / No. IC / No. Matric</label>
-                  <input type="text" class="form-control" id="search" placeholder="Search..." name="search">
+                  <label class="form-label" for="search">Name / No. IC / No. Matric</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="search" placeholder="Search..." name="search">
+                    <button class="btn btn-primary" type="button" id="btn-search">
+                      <i class="fa fa-search"></i> Search
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -66,6 +71,10 @@
                         Date
                     </th>
                     <th>
+                        Cetakan ke-2
+                    </th>
+                    <th>
+                        Action
                     </th>
                 </tr>
             </thead>
@@ -175,17 +184,24 @@
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
 
   <script type="text/javascript">
-  $('#search').keyup(function(event){
-    if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+  $('#search').on('keyup', function(event){
+    if (event.keyCode === 13 || event.key === 'Enter') {
         var searchTerm = $(this).val();
         getStudent(searchTerm);
     }
   });
 
+  $('#btn-search').on('click', function(){
+    var searchTerm = $('#search').val();
+    getStudent(searchTerm);
+  });
+
   function getStudent(search)
   {
-
-    $('#complex_header').DataTable().destroy();
+    if ($.fn.DataTable.isDataTable('#complex_header')) {
+        $('#complex_header').DataTable().clear().destroy();
+    }
+    $('#complex_header').empty();
 
     var edit = true;
 
@@ -219,9 +235,10 @@
             imageColor: "#019ff8",
             text : "Please wait...",
             textResizeFactor: 0.15,
-            textColor: "#019ff8",
             textColor: "#019ff8"
           });
+        },
+        complete:function(){
           $("#complex_header").LoadingOverlay("hide");
         },
         error:function(err){
@@ -229,11 +246,13 @@
             console.log(err);
         },
         success  : function(data){
+            if ($.fn.DataTable.isDataTable('#complex_header')) {
+                $('#complex_header').DataTable().clear().destroy();
+            }
             $('#complex_header').removeAttr('hidden');
             $('#complex_header').html(data);
             
             $('#complex_header').DataTable();
-            //window.location.reload();
         }
     });
       

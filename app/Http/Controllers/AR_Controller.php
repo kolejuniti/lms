@@ -6649,9 +6649,12 @@ class AR_Controller extends Controller
                 'b.SessionName AS session',
                 'tblstudent_status.name AS status'
             )
-            ->where('students.name', 'LIKE', "%" . $request->search . "%")
-            ->orwhere('students.ic', 'LIKE', "%" . $request->search . "%")
-            ->orwhere('students.no_matric', 'LIKE', "%" . $request->search . "%")->get();
+            ->where(function($query) use ($request) {
+                $search = trim($request->search);
+                $query->where('students.name', 'LIKE', "%" . $search . "%")
+                      ->orWhere('students.ic', 'LIKE', "%" . $search . "%")
+                      ->orWhere('students.no_matric', 'LIKE', "%" . $search . "%");
+            })->get();
 
         $content = "";
         $content .= '<thead>
@@ -6672,6 +6675,10 @@ class AR_Controller extends Controller
                                 Date
                             </th>
                             <th>
+                                Cetakan ke-2
+                            </th>
+                            <th>
+                                Action
                             </th>
                         </tr>
                     </thead>
@@ -6682,7 +6689,7 @@ class AR_Controller extends Controller
             $content .= '
             <tr>
                 <td style="width: 1%">
-                ' . $key + 1 . '
+                ' . ($key + 1) . '
                 </td>
                 <td>
                 ' . $student->name . '
@@ -6698,6 +6705,7 @@ class AR_Controller extends Controller
                     <div class="form-group">
                       <input type="date" class="form-control" id="date-' . $student->ic . '">
                     </div>
+                  </div>
                 </td>
                 <td>
                     <div class="form-group mt-2">
@@ -6705,7 +6713,6 @@ class AR_Controller extends Controller
                       <label for="cetakan-checkbox-' . $student->ic . '">Cetakan ke-2</label>
                       <input type="date" class="form-control mt-2" id="cetakan-date-' . $student->ic . '" style="display: none;">
                     </div>
-                  </div>
                 </td>
                 <td>';
 
@@ -7945,5 +7952,164 @@ class AR_Controller extends Controller
         }
 
         return back();
+    }
+
+    public function studentSubjekKhas()
+    {
+        return view('pendaftar_akademik.student.subjek_khas');
+    }
+
+    public function getStudentSubjekKhas(Request $request)
+    {
+        $student = DB::table('students')
+            ->leftJoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->leftJoin('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->leftJoin('sessions AS intake_session', 'students.intake', 'intake_session.SessionID')
+            ->leftJoin('sessions AS current_session', 'students.session', 'current_session.SessionID')
+            ->leftJoin('semester', 'students.semester', 'semester.id')
+            ->select(
+                'students.*',
+                'tblstudent_status.name AS status_name',
+                'tblprogramme.progname AS program_name',
+                'tblprogramme.progcode AS program_code',
+                'intake_session.SessionName AS intake_name',
+                'current_session.SessionName AS session_name',
+                'semester.semester_name'
+            )
+            ->where('students.ic', $request->student)
+            ->first();
+
+        if (!$student) {
+            return response("<div class='alert alert-danger'>Student not found.</div>", 404);
+        }
+
+        // 3 subjects from table subjek with sub_id 1293, 1292, 1291
+        $subjects = DB::table('subjek')
+            ->whereIn('sub_id', [1293, 1292, 1291])
+            ->orderByRaw("FIELD(sub_id, 1293, 1292, 1291)")
+            ->get();
+
+        // Active lecturers with usrtype DN, PL, AO, LCT
+        $lecturers = DB::table('users')
+            ->whereIn('usrtype', ['DN', 'PL', 'AO', 'LCT'])
+            ->where('status', 'ACTIVE')
+            ->orderBy('name', 'ASC')
+            ->select('ic', 'name', 'usrtype')
+            ->get();
+
+        $registered = DB::table('student_subjek_khas')
+            ->join('subjek', 'student_subjek_khas.sub_id', '=', 'subjek.sub_id')
+            ->leftJoin('sessions', 'student_subjek_khas.session_id', '=', 'sessions.SessionID')
+            ->leftJoin('semester', 'student_subjek_khas.semester_id', '=', 'semester.id')
+            ->leftJoin('users', 'student_subjek_khas.lecturer_ic', '=', 'users.ic')
+            ->select(
+                'student_subjek_khas.*',
+                'subjek.course_code',
+                'subjek.course_name',
+                'sessions.SessionName',
+                'semester.semester_name',
+                'users.name AS lecturer_name'
+            )
+            ->where('student_subjek_khas.student_ic', $student->ic)
+            ->orderBy('student_subjek_khas.id', 'DESC')
+            ->get();
+
+        return view('pendaftar_akademik.student.subjek_khas_get_student', compact('student', 'subjects', 'lecturers', 'registered'));
+    }
+
+    public function storeStudentSubjekKhas(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'student_ic' => 'required',
+            'subjects' => 'required|array|min:1',
+            'subjects.*.sub_id' => 'required',
+            'subjects.*.lecturer_ic' => 'required',
+            'subjects.*.total_mark' => 'required|numeric|min:0|max:100',
+            'subjects.*.status' => 'required|in:LULUS,GAGAL',
+        ], [
+            'subjects.*.lecturer_ic.required' => 'Please select a lecturer for each subject.',
+            'subjects.*.total_mark.required' => 'Please enter total mark for each subject.',
+            'subjects.*.status.required' => 'Please select status (LULUS/GAGAL) for each subject.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first()
+            ], 422);
+        }
+
+        $student = DB::table('students')->where('ic', $request->student_ic)->first();
+        if (!$student) {
+            return response()->json(['error' => 'Student not found.'], 404);
+        }
+
+        // By default semester_id = 1 and session_id stored based on id in Intake
+        $semester_id = 1;
+        $session_id = $student->intake;
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->subjects as $item) {
+                if (!isset($item['sub_id']) || empty($item['status'])) {
+                    continue;
+                }
+
+                $exists = DB::table('student_subjek_khas')->where([
+                    ['student_ic', $request->student_ic],
+                    ['sub_id', $item['sub_id']],
+                    ['semester_id', $semester_id],
+                    ['session_id', $session_id]
+                ])->first();
+
+                $mark = isset($item['total_mark']) && $item['total_mark'] !== '' ? $item['total_mark'] : null;
+                $lecturer_ic = !empty($item['lecturer_ic']) ? $item['lecturer_ic'] : null;
+
+                if ($exists) {
+                    DB::table('student_subjek_khas')->where('id', $exists->id)->update([
+                        'lecturer_ic' => $lecturer_ic,
+                        'total_mark' => $mark,
+                        'status' => $item['status'],
+                        'updated_at' => now(),
+                    ]);
+                } else {
+                    DB::table('student_subjek_khas')->insert([
+                        'student_ic' => $request->student_ic,
+                        'sub_id' => $item['sub_id'],
+                        'lecturer_ic' => $lecturer_ic,
+                        'semester_id' => $semester_id,
+                        'session_id' => $session_id,
+                        'total_mark' => $mark,
+                        'status' => $item['status'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => 'Special subjects registered successfully!'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'An error occurred while saving: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteStudentSubjekKhas($id)
+    {
+        try {
+            DB::table('student_subjek_khas')->where('id', $id)->delete();
+            return response()->json([
+                'success' => 'Subject record deleted successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to delete record: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
