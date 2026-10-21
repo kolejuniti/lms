@@ -94,7 +94,7 @@
                           Active
                           </th>
                           <th style="width: 10%; text-align: center; border: 1px solid black;" rowspan="2">
-                          Active on Leave
+                          Active on Leave (MIA)
                           </th>
                           <th style="width: 10%; text-align: center; border: 1px solid black;" rowspan="2">
                           Postpone
