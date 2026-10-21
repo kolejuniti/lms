@@ -423,9 +423,10 @@
                             @php
                               $active = count(DB::table('students')->where([
                                     ['students.status', 2],
-                                    ['students.campus_id', 1],
-                                    ['students.student_status', 2]
-                                    ])->get());
+                                    ['students.campus_id', 1]
+                                    ])
+                                    ->whereIn('students.student_status', [1, 2])
+                                    ->get());
                             @endphp
                             {{ $active }}
                           </td>
@@ -515,7 +516,7 @@
                               </td>
                             @endif
                           @endforeach
-                          <td style="text-align: center; border: 1px solid black;">
+                          <td style="text-align: center; border: 1px solid black;" colspan="2">
                             @php
                               $industry = count(DB::table('students')->where([
                                     ['students.status', 2],
@@ -523,15 +524,13 @@
                                     ['students.campus_id', 1]
                                     ])->get());
                             @endphp
-                            {{ $industry }}
+                            {{ $industry + $active }}
                           </td>
-                          @php
-
-                          $total_all = $active + $aol + $postpone + $holding;
-
-                          @endphp
-                          <td style="text-align: center; border: 1px solid black;" colspan="3">
-                            {{ $total_all }}
+                          <td style="text-align: center; border: 1px solid black;">
+                            {{ $aol }}
+                          </td>
+                          <td style="text-align: center; border: 1px solid black;">
+                            {{ $postpone }}
                           </td>
                           <td style="text-align: center; border: 1px solid black;">
                           </td>
@@ -561,7 +560,7 @@
                           </td>
                           @php
 
-                          $total_all = $industry + $active + $aol + $postpone + $holding;
+                          $total_all = $industry + $active + $aol + $postpone;
 
                           @endphp
                           <td style="text-align: center; border: 1px solid black;" colspan="4">

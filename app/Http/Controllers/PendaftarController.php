@@ -3121,9 +3121,9 @@ class PendaftarController extends Controller
                 ->where([
                     ['students.program', $prg->id],
                     ['students.status', 2],
-                    ['students.campus_id', 1],
-                    ['students.student_status', 2]
-                ])->get());
+                    ['students.campus_id', 1]
+                ])->whereIn('students.student_status', [1, 2])
+                ->get());
 
             $data['active_leave'][$key] = count(DB::table('students')
                 ->where([
