@@ -5519,9 +5519,11 @@ class FinanceController extends Controller
                     ->join('students', 'tblclaim.student_ic', 'students.ic')
                     ->leftjoin('tblprocess_status', 'tblclaim.process_status_id', 'tblprocess_status.id')
                     ->leftjoin('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
-                    ->where('students.name', 'LIKE', $request->search . "%")
-                    ->orwhere('students.ic', 'LIKE', $request->search . "%")
-                    ->orwhere('students.no_matric', 'LIKE', $request->search . "%")
+                    ->where(function ($query) use ($request) {
+                        $query->where('students.name', 'LIKE', $request->search . "%")
+                            ->orWhere('students.ic', 'LIKE', $request->search . "%")
+                            ->orWhere('students.no_matric', 'LIKE', $request->search . "%");
+                    })
                     ->where('tblclaim.process_status_id', 2)
                     ->groupBy('tblclaim.id')
                     ->select('tblclaim.id', 'tblclaim.remark', 'tblclaim.date AS unified_date', 'tblclaim.ref_no', 'tblclaim.date AS date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic')
@@ -5532,9 +5534,11 @@ class FinanceController extends Controller
                 $reg = DB::table('tblpayment')
                     ->join('students', 'tblpayment.student_ic', 'students.ic')
                     ->join('tblprocess_status', 'tblpayment.process_status_id', 'tblprocess_status.id')
-                    ->where('students.name', 'LIKE', $request->search . "%")
-                    ->orwhere('students.ic', 'LIKE', $request->search . "%")
-                    ->orwhere('students.no_matric', 'LIKE', $request->search . "%")
+                    ->where(function ($query) use ($request) {
+                        $query->where('students.name', 'LIKE', $request->search . "%")
+                            ->orWhere('students.ic', 'LIKE', $request->search . "%")
+                            ->orWhere('students.no_matric', 'LIKE', $request->search . "%");
+                    })
                     ->where('tblpayment.process_status_id', 2)
                     ->select('tblpayment.id', DB::raw("'' as remark"), 'tblpayment.date AS unified_date', 'tblpayment.ref_no', 'tblpayment.date AS date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
 
@@ -5542,9 +5546,11 @@ class FinanceController extends Controller
                     ->join('students', 'tblclaim.student_ic', 'students.ic')
                     ->leftjoin('tblprocess_status', 'tblclaim.process_status_id', 'tblprocess_status.id')
                     ->leftjoin('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
-                    ->where('students.name', 'LIKE', $request->search . "%")
-                    ->orwhere('students.ic', 'LIKE', $request->search . "%")
-                    ->orwhere('students.no_matric', 'LIKE', $request->search . "%")
+                    ->where(function ($query) use ($request) {
+                        $query->where('students.name', 'LIKE', $request->search . "%")
+                            ->orWhere('students.ic', 'LIKE', $request->search . "%")
+                            ->orWhere('students.no_matric', 'LIKE', $request->search . "%");
+                    })
                     ->where('tblclaim.process_status_id', 2)
                     ->groupBy('tblclaim.id')
                     ->select('tblclaim.id', 'tblclaim.remark', 'tblclaim.date AS unified_date', 'tblclaim.ref_no', 'tblclaim.date AS date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
