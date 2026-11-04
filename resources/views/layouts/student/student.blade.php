@@ -496,7 +496,14 @@
 					<li><a href="/student/midterm/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Midterm</a></li>
 					{{-- <li><a href="/student/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
 					<li><a href="/student/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li> --}}
-					<li><a href="/student/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
+					<li class="treeview">
+						<a href="#"><span>Practical</span>
+						</a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/student/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
+						<li><a href="/student/practical2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
+						</ul>
+					</li>
 					{{-- <li><a href="/student/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li> --}}
 					<li><a href="/student/report/{{ Session::get('CourseID') }}" class="">Report</a></li>
 				</ul>

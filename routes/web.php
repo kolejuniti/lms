@@ -243,6 +243,11 @@ Route::get('/AR/student/getCourse', [App\Http\Controllers\AR_Controller::class, 
 Route::post('/AR/student/register', [App\Http\Controllers\AR_Controller::class, 'registerCourse']);
 Route::delete('/AR/student/unregister', [App\Http\Controllers\AR_Controller::class, 'unregisterCourse']);
 Route::get('/AR/student/getSlipExam', [App\Http\Controllers\AR_Controller::class, 'getSlipExam'])->name('pendaftar_akademik.student.slipExam');
+Route::get('/AR/student/subjekKhas', [App\Http\Controllers\AR_Controller::class, 'studentSubjekKhas'])->name('pendaftar_akademik.studentSubjekKhas');
+Route::post('/AR/student/subjekKhas/getStudent', [App\Http\Controllers\AR_Controller::class, 'getStudentSubjekKhas'])->name('pendaftar_akademik.studentSubjekKhas.getStudent');
+Route::post('/AR/student/subjekKhas/store', [App\Http\Controllers\AR_Controller::class, 'storeStudentSubjekKhas'])->name('pendaftar_akademik.studentSubjekKhas.store');
+Route::delete('/AR/student/subjekKhas/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'deleteStudentSubjekKhas'])->name('pendaftar_akademik.studentSubjekKhas.delete');
+
 Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionList'])->name('pendaftar_akademik.session');
 Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
 Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
@@ -603,6 +608,15 @@ Route::get('/lecturer/practical/{practicalid}/{userid}/result', [App\Http\Contro
 Route::post('/lecturer/practical/getChapters', [App\Http\Controllers\PracticalController::class, 'getChapters']);
 Route::post('/lecturer/practical/deletepractical', [App\Http\Controllers\PracticalController::class, 'deletepractical']);
 
+Route::get('/lecturer/practical2/{id}', [App\Http\Controllers\PracticalController::class, 'practical2list'])->name('lecturer.practical2');
+Route::get('/lecturer/practical2/{id}/create', [App\Http\Controllers\PracticalController::class, 'practical2create'])->name('lecturer.practical2.create');
+Route::post('/lecturer/practical2/insert', [App\Http\Controllers\PracticalController::class, 'insertpractical2']);
+Route::post('/lecturer/practical2/update', [App\Http\Controllers\PracticalController::class, 'updatepractical2']);
+Route::get('/lecturer/practical2/{id}/{practical}', [App\Http\Controllers\PracticalController::class, 'lecturerpractical2status'])->name('lecturer.practical2.status');
+Route::post('/lecturer/practical2/{id}/{practical}/getGroup', [App\Http\Controllers\PracticalController::class, 'practical2GetGroup']);
+Route::post('/lecturer/practical2/getChapters', [App\Http\Controllers\PracticalController::class, 'getChapters']);
+Route::post('/lecturer/practical2/deletepractical', [App\Http\Controllers\PracticalController::class, 'deletepractical']);
+
 Route::get('/lecturer/other/{id}', [App\Http\Controllers\OtherController::class, 'otherlist'])->name('lecturer.other');
 Route::get('/lecturer/other/{id}/create', [App\Http\Controllers\OtherController::class, 'othercreate'])->name('lecturer.other.create');
 Route::post('/lecturer/other/insert', [App\Http\Controllers\OtherController::class, 'insertother']);
@@ -745,6 +759,7 @@ Route::get('/student/practical/{id}/{practical}', [App\Http\Controllers\Practica
 Route::get('/student/practical/{id}/{practical}/view', [App\Http\Controllers\PracticalController::class, 'practicalview']);
 Route::get('/student/practical/{practicalid}/{userid}/result', [App\Http\Controllers\PracticalController::class, 'practicalresultstd']);
 Route::post('/student/practical/submitpractical', [App\Http\Controllers\PracticalController::class, 'submitpractical']);
+Route::get('/student/practical2/{id}', [App\Http\Controllers\PracticalController::class, 'studentpractical2list'])->name('student.practical2');
 
 
 Route::get('/student/other/{id}', [App\Http\Controllers\OtherController::class, 'studentotherlist'])->name('student.other');

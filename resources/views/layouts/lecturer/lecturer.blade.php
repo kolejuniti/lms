@@ -322,7 +322,14 @@
 					<li><a href="/lecturer/midterm/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Midterm</a></li>
 					<li><a href="/lecturer/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
 					{{-- <li><a href="/lecturer/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li> --}}
-					<li><a href="/lecturer/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
+					<li class="treeview">
+						<a href="#"><span>Practical</span>
+						</a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/lecturer/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
+						<li><a href="/lecturer/practical2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
+						</ul>
+					</li>
 					<li><a href="/lecturer/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
 					<li><a href="/lecturer/extra/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Extra</a></li>
 					<li><a href="/lecturer/report/{{ Session::get('CourseID') }}" class="">Report</a></li>
