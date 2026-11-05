@@ -1,4 +1,4 @@
-@extends('../layouts.ketua_program')
+@extends('layouts.ketua_program')
 
 @section('main')
 	

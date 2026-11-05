@@ -1,4 +1,4 @@
-@extends((Auth::user()->usrtype == "DN") ? '../layouts.dekan' : '../layouts.ketua_program')
+@extends((Auth::user()->usrtype == "DN") ? 'layouts.dekan' : 'layouts.ketua_program')
 
 @section('main')
 <!-- Content Header (Page header) -->
