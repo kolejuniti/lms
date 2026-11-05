@@ -1,4 +1,4 @@
-@extends('../layouts.hea')
+@extends('layouts.hea')
 
 @section('main')
 <!-- Content Header (Page header) -->

@@ -1,4 +1,4 @@
-@extends('../layouts.pendaftar')
+@extends('layouts.pendaftar')
 
 @section('main')
 
