@@ -1,4 +1,4 @@
-@extends('../layouts.coop')
+@extends('layouts.coop')
 
 @section('main')
 <!-- Content Header (Page header) -->
