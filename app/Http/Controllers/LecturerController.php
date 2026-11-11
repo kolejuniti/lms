@@ -2902,6 +2902,19 @@ class LecturerController extends Controller
             ->select('subjek.*', 'sessions.SessionName AS session')
             ->first();
 
+        // Grade scale selection:
+        // - Default: use all rows in `tblsubject_grade`
+        // - Special case: for course `subjek.sub_id = 14` AND `subjek.course_level_id = 14`,
+        //   use only `tblsubject_grade.id` 15 and 16
+        $gradeScaleQuery = DB::table('tblsubject_grade');
+        if (
+            $data['lectInfo'] !== null
+            && (int) $data['lectInfo']->course_level_id === 16
+        ) {
+            $gradeScaleQuery->whereIn('id', [15, 16]);
+        }
+        $gradeScale = $gradeScaleQuery->get();
+
         $groups = DB::table('user_subjek')
             ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
             ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -3748,9 +3761,9 @@ class LecturerController extends Controller
                 $collectionall = collect($overallall[$ky]);
 
                 //check grade
-                $grade = DB::table('tblsubject_grade')->get();
+                // $grade = DB::table('tblsubject_grade')->get();
 
-                foreach ($grade as $grd) {
+                foreach($gradeScale as $grd) {
 
                     if ($overallall[$ky][$keys] >= $grd->mark_start && $overallall[$ky][$keys] <= $grd->mark_end) {
                         $valGrade[$ky][$keys] = $grd->code;
