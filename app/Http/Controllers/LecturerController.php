@@ -2904,14 +2904,14 @@ class LecturerController extends Controller
 
         // Grade scale selection:
         // - Default: use all rows in `tblsubject_grade`
-        // - Special case: for course `subjek.sub_id = 14` AND `subjek.course_level_id = 14`,
+        // - Special case: for course `subjek.sub_id = 14` AND `subjek.course_level_id = 16`,
         //   use only `tblsubject_grade.id` 15 and 16
         $gradeScaleQuery = DB::table('tblsubject_grade');
         if (
             $data['lectInfo'] !== null
             && (int) $data['lectInfo']->course_level_id === 16
         ) {
-            $gradeScaleQuery->whereIn('id', [15, 16]);
+            $gradeScaleQuery->whereIn('id', [14, 15]);
         }
         $gradeScale = $gradeScaleQuery->get();
 
