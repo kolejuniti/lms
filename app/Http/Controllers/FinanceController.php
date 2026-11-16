@@ -10053,7 +10053,7 @@ class FinanceController extends Controller
                     $convoBalance -= $req->amount;
                 }
             }
-            $data['convo_fee'][$key] = $convoBalance;
+            $data['convo_fee'][$key] = max(0, $convoBalance);
 
             $data['total_balance'][$key] = $data['current_balance'][$key] + $data['pk_balance'][$key] + $data['fine'][$key] + $data['convo_fee'][$key];
         }
@@ -10327,7 +10327,7 @@ class FinanceController extends Controller
                 $convoBalance -= $req->amount;
             }
         }
-        $data['convo_fee'] = $convoBalance;
+        $data['convo_fee'] = max(0, $convoBalance);
 
         $data['total_all'] = $data['current_balance'] + $data['pk_balance'] + $data['fine'] + $data['convo_fee'];
 
