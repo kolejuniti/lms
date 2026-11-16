@@ -441,7 +441,7 @@
               </a>
             </li>
             <li>
-              <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20262027 (Kemasukan Jun).pdf') }}" target="_blank">
+              <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir Semester I Sesi 20262027 (Kemasukan Ogos).pdf') }}" target="_blank">
                 <i data-feather="file-text"></i><span>Final Exam Schedule (UNITI)</span>
               </a>
             </li>
