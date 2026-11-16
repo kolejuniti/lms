@@ -153,6 +153,9 @@
                                         <p>TUNGGAKAN DENDA / SAMAN (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['fine']) ? number_format($data['fine'], 2) : 0.00 }}</p>
                                     </div>
                                     <div class="form-group">
+                                        <p>TUNGGAKAN YURAN KONVOKESYEN (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['convo_fee']) ? number_format($data['convo_fee'], 2) : 0.00 }}</p>
+                                    </div>
+                                    <div class="form-group">
                                         <p>TUNGGAKAN KESELURUHAN (RM) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_all']) ? number_format($data['total_all'], 2) : 0.00 }}</p>
                                     </div>
                                     <div class="form-group">

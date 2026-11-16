@@ -5334,15 +5334,19 @@ class FinanceController extends Controller
                 $data['sum1_3'] += $req->amount;
             } elseif (array_intersect([1, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], (array) $req->process_type_id)) {
 
-                $data['total3'][$key] = $val - $req->amount;
+                if (str_starts_with(strtoupper(trim((string)$req->ref_no)), 'BL')) {
+                    $data['total3'][$key] = 0;
+                } else {
+                    $data['total3'][$key] = $val - $req->amount;
 
-                $val = $val - $req->amount;
+                    $val = $val - $req->amount;
+                }
 
                 $data['sum2_3'] += $req->amount;
             }
         }
 
-        $data['sum3_3'] = end($data['total3']);
+        $data['sum3_3'] = $val;
 
         //TUNGGAKAN KESELURUHAN
 
@@ -9850,13 +9854,7 @@ class FinanceController extends Controller
                     ['tblclaim.process_status_id', 2],
                     ['tblclaimdtl.amount', '!=', 0]
                 ])
-                ->where(function ($query) {
-                    $query->where('tblstudentclaim.groupid', 1)
-                        ->orWhere(function ($query) {
-                            $query->where('tblstudentclaim.groupid', 5)
-                                ->where('tblstudentclaim.id', 47);
-                        });
-                })
+                ->where('tblstudentclaim.groupid', 1)
                 ->unionALL($record)
                 ->select(
                     DB::raw("'claim' as source"),
@@ -10022,7 +10020,42 @@ class FinanceController extends Controller
             }
             $data['fine'][$key] = $fineBalance;
 
-            $data['total_balance'][$key] = $data['current_balance'][$key] + $data['pk_balance'][$key] + $data['fine'][$key];
+            // Convo Fee calculation (tblstudentclaim.id = 47)
+            $convoPaymentQuery = DB::table('tblpaymentdtl')
+                ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+                ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                ->where([
+                    ['tblpayment.student_ic', $std->ic],
+                    ['tblpayment.process_status_id', 2],
+                    ['tblstudentclaim.id', 47],
+                    ['tblpaymentdtl.amount', '!=', 0]
+                ])
+                ->select('tblpaymentdtl.amount', 'tblpayment.process_type_id');
+
+            $convoClaims = DB::table('tblclaimdtl')
+                ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+                ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+                ->where([
+                    ['tblclaim.student_ic', $std->ic],
+                    ['tblclaim.process_status_id', 2],
+                    ['tblstudentclaim.id', 47],
+                    ['tblclaimdtl.amount', '!=', 0]
+                ])
+                ->select('tblclaimdtl.amount', 'tblclaim.process_type_id')
+                ->unionALL($convoPaymentQuery)
+                ->get();
+
+            $convoBalance = 0;
+            foreach ($convoClaims as $req) {
+                if (array_intersect([2, 3, 4, 5, 11], (array) $req->process_type_id)) {
+                    $convoBalance += $req->amount;
+                } elseif (array_intersect([1, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], (array) $req->process_type_id)) {
+                    $convoBalance -= $req->amount;
+                }
+            }
+            $data['convo_fee'][$key] = $convoBalance;
+
+            $data['total_balance'][$key] = $data['current_balance'][$key] + $data['pk_balance'][$key] + $data['fine'][$key] + $data['convo_fee'][$key];
         }
 
 
@@ -10261,7 +10294,42 @@ class FinanceController extends Controller
         }
         $data['fine'] = $fineBalance;
 
-        $data['total_all'] = $data['current_balance'] + $data['pk_balance'] + $data['fine'];
+        // Convo Fee calculation (tblstudentclaim.id = 47)
+        $convoPaymentQuery = DB::table('tblpaymentdtl')
+            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->where([
+                ['tblpayment.student_ic', request()->ic],
+                ['tblpayment.process_status_id', 2],
+                ['tblstudentclaim.id', 47],
+                ['tblpaymentdtl.amount', '!=', 0]
+            ])
+            ->select('tblpaymentdtl.amount', 'tblpayment.process_type_id');
+
+        $convoClaims = DB::table('tblclaimdtl')
+            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+            ->where([
+                ['tblclaim.student_ic', request()->ic],
+                ['tblclaim.process_status_id', 2],
+                ['tblstudentclaim.id', 47],
+                ['tblclaimdtl.amount', '!=', 0]
+            ])
+            ->select('tblclaimdtl.amount', 'tblclaim.process_type_id')
+            ->unionALL($convoPaymentQuery)
+            ->get();
+
+        $convoBalance = 0;
+        foreach ($convoClaims as $req) {
+            if (array_intersect([2, 3, 4, 5, 11], (array) $req->process_type_id)) {
+                $convoBalance += $req->amount;
+            } elseif (array_intersect([1, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], (array) $req->process_type_id)) {
+                $convoBalance -= $req->amount;
+            }
+        }
+        $data['convo_fee'] = $convoBalance;
+
+        $data['total_all'] = $data['current_balance'] + $data['pk_balance'] + $data['fine'] + $data['convo_fee'];
 
         //E
 
@@ -10941,13 +11009,17 @@ class FinanceController extends Controller
                     $val2 = $val2 + $req->amount;
                 } elseif (array_intersect([1, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], (array) $req->process_type_id)) {
 
-                    $total3[$recKey] = $val2 - $req->amount;
+                    if (str_starts_with(strtoupper(trim((string)$req->ref_no)), 'BL')) {
+                        $total3[$recKey] = 0;
+                    } else {
+                        $total3[$recKey] = $val2 - $req->amount;
 
-                    $val2 = $val2 - $req->amount;
+                        $val2 = $val2 - $req->amount;
+                    }
                 }
             }
 
-            $data['sum3_3'][$key] = isset($total3) && !empty($total3) ? end($total3) : 0;
+            $data['sum3_3'][$key] = $val2;
 
             // Calculate combined balance including fine and other values if requested
             $data['fine_balance'][$key] = isset($data['sum3_2'][$key]) ? $data['sum3_2'][$key] : 0;

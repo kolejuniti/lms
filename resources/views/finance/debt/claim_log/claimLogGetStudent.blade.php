@@ -42,6 +42,9 @@
                                     Fine / Summons
                                 </th>
                                 <th>
+                                    Convo Fee
+                                </th>
+                                <th>
                                     Total Arrears
                                 </th>
                                 <th>
@@ -54,7 +57,7 @@
                         <tbody id="table">
                             @foreach ($data['student'] as $key => $std)
 
-                                @if(number_format($data['current_balance'][$key], 2) > 0 || number_format($data['pk_balance'][$key], 2) > 0 || number_format($data['total_balance'][$key], 2) > 0)
+                                @if(number_format($data['current_balance'][$key], 2) > 0 || number_format($data['pk_balance'][$key], 2) > 0 || number_format($data['fine'][$key], 2) > 0 || number_format($data['convo_fee'][$key], 2) > 0 || number_format($data['total_balance'][$key], 2) > 0)
                                 <tr>
                                     <td>
                                         {{ $key+1 }}
@@ -92,6 +95,9 @@
                                     </td>
                                     <td>
                                         {{ number_format($data['fine'][$key], 2) }}
+                                    </td>
+                                    <td>
+                                        {{ number_format($data['convo_fee'][$key], 2) }}
                                     </td>
                                     <td>
                                         {{ number_format($data['total_balance'][$key], 2) }}

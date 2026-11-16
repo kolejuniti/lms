@@ -1640,9 +1640,13 @@ class StudentController extends Controller
             }elseif(array_intersect([1], (array) $req->group_id))
             {
 
-                $data['total3'][$key] = $val - $req->amount;
+                if (str_starts_with(strtoupper(trim((string)$req->ref_no)), 'BL')) {
+                    $data['total3'][$key] = 0;
+                } else {
+                    $data['total3'][$key] = $val - $req->amount;
 
-                $val = $val - $req->amount;
+                    $val = $val - $req->amount;
+                }
 
                 $data['sum2_3'] += $req->amount;
 
@@ -1650,7 +1654,7 @@ class StudentController extends Controller
 
         }
 
-        $data['sum3_3'] = end($data['total3']);
+        $data['sum3_3'] = $val;
 
         //TUNGGAKAN KESELURUHAN
 
