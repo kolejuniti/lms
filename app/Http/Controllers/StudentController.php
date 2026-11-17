@@ -1775,16 +1775,21 @@ class StudentController extends Controller
 
     public function studentResult()
     {
-        $currentTime = now()->format('H:i:s');
-        $startTime = '18:00:00';
-        $endTime = '07:00:00';
+        $now = now();
 
-        // Allow access only between 18:00 (6pm) and 07:00 (7am next day)
-        $isAfterSix = $currentTime >= $startTime;
-        $isBeforeSeven = $currentTime <= $endTime;
+        // Check if today is a weekday (Monday to Friday)
+        if (!$now->isWeekend()) {
+            $currentTime = $now->format('H:i:s');
+            $startTime = '18:00:00';
+            $endTime = '07:00:00';
 
-        if (!$isAfterSix && !$isBeforeSeven) {
-            return redirect()->back()->with('alert', 'Result page can only be accessed between 06:00 PM and 07:00 AM.');
+            // Allow access only between 18:00 (6pm) and 07:00 (7am next day)
+            $isAfterSix = $currentTime >= $startTime;
+            $isBeforeSeven = $currentTime <= $endTime;
+
+            if (!$isAfterSix && !$isBeforeSeven) {
+                return redirect()->back()->with('alert', 'Result page can only be accessed between 06:00 PM and 07:00 AM on weekdays. Weekend access is open 24 hours.');
+            }
         }
 
         $student = Session::get('StudInfo');
