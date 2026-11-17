@@ -435,11 +435,11 @@
                 <i data-feather="credit-card"></i><span>Payment</span>
               </a>
             </li>
-            <li>
+            {{-- <li>
               <a href="{{ asset('storage/memo/2025.02.27 - Memo 01 Ketetapan Mod Pengajian Kuliah Kolej UNITI bagi Sesi 20252026-II.pdf') }}" target="_blank">
                 <i data-feather="file-text"></i><span>Memo Pelajar</span>
               </a>
-            </li>
+            </li> --}}
             <li>
               <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir Semester I Sesi 20262027 (Kemasukan Ogos).pdf') }}" target="_blank">
                 <i data-feather="file-text"></i><span>Final Exam Schedule (UNITI)</span>
