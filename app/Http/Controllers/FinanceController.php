@@ -10529,14 +10529,21 @@ class FinanceController extends Controller
 
     public function collectionExpectReport()
     {
+        $data['status'] = DB::table('tblstudent_status')->whereIn('id', [3, 4, 7, 8])->get();
 
-        return view('finance.debt.collection_expectation_report.collection2Report');
+        return view('finance.debt.collection_expectation_report.collection2Report', compact('data'));
     }
 
     public function getCollectionExpectReport(Request $request)
     {
 
         //A
+
+        // Determine status filter
+        $statusFilter = [3, 4, 7, 8]; // Default to all allowed statuses
+        if ($request->status && $request->status != '-') {
+            $statusFilter = [$request->status];
+        }
 
         // $data['student'] = DB::table('student_payment_log')
         //                    ->join('students', 'student_payment_log.student_ic', 'students.ic')
@@ -10566,7 +10573,7 @@ class FinanceController extends Controller
                 ->select('tblstudent_status.id')
                 ->first();
 
-            if ($status && $status->id == 8) {
+            if ($status && in_array($status->id, $statusFilter)) {
                 $filteredStudents[] = $student;
             }
         }
