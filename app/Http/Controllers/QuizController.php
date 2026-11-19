@@ -519,6 +519,8 @@ class QuizController extends Controller
     {
         $user = Auth::user();
 
+        $this->autoSubmitExpiredQuizzes(request()->quiz);
+
         $group = DB::table('user_subjek')
                 ->join('tblclassquiz_group', 'user_subjek.id', 'tblclassquiz_group.groupid')
                 ->join('tblclassquiz', 'tblclassquiz_group.quizid', 'tblclassquiz.id')
@@ -569,6 +571,8 @@ class QuizController extends Controller
     {
 
         $user = Auth::user();
+
+        $this->autoSubmitExpiredQuizzes(request()->quiz);
 
         $gp = explode('|', $request->group);
 
@@ -1122,6 +1126,9 @@ class QuizController extends Controller
                 ]);
             }
 
+            // Auto-submit any expired attempts for this quiz first
+            $this->autoSubmitExpiredQuizzes($quiz->id);
+
             // Get all submitted quizzes for this specific quiz that are not yet marked
             $submittedQuizzes = DB::table('tblclassstudentquiz')
                 ->where([
@@ -1457,15 +1464,68 @@ class QuizController extends Controller
 
     }
 
+    public function autoSubmitExpiredQuizzes($quizId = null, $studentIc = null)
+    {
+        $query = DB::table('tblclassstudentquiz')
+            ->join('tblclassquiz', 'tblclassstudentquiz.quizid', '=', 'tblclassquiz.id')
+            ->where('tblclassstudentquiz.status', 1)
+            ->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->whereNotNull('tblclassstudentquiz.endtime')
+                        ->where('tblclassstudentquiz.endtime', '<', DB::raw('NOW()'));
+                })->orWhere(function ($sub) {
+                    $sub->whereNotNull('tblclassquiz.date_to')
+                        ->where('tblclassquiz.date_to', '<', DB::raw('NOW()'));
+                });
+            });
+
+        if (!empty($quizId)) {
+            $query->where('tblclassstudentquiz.quizid', $quizId);
+        }
+
+        if (!empty($studentIc)) {
+            $query->where('tblclassstudentquiz.userid', $studentIc);
+        }
+
+        $expired = $query->select(
+            'tblclassstudentquiz.id',
+            'tblclassstudentquiz.content as student_content',
+            'tblclassstudentquiz.endtime',
+            'tblclassquiz.content as default_content'
+        )->get();
+
+        foreach ($expired as $item) {
+            $updateData = [
+                'status' => 2,
+                'submittime' => $item->endtime ?? DB::raw('NOW()')
+            ];
+
+            if (empty($item->student_content)) {
+                $updateData['content'] = $item->default_content;
+            }
+
+            DB::table('tblclassstudentquiz')
+                ->where('id', $item->id)
+                ->update($updateData);
+        }
+    }
+
     public function studentquizstatus()
     {
+        $studentUser = Session::get('StudInfos') ?? Session::get('StudInfo') ?? auth()->guard('student')->user();
+        $studentIc = $studentUser ? $studentUser->ic : null;
+
+        if (request()->quiz && $studentIc) {
+            $this->autoSubmitExpiredQuizzes(request()->quiz, $studentIc);
+        }
+
         $courseid = DB::table('subjek')->where('id', Session::get('CourseIDS'))->value('sub_id');
 
         $group = DB::table('user_subjek')
                 ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                 ->join('users', 'user_subjek.user_ic', 'users.ic')
                 ->where([
-                    ['student_subjek.student_ic', Session::get('StudInfos')->ic],
+                    ['student_subjek.student_ic', $studentIc],
                     ['student_subjek.courseid', $courseid],
                     ['student_subjek.sessionid', Session::get('SessionIDS')]
                     ])
@@ -1482,21 +1542,17 @@ class QuizController extends Controller
                     ['student_subjek.group_id', $group->id],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.id', request()->quiz],
-                    ['student_subjek.student_ic', Session::get('StudInfos')->ic]
+                    ['student_subjek.student_ic', $studentIc]
                 ])->get();
-
-        //dd(Session::get('StudInfos')->ic);
 
         foreach($quiz as $qz)
         {
             $status[] = DB::table('tblclassstudentquiz')
             ->where([
                 ['quizid', $qz->id],
-                ['userid', Session::get('StudInfos')->ic]
+                ['userid', $studentIc]
             ])->first();
         }
-
-        //dd($status);
 
         return view('student.courseassessment.quizstatus', compact('quiz', 'status'));
     }
@@ -1504,10 +1560,16 @@ class QuizController extends Controller
     public function quizview(Request $request){
 
         $id = $request->quiz;
+        $studentUser = Session::get('StudInfos') ?? Session::get('StudInfo') ?? auth()->guard('student')->user();
+        $studentIc = $studentUser ? $studentUser->ic : null;
+
+        if ($id && $studentIc) {
+            $this->autoSubmitExpiredQuizzes($id, $studentIc);
+        }
 
         if(DB::table('tblclassstudentquiz')
         ->where([
-            ['userid', Session::get('StudInfo')->ic],
+            ['userid', $studentIc],
             ['quizid', $id]
          ])->exists()) {
 
@@ -1516,7 +1578,7 @@ class QuizController extends Controller
             {
                 $join->on('tblclassquiz.id', '=', 'tblclassstudentquiz.quizid');
             })
-            ->where('tblclassstudentquiz.userid',  '=', Session::get('StudInfo')->ic);
+            ->where('tblclassstudentquiz.userid',  '=', $studentIc);
 
          }else{
 
@@ -1581,7 +1643,7 @@ class QuizController extends Controller
         if($quiz->classquizstatus == 2){
             if($quiz->studentquizstatus == 2 || $quiz->studentquizstatus == 3){
                 //completed quiz
-                return redirect('/academics/quiz/'.$quiz->quizid.'/result');
+                return redirect('/student/quiz/'.$quiz->id.'/'.$quiz->userid.'/result');
             }else{
                 $data['quiz'] = json_encode($quizformdata );
                 $data['quizid'] = $quiz->id;
@@ -1607,25 +1669,56 @@ class QuizController extends Controller
         $quiz = $request->quiz;
         $data = $request->data;
         
-        $quizduration = DB::table('tblclassquiz')->select('duration')->where('id', $quiz)->first()->duration;
+        $quizInfo = DB::table('tblclassquiz')->select('duration', 'content')->where('id', $quiz)->first();
+        $quizduration = $quizInfo ? $quizInfo->duration : 0;
+        $content = !empty($data) ? $data : ($quizInfo ? $quizInfo->content : null);
         
+        $studentUser = Session::get('StudInfos') ?? Session::get('StudInfo') ?? auth()->guard('student')->user();
+        $studentIc = $studentUser ? $studentUser->ic : null;
+        
+        // If an entry already exists, ensure content is populated if it was previously empty
+        $existing = DB::table('tblclassstudentquiz')
+            ->where('userid', $studentIc)
+            ->where('quizid', $quiz)
+            ->first();
+
+        if ($existing) {
+            if (empty($existing->content) && !empty($content)) {
+                DB::table('tblclassstudentquiz')
+                    ->where('id', $existing->id)
+                    ->update([
+                        'content' => $content
+                    ]);
+            }
+            return response()->json(['status' => true, 'message' => 'Quiz already started']);
+        }
+
         try{
             DB::beginTransaction();
             $q =  DB::table('tblclassstudentquiz')->insert([
-                "userid" =>  Session::get('StudInfos')->ic,
+                "userid" =>  $studentIc,
                 "quizid" => $quiz,
-                "content" => $data,
+                "content" => $content,
                 "starttime" =>  DB::raw('now()'),
                 "endtime" => DB::raw('now() + INTERVAL '.$quizduration.' MINUTE'),
                 "status" => 1
             ]);
             DB::commit();
         }catch(QueryException $ex){
+            DB::rollBack();
             if($ex->getCode() == 23000){
+                // If race condition on duplicate entry, populate content if empty
+                DB::table('tblclassstudentquiz')
+                    ->where('userid', $studentIc)
+                    ->where('quizid', $quiz)
+                    ->whereNull('content')
+                    ->update(['content' => $content]);
             }else{
                 \Log::debug($ex);
             }
         }
+
+        return response()->json(['status' => true]);
     }
 
     public function savequiz(Request $request){
@@ -1648,38 +1741,41 @@ class QuizController extends Controller
         $data = $request->data;
         $id = $request->id;
 
+        $studentUser = Session::get('StudInfos') ?? Session::get('StudInfo') ?? auth()->guard('student')->user();
+        $studentIc = $studentUser ? $studentUser->ic : null;
+
          // Decode the JSON data
         $decodedData = json_decode($data, true);
 
-        // Iterate over formData and update checkbox groups
-        foreach ($decodedData['formData'] as &$item) {
-            if ($item['type'] == 'checkbox-group') {
-                if (empty($item['userData']) || !isset($item['userData'])) {
-                    $item['userData'] = [" "];
+        // Iterate over formData and update checkbox groups if valid
+        if (!empty($decodedData['formData']) && is_array($decodedData['formData'])) {
+            foreach ($decodedData['formData'] as &$item) {
+                if ($item['type'] == 'checkbox-group') {
+                    if (empty($item['userData']) || !isset($item['userData'])) {
+                        $item['userData'] = [" "];
+                    }
                 }
             }
+            $data = json_encode($decodedData);
         }
 
-        // Encode the data back to JSON
-        $data = json_encode($decodedData);
-
         $quiz = DB::table('tblclassquiz')
-            ->leftjoin('tblclassstudentquiz', function($join) 
+            ->leftjoin('tblclassstudentquiz', function($join) use ($studentIc)
             {
                 $join->on('tblclassquiz.id', '=', 'tblclassstudentquiz.quizid');
-                $join->on('tblclassstudentquiz.userid',  '=', DB::raw('12345'));
+                $join->on('tblclassstudentquiz.userid',  '=', DB::raw("'".$studentIc."'"));
             })
             ->select('tblclassquiz.*', 'tblclassstudentquiz.userid', DB::raw('tblclassstudentquiz.status as studentquizstatus'),
              'tblclassstudentquiz.quizid')
             ->where('tblclassquiz.id', $id)
             ->get()->first();
 
-        if($quiz->studentquizstatus == 2 || $quiz->studentquizstatus == 3){
+        if($quiz && ($quiz->studentquizstatus == 2 || $quiz->studentquizstatus == 3)){
             return ["status"=>false, "message" =>"Sorry, you have completed the quiz before."];
         }
 
         $q = DB::table('tblclassstudentquiz')->upsert([
-            "userid" => Session::get('StudInfos')->ic,
+            "userid" => $studentIc,
             "quizid" => $id,
             "submittime" => DB::raw('now()'),
             "content" => $data,
